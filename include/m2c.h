@@ -11,4 +11,10 @@ typedef float f32;        typedef double f64;
 #define M2C_ERROR(desc) (0)
 #define M2C_BITWISE(type, expr) ((type)(expr))
 #define M2C_STRUCT_COPY(dst, src, size) (*(dst) = *(src))
+#ifndef NULL
+#define NULL 0
+#endif
+#define M2C_SYNC() __asm__ volatile("sync")
+#define M2C_BREAK(n) __asm__ volatile("break")
+#define M2C_UNALIGNED32(x) (x)
 #endif

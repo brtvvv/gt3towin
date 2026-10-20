@@ -16,8 +16,20 @@ done = set(os.path.basename(f)[:-4] for f in glob.glob(os.path.join(ROOT, 'src/*
 os.makedirs(os.path.join(ROOT, 'src/auto'), exist_ok=True)
 os.makedirs(os.path.join(ROOT, 'build'), exist_ok=True)
 
+PROTO = {}
+_fh = os.path.join(ROOT, 'include/funcs.h')
+if os.path.exists(_fh):
+    for _l in open(_fh):
+        _m = re.match(r'\w+ (func_[0-9A-F]+)\(', _l)
+        if _m: PROTO[_m.group(1)] = _l.strip()
+
 def m2c(asm):
-    r = subprocess.run([sys.executable, '-m', 'm2c.main', '-t', os.environ.get('M2C_TARGET', 'mipsee-gcc-c'), '--valid-syntax', asm],
+    name = os.path.basename(asm)[:-2]
+    callees = set(re.findall(r'\b(func_[0-9A-F]+)\b', open(asm).read())) - {name}
+    ctx = os.path.join(tempfile.gettempdir(), name + '.ctx.h')
+    open(ctx, 'w').write('\n'.join(PROTO[c] for c in sorted(callees) if c in PROTO) + '\n')
+    args = ['--context', ctx] if PROTO and not os.environ.get('NO_CTX') else []
+    r = subprocess.run([sys.executable, '-m', 'm2c.main', '-t', os.environ.get('M2C_TARGET', 'mipsee-gcc-c'), '--valid-syntax'] + args + [asm],
                        capture_output=True, text=True)
     return r.stdout if r.returncode == 0 else None
 
@@ -29,7 +41,19 @@ def to_cpp(c, name):
         body.append(line)
     c = '\n'.join(body)
     c = re.sub(r'^(\w[^\n;]*\b%s\()' % name, r'extern "C" \1', c, flags=re.M)
-    return '#include "m2c.h"\n' + c + '\n'
+    c = c.replace('*(void *)', '*(s32 *)')
+    return '#define DEF_%s\n#include "m2c.h"\n#include "funcs.h"\n' % name + c + '\n'
+
+def fix_after_error(c, err):
+    """Poprawki stosowane dopiero po bledzie kompilacji."""
+    # zmienne stosu (sp, spC, sp10...) - deklaracja bufora
+    for v in sorted(set(re.findall(r"`(sp[0-9A-F]*)' undeclared", err))):
+        c = re.sub(r'(extern "C" [^\n]*\{\n)', r'\1    s32 %s[4];\n' % v, c, count=1)
+    # za malo argumentow: prototyp bez typow (tylko gdy bez float)
+    for f in set(re.findall(r"too few arguments to function `[^']*?(func_[0-9A-F]+)", err)):
+        c = re.sub(r'(extern "C" [^\n]*\b%s)\(([^)\n]*)\)' % f,
+                   lambda m: m.group(0) if 'f32' in m.group(2) or 'f64' in m.group(2) else m.group(1) + '(...)', c)
+    return c
 
 stats = {'match': 0, 'diff': 0, 'compile': 0, 'm2c': 0}
 report = []
@@ -38,15 +62,25 @@ for addr, sz in sorted(T.SIZES.items()):
     name = f'func_{addr:08X}'
     if sz <= maxsz and name not in done:
         cands.append(name)
+only = set(open(os.environ['ONLY']).read().split()) if os.environ.get('ONLY') else None
 for name in cands[:limit][shard::nshards]:
+    if only is not None and name not in only: continue
     c = m2c(os.path.join(ROOT, 'asm/funcs', name + '.s'))
     if c is None:
         stats['m2c'] += 1; report.append(f'{name} m2c-fail'); continue
     src = os.path.join(tempfile.gettempdir(), name + '.cpp')
     open(src, 'w').write(to_cpp(c, name))
-    try:
-        res = T.run(src, verbose=False, extra=['-I', os.path.join(ROOT, 'include'), '-fpermissive', '-w'])
-    except SystemExit:
+    res = None
+    for attempt in range(3):
+        try:
+            res = T.run(src, verbose=False, extra=['-I', os.path.join(ROOT, 'include'), '-fpermissive', '-w'])
+            break
+        except SystemExit as e:
+            new = fix_after_error(open(src).read(), str(e.code))
+            if new == open(src).read():
+                break
+            open(src, 'w').write(new)
+    if res is None:
         stats['compile'] += 1; report.append(f'{name} compile-fail'); continue
     r = [x for x in res if x[0] == name]
     if r and not r[0][3]:

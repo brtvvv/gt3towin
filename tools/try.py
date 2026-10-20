@@ -15,7 +15,7 @@ for _n, _s in re.findall(r'nonmatching func_([0-9A-F]{8}), (0x[0-9A-F]+)', open(
     SIZES[int(_n, 16)] = int(_s, 16)
 
 CC = os.environ.get('CC', 'ee-gcc2.9-991111-01')
-FLAGS = ['-O2', '-G8']
+FLAGS = ['-O2', '-G8', '-I', os.path.join(ROOT, 'include'), '-fpermissive', '-w']
 
 def run(src, verbose=True, extra=()):
     obj = compile_obj(CC, src, FLAGS + list(extra))
