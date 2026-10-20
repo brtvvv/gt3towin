@@ -1,0 +1,8 @@
+#define DEF_func_001D9148
+#include "m2c.h"
+#include "funcs.h"
+extern "C" void func_001D9148(s32 arg0, s32 arg1) {
+    if (arg1 & 1) {
+        func_0027D2F8(arg0);
+    }
+}
