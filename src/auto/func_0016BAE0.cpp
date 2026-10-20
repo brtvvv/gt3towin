@@ -1,0 +1,20 @@
+#include "m2c.h"
+extern "C" M2C_UNK func_001D9130(M2C_UNK *, M2C_UNK *);        /* extern */
+extern M2C_UNK D_00353388;
+extern M2C_UNK D_00353390;
+extern M2C_UNK D_003533A8;
+extern M2C_UNK D_003533B0;
+extern M2C_UNK D_003533C0;
+extern M2C_UNK D_003533C8;
+extern M2C_UNK D_003533D8;
+extern M2C_UNK D_003533E0;
+extern M2C_UNK D_003533F0;
+extern M2C_UNK D_003533F8;
+
+extern "C" void func_0016BAE0(void) {
+    func_001D9130(&D_00353390, &D_00353388);
+    func_001D9130(&D_003533B0, &D_003533A8);
+    func_001D9130(&D_003533C8, &D_003533C0);
+    func_001D9130(&D_003533E0, &D_003533D8);
+    func_001D9130(&D_003533F8, &D_003533F0);
+}
