@@ -1,0 +1,9 @@
+#define DEF_func_001B3658
+#include "m2c.h"
+#include "funcs.h"
+extern M2C_UNK D_00331A80 __attribute__((section(".data")));
+
+extern "C" void func_001B3658(void *arg0, s32 arg1) {
+    M2C_FIELD(arg0, M2C_UNK **, 0x2C) = &D_00331A80;
+    func_001B1580((s32) arg0, arg1);
+}
