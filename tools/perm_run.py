@@ -13,7 +13,9 @@ WORK = os.environ.get('PERM_WORK', '/tmp/gt3perm')
 secs = int(sys.argv[2]) if len(sys.argv) > 2 else 90
 os.makedirs(os.path.join(ROOT, 'src/perm'), exist_ok=True)
 done = set(os.path.basename(f)[:-4] for f in glob.glob(os.path.join(ROOT, 'src/*/*.cpp')))
-log = open(os.path.join(ROOT, 'build/perm_log.txt'), 'a')
+_lp = os.path.join(ROOT, 'build/perm_log.txt')
+tried = set(l.split()[0] for l in open(_lp)) if os.path.exists(_lp) else set()
+log = open(_lp, 'a')
 
 def wrap(src, nongp):
     out = []
@@ -25,7 +27,7 @@ def wrap(src, nongp):
     return 'extern "C" {\n' + '\n'.join(out) + '\n}\n'
 
 for name in open(sys.argv[1]).read().split():
-    if name in done:
+    if name in done or name in tried:
         continue
     d = os.path.join(WORK, name)
     shutil.rmtree(d, ignore_errors=True)
