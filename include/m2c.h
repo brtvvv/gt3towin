@@ -17,4 +17,10 @@ typedef float f32;        typedef double f64;
 #define M2C_SYNC() __asm__ volatile("sync")
 #define M2C_BREAK(n) __asm__ volatile("break")
 #define M2C_UNALIGNED32(x) (x)
+#ifdef __cplusplus
+/* dostep do tablicy w strukturze: daje taka sama kolejnosc operandow jak oryginal */
+template<int OFF, class T> struct M2C_ARR { char pad[OFF]; T a[1]; };
+template<class T> struct M2C_ARR<0, T> { T a[1]; };
+#define M2C_INDEX(base, type, off, idx) (((M2C_ARR<(off), type> *)(base))->a[idx])
+#endif
 #endif

@@ -7,6 +7,7 @@ Dopasowane laduja w src/auto/<func>.cpp, raport w build/auto_report.txt
 import glob, os, re, subprocess, sys, tempfile
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import try_ as T
+import permute
 
 ROOT = T.ROOT
 maxsz = int(sys.argv[1], 16)
@@ -42,6 +43,14 @@ def to_cpp(c, name):
     c = '\n'.join(body)
     c = re.sub(r'^(\w[^\n;]*\b%s\()' % name, r'extern "C" \1', c, flags=re.M)
     c = c.replace('*(void *)', '*(s32 *)')
+    # dane spoza small-data: oryginal adresuje je przez lui/addiu, nie przez $gp
+    asm = open(os.path.join(ROOT, 'asm/funcs', name + '.s')).read()
+    def _sec(m):
+        sym = m.group(2)
+        if '%%gp_rel(%s)' % sym in asm:
+            return m.group(0)
+        return m.group(1) + ' __attribute__((section(".data")));'
+    c = re.sub(r'^(extern [^\n(]*?\b(D_[0-9A-F]+)(?:\[[^\]]*\])?);', _sec, c, flags=re.M)
     return '#define DEF_%s\n#include "m2c.h"\n#include "funcs.h"\n' % name + c + '\n'
 
 def fix_after_error(c, err):
@@ -83,6 +92,28 @@ for name in cands[:limit][shard::nshards]:
     if res is None:
         stats['compile'] += 1; report.append(f'{name} compile-fail'); continue
     r = [x for x in res if x[0] == name]
+    # near-miss: probuj zamiany operandow (maks. 2 rundy, 16 prob)
+    if r and r[0][3] and r[0][2] * 4 == T.SIZES.get(r[0][1]) and len(r[0][3]) <= max(3, r[0][2] // 4):
+        best = (len(r[0][3]), open(src).read())
+        tries = 0
+        for rnd in range(2):
+            improved = False
+            for v in permute.variants(best[1]):
+                if tries >= 16: break
+                tries += 1
+                vs = src + '.v.cpp'
+                open(vs, 'w').write(v)
+                try:
+                    rr = [x for x in T.run(vs, verbose=False) if x[0] == name]
+                except SystemExit:
+                    continue
+                if rr and rr[0][2] * 4 == T.SIZES.get(rr[0][1]) and len(rr[0][3]) < best[0]:
+                    best = (len(rr[0][3]), v); improved = True
+                    if not rr[0][3]: break
+            if not improved or best[0] == 0: break
+        open(src, 'w').write(best[1])
+        if best[0] == 0:
+            r = [(name, r[0][1], r[0][2], [])]
     if r and not r[0][3]:
         stats['match'] += 1
         os.replace(src, os.path.join(ROOT, 'src/auto', name + '.cpp'))
