@@ -1,0 +1,11 @@
+# Postep
+
+Ostatnia aktualizacja: 2026-10-20 21:02
+
+| | |
+|---|---|
+| Funkcji w grze | 11434 |
+| Dopasowane (automat) | 479 |
+| Dopasowane (recznie) | 5 |
+| **Razem** | **484** (4%) |
+| Automatyczny przebieg | trwa, sprawdzono ok. 1603 funkcji |
