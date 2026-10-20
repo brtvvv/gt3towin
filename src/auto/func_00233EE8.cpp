@@ -1,0 +1,72 @@
+#define DEF_func_00233EE8
+#include "m2c.h"
+#include "funcs.h"
+extern "C" void func_00233EE8(void *arg0, void *arg1, void *arg2) {
+    u8 temp_s3;
+    u8 temp_s3_2;
+    u8 temp_s3_3;
+    u8 temp_s3_4;
+
+    M2C_FIELD(arg1, u8 *, 0x64) = (u8) M2C_FIELD(arg2, u8 *, 0x1D);
+    M2C_FIELD(arg1, u8 *, 0x65) = (u8) M2C_FIELD(arg2, u8 *, 0x1E);
+    M2C_FIELD(arg1, u8 *, 0x66) = (u8) M2C_FIELD(arg2, u8 *, 0x1F);
+    M2C_FIELD(arg1, u8 *, 0x67) = (u8) M2C_FIELD(arg2, u8 *, 0x20);
+    M2C_FIELD(arg1, u8 *, 0x3C) = (u8) M2C_FIELD(arg2, u8 *, 0x29);
+    M2C_FIELD(arg1, u8 *, 0x4C) = (u8) M2C_FIELD(arg2, u8 *, 0x2A);
+    M2C_FIELD(arg1, u8 *, 0x122) = (u8) M2C_FIELD(arg2, u8 *, 0x60);
+    M2C_FIELD(arg1, u8 *, 0x123) = (u8) M2C_FIELD(arg2, u8 *, 0x61);
+    M2C_FIELD(arg1, u8 *, 0x124) = (u8) M2C_FIELD(arg2, u8 *, 0x62);
+    M2C_FIELD(arg1, u8 *, 0x125) = (u8) M2C_FIELD(arg2, u8 *, 0x63);
+    M2C_FIELD(arg1, u8 *, 0x12A) = (u8) M2C_FIELD(arg2, u8 *, 0x64);
+    M2C_FIELD(arg1, u8 *, 0x12B) = (u8) M2C_FIELD(arg2, u8 *, 0x65);
+    M2C_FIELD(arg1, u8 *, 0x12C) = (u8) M2C_FIELD(arg2, u8 *, 0x66);
+    M2C_FIELD(arg1, u8 *, 0x12D) = (u8) M2C_FIELD(arg2, u8 *, 0x67);
+    M2C_FIELD(arg1, u8 *, 0x126) = (u8) M2C_FIELD(arg2, u8 *, 0x68);
+    M2C_FIELD(arg1, u8 *, 0x127) = (u8) M2C_FIELD(arg2, u8 *, 0x69);
+    M2C_FIELD(arg1, u8 *, 0x128) = (u8) M2C_FIELD(arg2, u8 *, 0x6A);
+    M2C_FIELD(arg1, u8 *, 0x129) = (u8) M2C_FIELD(arg2, u8 *, 0x6B);
+    M2C_FIELD(arg1, u8 *, 0x12E) = (u8) M2C_FIELD(arg2, u8 *, 0x6C);
+    M2C_FIELD(arg1, u8 *, 0x12F) = (u8) M2C_FIELD(arg2, u8 *, 0x6D);
+    M2C_FIELD(arg1, u8 *, 0x130) = (u8) M2C_FIELD(arg2, u8 *, 0x6E);
+    M2C_FIELD(arg1, u8 *, 0x131) = (u8) M2C_FIELD(arg2, u8 *, 0x6F);
+    M2C_FIELD(arg1, u8 *, 0x62) = (u8) M2C_FIELD(arg2, u8 *, 0x5E);
+    M2C_FIELD(arg1, u8 *, 0x63) = (u8) M2C_FIELD(arg2, u8 *, 0x5F);
+    M2C_FIELD(arg1, u8 *, 0x3D) = (u8) M2C_FIELD(arg2, u8 *, 0x5C);
+    M2C_FIELD(arg1, u8 *, 0x4D) = (u8) M2C_FIELD(arg2, u8 *, 0x5D);
+    M2C_FIELD(arg1, u8 *, 0x3E) = (u8) M2C_FIELD(arg2, u8 *, 0x70);
+    M2C_FIELD(arg1, u8 *, 0x40) = (u8) M2C_FIELD(arg2, u8 *, 0x71);
+    M2C_FIELD(arg1, u8 *, 0x42) = (u8) M2C_FIELD(arg2, u8 *, 0x72);
+    M2C_FIELD(arg1, u8 *, 0x44) = (u8) M2C_FIELD(arg2, u8 *, 0x73);
+    M2C_FIELD(arg1, u8 *, 0x4E) = (u8) M2C_FIELD(arg2, u8 *, 0x74);
+    M2C_FIELD(arg1, u8 *, 0x50) = (u8) M2C_FIELD(arg2, u8 *, 0x75);
+    M2C_FIELD(arg1, u8 *, 0x52) = (u8) M2C_FIELD(arg2, u8 *, 0x76);
+    M2C_FIELD(arg1, u8 *, 0x54) = (u8) M2C_FIELD(arg2, u8 *, 0x77);
+    M2C_FIELD(arg1, u8 *, 0x46) = (u8) M2C_FIELD(arg2, u8 *, 0x78);
+    M2C_FIELD(arg1, u8 *, 0x56) = (u8) M2C_FIELD(arg2, u8 *, 0x79);
+    M2C_FIELD(arg1, u8 *, 0x47) = (u8) M2C_FIELD(arg2, u8 *, 0x7A);
+    M2C_FIELD(arg1, u8 *, 0x57) = (u8) M2C_FIELD(arg2, u8 *, 0x7B);
+    M2C_FIELD(arg1, u8 *, 0x5A) = (u8) M2C_FIELD(arg0, u8 *, 0x144);
+    M2C_FIELD(arg1, u8 *, 0x5B) = (u8) M2C_FIELD(arg0, u8 *, 0x148);
+    M2C_FIELD(arg1, u8 *, 0x5C) = (u8) M2C_FIELD(arg0, u8 *, 0x14C);
+    M2C_FIELD(arg1, u8 *, 0x5D) = (u8) M2C_FIELD(arg0, u8 *, 0x150);
+    M2C_FIELD(arg1, u8 *, 0x60) = (u8) M2C_FIELD(arg0, u8 *, 0x154);
+    M2C_FIELD(arg1, u8 *, 0x61) = (u8) M2C_FIELD(arg0, u8 *, 0x158);
+    M2C_FIELD(arg1, u8 *, 0x3A) = (u8) M2C_FIELD(arg0, u8 *, 0x15C);
+    M2C_FIELD(arg1, u8 *, 0x4A) = (u8) M2C_FIELD(arg0, u8 *, 0x160);
+    M2C_FIELD(arg1, u8 *, 0x5E) = (u8) M2C_FIELD(arg0, u8 *, 0x164);
+    M2C_FIELD(arg1, u8 *, 0x5F) = (u8) M2C_FIELD(arg0, u8 *, 0x168);
+    temp_s3 = M2C_FIELD(arg2, u8 *, 0x2B);
+    M2C_FIELD(arg1, s8 *, 0x3F) = func_00234FE0((s32) arg0, (s32) M2C_FIELD(arg2, u8 *, 0x2C), (s32) M2C_FIELD(arg2, u8 *, 0x2D), (s32) temp_s3, M2C_FIELD(arg0, s32 *, 0x16C));
+    M2C_FIELD(arg1, s8 *, 0x41) = func_00234FE0((s32) arg0, (s32) M2C_FIELD(arg2, u8 *, 0x2F), (s32) M2C_FIELD(arg2, u8 *, 0x30), (s32) temp_s3, M2C_FIELD(arg0, s32 *, 0x170));
+    temp_s3_2 = M2C_FIELD(arg2, u8 *, 0x32);
+    M2C_FIELD(arg1, s8 *, 0x43) = func_00234FE0((s32) arg0, (s32) M2C_FIELD(arg2, u8 *, 0x33), (s32) M2C_FIELD(arg2, u8 *, 0x34), (s32) temp_s3_2, M2C_FIELD(arg0, s32 *, 0x16C));
+    M2C_FIELD(arg1, s8 *, 0x45) = func_00234FE0((s32) arg0, (s32) M2C_FIELD(arg2, u8 *, 0x36), (s32) M2C_FIELD(arg2, u8 *, 0x37), (s32) temp_s3_2, M2C_FIELD(arg0, s32 *, 0x170));
+    temp_s3_3 = M2C_FIELD(arg2, u8 *, 0x39);
+    M2C_FIELD(arg1, s8 *, 0x4F) = func_00234FE0((s32) arg0, (s32) M2C_FIELD(arg2, u8 *, 0x3A), (s32) M2C_FIELD(arg2, u8 *, 0x3B), (s32) temp_s3_3, M2C_FIELD(arg0, s32 *, 0x17C));
+    M2C_FIELD(arg1, s8 *, 0x51) = func_00234FE0((s32) arg0, (s32) M2C_FIELD(arg2, u8 *, 0x3D), (s32) M2C_FIELD(arg2, u8 *, 0x3E), (s32) temp_s3_3, M2C_FIELD(arg0, s32 *, 0x180));
+    temp_s3_4 = M2C_FIELD(arg2, u8 *, 0x40);
+    M2C_FIELD(arg1, s8 *, 0x53) = func_00234FE0((s32) arg0, (s32) M2C_FIELD(arg2, u8 *, 0x41), (s32) M2C_FIELD(arg2, u8 *, 0x42), (s32) temp_s3_4, M2C_FIELD(arg0, s32 *, 0x184));
+    M2C_FIELD(arg1, s8 *, 0x55) = func_00234FE0((s32) arg0, (s32) M2C_FIELD(arg2, u8 *, 0x44), (s32) M2C_FIELD(arg2, u8 *, 0x45), (s32) temp_s3_4, M2C_FIELD(arg0, s32 *, 0x188));
+    M2C_FIELD(arg1, s8 *, 0x3B) = func_00234FE0((s32) arg0, (s32) M2C_FIELD(arg2, u8 *, 0x48), (s32) M2C_FIELD(arg2, u8 *, 0x49), (s32) M2C_FIELD(arg2, u8 *, 0x47), M2C_FIELD(arg0, s32 *, 0x18C));
+    M2C_FIELD(arg1, s8 *, 0x4B) = func_00234FE0((s32) arg0, (s32) M2C_FIELD(arg2, u8 *, 0x4C), (s32) M2C_FIELD(arg2, u8 *, 0x4D), (s32) M2C_FIELD(arg2, u8 *, 0x4B), M2C_FIELD(arg0, s32 *, 0x190));
+}
