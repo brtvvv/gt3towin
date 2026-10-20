@@ -1,0 +1,6 @@
+# plik                     symbol            adres
+func_0017BA40.cpp          func_0017BA40     0x17BA40
+Foo_dtor_0017BF00.cpp      _$_3Foo           0x17BF00
+func_0017BEA0.cpp          func_0017BEA0     0x17BEA0
+func_00155CC0.cpp          func_00155CC0     0x155CC0
+func_0019CDF0.cpp          func_0019CDF0     0x19CDF0
