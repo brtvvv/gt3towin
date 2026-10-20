@@ -1,0 +1,37 @@
+#include "m2c.h"
+extern "C" M2C_UNK func_001D9148(M2C_UNK *, M2C_UNK);          /* extern */
+extern M2C_UNK D_00354108;
+extern M2C_UNK D_00354120;
+extern M2C_UNK D_00354140;
+extern M2C_UNK D_00354158;
+extern M2C_UNK D_00354170;
+extern M2C_UNK D_00354188;
+extern M2C_UNK D_003541A0;
+extern M2C_UNK D_003541B8;
+extern M2C_UNK D_003541D0;
+extern M2C_UNK D_003541E8;
+extern M2C_UNK D_00354200;
+extern M2C_UNK D_00354218;
+extern M2C_UNK D_00354230;
+extern M2C_UNK D_00354248;
+extern M2C_UNK D_00354260;
+extern M2C_UNK D_00354278;
+
+extern "C" void func_001D4B60(void) {
+    func_001D9148(&D_00354278, 2);
+    func_001D9148(&D_00354260, 2);
+    func_001D9148(&D_00354248, 2);
+    func_001D9148(&D_00354230, 2);
+    func_001D9148(&D_00354218, 2);
+    func_001D9148(&D_00354200, 2);
+    func_001D9148(&D_003541E8, 2);
+    func_001D9148(&D_003541D0, 2);
+    func_001D9148(&D_003541B8, 2);
+    func_001D9148(&D_003541A0, 2);
+    func_001D9148(&D_00354188, 2);
+    func_001D9148(&D_00354170, 2);
+    func_001D9148(&D_00354158, 2);
+    func_001D9148(&D_00354140, 2);
+    func_001D9148(&D_00354120, 2);
+    func_001D9148(&D_00354108, 2);
+}
