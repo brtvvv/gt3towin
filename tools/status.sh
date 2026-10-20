@@ -5,7 +5,7 @@ TOTAL=$(grep -c '^nonmatching func_' asm/0.s)
 AUTO=$(ls src/auto 2>/dev/null | wc -l)
 MAN=$(grep -vc '^#' src/matched/manifest.txt)
 TRIED=$(( $(ls /tmp/func_*.cpp 2>/dev/null | wc -l) + AUTO ))
-RUN=$(pgrep -f auto_m2c.py >/dev/null && echo "trwa" || echo "zakonczony")
+RUN=$(pgrep -f '^python3 tools/auto_m2c' >/dev/null && echo "trwa" || echo "zakonczony")
 cat > STATUS.md <<EOS
 # Postep
 
