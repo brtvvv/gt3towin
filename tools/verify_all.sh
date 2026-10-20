@@ -10,3 +10,4 @@ for f in src/auto/*.cpp; do
   if python3 tools/try.py "$f" 2>/dev/null | grep -q '^-- 1/1'; then ok=$((ok+1)); else bad=$((bad+1)); echo "ZEPSUTE: $f"; fi
 done
 echo "src/auto: $ok OK, $bad zepsutych"
+for f in src/classes/*.cpp; do python3 tools/try.py "$f" | grep -E "^(DIFF|SIZE)" && echo "ZEPSUTE: $f"; done

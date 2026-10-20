@@ -3,7 +3,7 @@
 cd "$(dirname "$0")/.."
 TOTAL=$(grep -c '^nonmatching func_' asm/0.s)
 AUTO=$(ls src/auto 2>/dev/null | wc -l)
-MAN=$(grep -vc '^#' src/matched/manifest.txt)
+MAN=$(( $(grep -vc '^#' src/matched/manifest.txt) + $(grep -ho "^// @" src/classes/*.cpp 2>/dev/null | wc -l) ))
 TRIED=$(( $(ls /tmp/func_*.cpp 2>/dev/null | wc -l) + AUTO ))
 RUN=$(pgrep -f '^python3 tools/auto_m2c' >/dev/null && echo "trwa" || echo "zakonczony")
 cat > STATUS.md <<EOS
