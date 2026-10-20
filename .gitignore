@@ -1,0 +1,10 @@
+# Pliki gry i wszystko, co z nich wygenerowane - NIGDY do repo (repo jest publiczne)
+orig/*
+!orig/.gitkeep
+asm/
+build/
+assets/
+*.bin
+*.GT3
+*.iso
+__pycache__/

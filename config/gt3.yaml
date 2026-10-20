@@ -1,0 +1,34 @@
+name: Gran Turismo 3 A-Spec (PAL v2.00, CORE.GT3)
+sha1: 8c69f1d3fec6bc96e6057dc0f0494051cd177ac7
+options:
+  basename: core
+  target_path: orig/core_100000.bin
+  base_path: ..
+  platform: ps2
+  compiler: EEGCC
+  find_file_boundaries: true
+  asm_path: asm
+  src_path: src
+  build_path: build
+  ld_script_path: build/core.ld
+  symbol_addrs_path: config/symbol_addrs.txt
+  undefined_funcs_auto_path: config/undefined_funcs_auto.txt
+  undefined_syms_auto_path: config/undefined_syms_auto.txt
+  asm_function_macro: glabel
+  asm_jtbl_label_macro: jlabel
+  asm_data_macro: dlabel
+  section_order: [.text, .data, .bss]
+  gp_value: 0x359370
+  create_undefined_funcs_auto: true
+  create_undefined_syms_auto: true
+  migrate_rodata_to_functions: false
+segments:
+  - name: core
+    type: code
+    start: 0x0
+    vram: 0x100000
+    bss_size: 0x15FA1C
+    subsegments:
+      - [0x0, asm]
+      - [0x18FA00, data]
+  - [0x254B83]
