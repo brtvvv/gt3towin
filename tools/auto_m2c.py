@@ -30,6 +30,10 @@ def m2c(asm):
     ctx = os.path.join(tempfile.gettempdir(), name + '.ctx.h')
     open(ctx, 'w').write('\n'.join(PROTO[c] for c in sorted(callees) if c in PROTO) + '\n')
     args = ['--context', ctx] if PROTO and not os.environ.get('NO_CTX') else []
+    # w ABI EE rejestry t0-t3 to argumenty 5-8; m2c nazywa je a4-a7
+    asm2 = os.path.join(tempfile.gettempdir(), name + '.m2c.s')
+    open(asm2, 'w').write(re.sub(r'\$t([0-3])\b', lambda m: '$a%d' % (int(m.group(1)) + 4), open(asm).read()))
+    asm = asm2
     r = subprocess.run([sys.executable, '-m', 'm2c.main', '-t', os.environ.get('M2C_TARGET', 'mipsee-gcc-c'), '--valid-syntax'] + args + [asm],
                        capture_output=True, text=True)
     return r.stdout if r.returncode == 0 else None
@@ -43,6 +47,18 @@ def to_cpp(c, name):
     c = '\n'.join(body)
     c = re.sub(r'^(\w[^\n;]*\b%s\()' % name, r'extern "C" \1', c, flags=re.M)
     c = c.replace('*(void *)', '*(s32 *)')
+    # brakujace parametry (np. tylko arg1): dopisz nieuzywane, zeby rejestry sie zgadzaly
+    def _params(m):
+        ps = [p.strip() for p in m.group(2).split(',') if p.strip() and p.strip() != 'void']
+        idx = {}
+        for p in ps:
+            mm = re.search(r'\barg(\d+)$', p)
+            if mm: idx[int(mm.group(1))] = p
+        if not idx or len(idx) != len(ps) or max(idx) + 1 == len(idx):
+            return m.group(0)
+        full = [idx.get(i, 's32 unused%d' % i) for i in range(max(idx) + 1)]
+        return m.group(1) + ', '.join(full) + ')'
+    c = re.sub(r'^(extern "C" [^\n]*\b%s\()([^)]*)\)' % name, _params, c, count=1, flags=re.M)
     # dane spoza small-data: oryginal adresuje je przez lui/addiu, nie przez $gp
     asm = open(os.path.join(ROOT, 'asm/funcs', name + '.s')).read()
     def _sec(m):
