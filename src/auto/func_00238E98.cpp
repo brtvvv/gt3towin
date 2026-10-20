@@ -1,0 +1,29 @@
+#define DEF_func_00238E98
+#include "m2c.h"
+#include "funcs.h"
+extern "C" void func_00238E98(s32 arg0) {
+    func_00238A88(arg0, func_00235E80(arg0));
+    func_00238A88(arg0, func_00235E80(arg0));
+    func_00238A88(arg0, func_00235EC0(arg0));
+    func_00238A88(arg0, func_00235F40(arg0));
+    func_00238A88(arg0, func_00235F80(arg0));
+    func_00238A88(arg0, func_00235FC0(arg0));
+    func_00238A88(arg0, func_00236000(arg0));
+    func_00238A88(arg0, func_00235F00(arg0));
+    func_00238A88(arg0, func_00236040(arg0));
+    func_00238A88(arg0, func_00236080(arg0));
+    func_00238A88(arg0, func_002360C0(arg0));
+    func_00238A88(arg0, func_00236100(arg0));
+    func_00238A88(arg0, func_00236140(arg0));
+    func_00238A88(arg0, func_00236180(arg0));
+    func_00238A88(arg0, func_002361C0(arg0));
+    func_00238A88(arg0, func_00236200(arg0));
+    func_00238A88(arg0, func_00236240(arg0));
+    func_00238A88(arg0, func_00236280(arg0));
+    func_00238A88(arg0, func_002362C0(arg0));
+    func_00238A88(arg0, func_00236300(arg0));
+    func_00238A88(arg0, func_00236340(arg0));
+    func_00238A88(arg0, func_00236380(arg0));
+    func_00238A88(arg0, func_002363F8(arg0));
+    func_00238A88(arg0, func_00236450(arg0));
+}
