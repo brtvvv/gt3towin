@@ -1,0 +1,1 @@
+struct E { char d[0x1BC]; }; struct S { int idx; E e[2]; }; extern "C" int func_0023F6A0(E *); extern "C" void func_0023F778(S *s) { if (func_0023F6A0(&s->e[s->idx])) { if (++s->idx >= 2) s->idx = 0; } }
