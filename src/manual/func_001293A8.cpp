@@ -1,0 +1,1 @@
+struct Q { char p[0x34]; int n; }; struct S { char p[0x100]; Q *q; int dir; char r[0x100]; float x; float sc; }; extern "C" void func_001293A8(S *s, float *px, float *w) { float v = s->q->n * s->sc; *w = v; if (s->dir == 1) { if (v > 0) *w = 0; else *w = -v; } else if (v < 0) *w = 0; *px = s->x + *w * 0.5f; }
