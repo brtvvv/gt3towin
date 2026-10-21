@@ -1,0 +1,1 @@
+extern char D_003301E0[], D_003301F8[], D_00330210[], D_00330228[], D_00330240[]; extern "C" char *func_0019A508(int k) { switch (k) { case 0: return D_003301E0; case 2: return D_003301F8; case 1: return D_00330210; case 3: return D_00330228; default: return D_00330240; } }
