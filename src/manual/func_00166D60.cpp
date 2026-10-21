@@ -1,0 +1,1 @@
+extern "C" { int func_00219680(); void func_00166C20(void *, int); } struct T { char p[0x110]; int a; int b; char q[0x1AC - 0x118]; int c; }; struct S { char p[0xE50]; T t; }; extern "C" int func_00166D60(S *s, int v) { if (!*(int *)(({ int _g = func_00219680() + 0x307C8; _g; }) + 0x540)) return 0; T *t = &s->t; t->b = v; func_00166C20(s, v); t->c = t->a; return 1; }

@@ -1,0 +1,1 @@
+struct V { char p[0x1C]; virtual void d0(); virtual void v1(); }; struct S { char p[0x100]; V *v[8]; V *a; V *b; }; extern "C" void func_00103A20(S *s) { for (int i = 0; i < 8; i++) if (s->v[i]) s->v[i]->v1(); if (s->a) s->a->v1(); if (s->b) s->b->v1(); }
