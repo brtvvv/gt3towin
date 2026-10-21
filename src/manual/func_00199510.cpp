@@ -1,0 +1,1 @@
+extern "C" { int func_0026D950(char *, const char *, ...); void func_001974B0(void *, char *); } struct S { char p[0x18]; int n; }; extern "C" void func_00199510(S *s, int n) { char buf[128]; s->n = n; if (n < 0x3F) { func_0026D950(buf, "panel_%d", n); func_001974B0(s, buf); } }

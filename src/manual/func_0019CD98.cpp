@@ -1,0 +1,1 @@
+struct E { float v; float p; char q[0x30]; }; struct S { char p[0x2250]; E e[8]; }; extern "C" void func_0019CD98(S *s, float t) { for (int i = 0; i < 8; i++) { s->e[i].p += s->e[i].v * t; if (s->e[i].p > 1.0f) s->e[i].p -= 1.0f; } }

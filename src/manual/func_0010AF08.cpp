@@ -1,0 +1,1 @@
+extern "C" { int func_0026D950(char *, const char *, ...); void func_0010AD78(void *, char *); } struct I { char p[0x24]; short v; }; struct S { char p[0xC4]; I *i; }; extern "C" void func_0010AF08(S *s) { char buf[32]; func_0026D950(buf, "WheelBase\n%dmm", s->i->v); func_0010AD78(s, buf); }

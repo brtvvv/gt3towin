@@ -1,0 +1,1 @@
+extern "C" { int func_001AA960(int, char *); void func_002428C8(int, int, int, int, const char *); } extern "C" void func_001AA9D8(int a, int b) { char buf[64]; func_002428C8(func_001AA960(a, buf), b, 0xD00000, 1, ""); }

@@ -1,0 +1,1 @@
+extern "C" { void func_00253458(int); int func_002439F0(); void func_002434D0(int, int); extern int D_00354940; void func_00243408() { func_00253458(2); while (!func_002439F0()) func_00253458(1); if (D_00354940) func_002434D0(D_00354940, 3); D_00354940 = 0; } }

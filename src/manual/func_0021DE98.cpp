@@ -1,0 +1,1 @@
+extern "C" void func_0021D840(unsigned, unsigned, int, int); struct S { int a, b; }; extern "C" void func_0021DE98(S *s, unsigned p, int n) { unsigned e = p + n - 8; for (; p <= e; p++) func_0021D840(p, p, s->a, s->b); }

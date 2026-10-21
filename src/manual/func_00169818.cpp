@@ -1,0 +1,1 @@
+extern "C" { int func_00219680(); unsigned char *func_002359C8(void *); } struct M { char p[0x10]; char o[1]; }; extern "C" int func_00169818() { M *m = *(M **)(({ int _g = func_00219680() + 0x307C8; _g; }) + 0x540); if (!m) return 0; unsigned char v = func_002359C8(m->o)[0x11]; if (v == 1 && func_002359C8(m->o)[0x15] == v) return 0; return 1; }
