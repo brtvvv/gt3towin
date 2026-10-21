@@ -1,0 +1,1 @@
+struct S { char p[0xA8]; int f; }; struct T { char p[0x40]; int m; }; extern "C" void func_001BA2E8(S *s, T *t) { switch (t->m & 0xF0) { case 0: s->f |= 1; break; case 0x10: s->f |= 0x11; break; case 0x20: s->f |= 0x31; break; } }

@@ -1,0 +1,1 @@
+void func_0026FE58(int); void func_002715D0(char *s) { int *h = (int *)(s + 0x78); int *st = (int *)(s + 0x98); int i = 7; do { i--; if ((unsigned)(*st++ - 1) < 2) { if (*h >= 0) func_0026FE58(*h); } h++; } while (i >= 0); }

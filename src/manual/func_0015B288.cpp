@@ -1,0 +1,1 @@
+extern "C" void func_0026BC88(void *); struct E { int a, b, c, d; int e, f; }; extern E D_002A9870[] __attribute__((section(".data"))); extern int D_00353258[2]; extern "C" void func_0015B288(int i) { int *p = &D_00353258[i]; if (*p) { E *e = &D_002A9870[i]; func_0026BC88(e); e->a = 0; e->b = 0; e->c = 0; e->d = 0; *p = 0; } }

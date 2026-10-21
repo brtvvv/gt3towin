@@ -1,0 +1,1 @@
+struct N { int a; N *next; N *child; }; extern "C" void func_001C06D8(N *n, void (*fn)(N *, int, int, int), int a, int b, int c) { fn(n, a, b, c); if (n->child) { N *p = n->child; do { func_001C06D8(p, fn, a, b, c); } while ((p = p->next)); } }

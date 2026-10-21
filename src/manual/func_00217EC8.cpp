@@ -1,0 +1,1 @@
+extern "C" { int func_0021EE60(); int func_0021E7F0(int); } extern "C" int func_00217EC8(int *p) { int n = func_0021E7F0(func_0021EE60()); int c = 0; for (int i = 0; i < n; i++) if (p[i] == 0) c++; return c; }
