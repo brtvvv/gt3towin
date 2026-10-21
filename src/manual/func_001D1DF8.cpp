@@ -1,0 +1,1 @@
+struct V { float x, y, z, w; V &operator=(const V &o) { x = o.x; y = o.y; z = o.z; w = o.w; return *this; } }; struct S { char p[0x40]; V v[4]; }; extern "C" void func_001D1DF8(S *s, V *v, int i) { s->v[i] = *v; }
