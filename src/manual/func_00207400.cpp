@@ -1,0 +1,1 @@
+struct S { long long h; float a[128]; int b[128]; char c[1]; }; extern "C" void func_00207278(char *, float, float, float); extern "C" void func_00207400(S *s, float x) { int i; for (i = 0; i < 128; i++) { s->a[i] = 0; s->b[i] = 0; } s->a[0] = x; s->h = 0; func_00207278(s->c, 1.0f, 0.0f, 2.0f); }

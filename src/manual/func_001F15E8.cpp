@@ -1,0 +1,1 @@
+extern "C" int func_001F15A0(int); extern "C" int func_001F15E8(int a) { int r = 1; switch (func_001F15A0(a)) { case 1: break; case 0: r = 3; break; case 2: r = 2; break; case 3: r = 3; break; } return r; }

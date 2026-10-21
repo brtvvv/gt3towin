@@ -1,0 +1,1 @@
+extern int D_00354640; extern "C" void func_00115DD0(int, int, int); extern "C" void func_00115D68(int a, int k) { func_00115DD0(a, 0, 1); if (k == 5) func_00115DD0(a, 1, 1); else func_00115DD0(a, 1, 2); D_00354640 = k; }

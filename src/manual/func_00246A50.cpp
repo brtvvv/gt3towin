@@ -1,0 +1,1 @@
+struct S { char p[8]; int k; }; extern char D_00354A08[], D_00354A10[], D_00354A18[], D_00354A20[]; extern "C" char *func_00246A50(S *s) { switch (s->k) { case 0: return D_00354A08; case 1: return D_00354A10; case 2: return D_00354A18; default: return D_00354A20; } }

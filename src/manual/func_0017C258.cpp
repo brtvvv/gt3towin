@@ -1,0 +1,1 @@
+struct S { int w[4]; unsigned int k; }; extern "C" int func_0017C258(S *a, S *b) { if (a->k == 0x157529FF || b->k < a->k) { int i; for (i = 0; i < 4; i++) a->w[i] = b->w[i]; a->k = b->k; return 1; } return 0; }
