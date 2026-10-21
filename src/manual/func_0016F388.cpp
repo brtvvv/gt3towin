@@ -1,0 +1,1 @@
+struct V { float x, y, z; }; extern "C" { V *func_00256880(int); void func_002512B0(V *, int, int, int, int); } extern "C" void func_0016F388(float a, float b, float c, float d) { V *v = func_00256880(3); v[0].x = a + b; v[0].y = c; v[0].z = 0; v[1].x = a - b; v[1].y = c; v[1].z = 0; v[2].x = a; v[2].y = d; v[2].z = 0; func_002512B0(v, 0, 0, 0, 3); }

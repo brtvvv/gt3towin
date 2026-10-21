@@ -1,0 +1,1 @@
+typedef struct { char p[0xC]; unsigned short flags; short fd; char q[0x40]; int off; void *cookie; } F; long long func_00285350(void *, int, int, int); long long func_00283DA0(F *f, int a, int b) { long long r = func_00285350(f->cookie, f->fd, a, b); if (r == -1) f->flags &= ~0x1000; else { f->off = r; f->flags |= 0x1000; } return r; }
