@@ -1,0 +1,1 @@
+extern "C" { void func_0023C9B0(char *, int); void func_001BAE10(int, char *); } struct S { char p[0x44]; int w; char q[8]; char s[0x20]; }; extern "C" void func_001B2658(S *s, int v, int pos) { func_0023C9B0(s->s + 1, v); s->s[0] = pos ? 0x2B : 0x20; func_001BAE10(s->w, s->s); }

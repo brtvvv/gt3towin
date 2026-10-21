@@ -1,0 +1,1 @@
+struct B { unsigned char *p; unsigned int n; }; extern "C" B *func_0021C7F0(B *b) { unsigned int c = 0; if (b->n == 0) return b; for (unsigned int i = 0; i < b->n; i++) { unsigned char *q = b->p + i; unsigned char v = *q; *q = c | (v << 1); c = v >> 7; } return b; }

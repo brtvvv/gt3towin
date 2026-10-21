@@ -1,0 +1,1 @@
+extern "C" int func_001424D0(int, int); struct R { int a, b, c, d; int (*fn)(int, int); int e, f, g; R(int v, int (*p)(int, int)) : a(1), b(100), c(v), d(1), fn(p), e(1), f(0), g(0) {} }; struct S { char p[0xE74]; int v; }; extern "C" R func_001424E0(S *s) { return R(s->v, func_001424D0); }

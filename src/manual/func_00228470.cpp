@@ -1,0 +1,1 @@
+extern "C" int func_00228470(float *t, int n, float v) { int hi = n - 1, lo = 0; if (v < t[0]) return 0x80000001; if (t[hi] <= v) return 0x7FFFFFFE; while (lo < hi) { int m = (lo + hi) >> 1; if (v < t[m]) hi = m; else lo = m + 1; } return lo - 1; }
