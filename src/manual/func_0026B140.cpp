@@ -1,0 +1,1 @@
+extern "C" { int func_0026AFB8(int, int); long long func_0026B000(int, int, int); void func_0026B108(int); } struct R { int t; int sz; }; extern "C" int func_0026B140(int name, R *r) { int fd = func_0026AFB8(name, 1); if (fd < 0) return -1; long long sz = func_0026B000(fd, 0, 2); func_0026B108(fd); r->t = 0x11; r->sz = sz; return 0; }
