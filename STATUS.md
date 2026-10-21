@@ -8,4 +8,4 @@ Ostatnia aktualizacja: 2026-10-21 17:06
 | Dopasowane funkcje (pliki func_*) | 6707 |
 | Dopasowane metody klas + pierwsze testy | 6 |
 | **Razem** | **6713** (58%) |
-| Automatyczny przebieg | trwa, sprawdzono ok. 13035 funkcji |
+| Automatyczny przebieg | zakonczony, sprawdzono ok. 13035 funkcji |
