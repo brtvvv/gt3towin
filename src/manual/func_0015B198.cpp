@@ -1,0 +1,1 @@
+struct T { int a; int b; }; extern int D_00353260[2]; extern T *D_00353268[2]; extern "C" void func_00253458(int); extern "C" void func_0015B198(int i) { T *t = D_00353268[i]; if (t) { int *pa = &D_00353260[i]; if (*pa) { t->b = 0; func_00253458(2); } *pa = 0; } }

@@ -1,0 +1,1 @@
+struct E { char d[0x18]; }; struct S { int cnt; int b; char p[0x34]; int k; }; extern E D_002A9870[]; extern "C" void func_00253458(int); extern "C" void func_0026BFC0(E *, S *); extern "C" void func_0015B088(S *s, int f) { if (s && --s->cnt < 0) { s->b = 0; if (!f) func_00253458(2); func_0026BFC0(&D_002A9870[s->k], s); } }

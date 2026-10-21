@@ -1,0 +1,1 @@
+struct E { char d[5]; }; extern E D_002EAF18[8]; extern int D_00354648, D_00354674, D_00354644; extern "C" void func_0022E388(E *); extern "C" void func_0022E3E0(void) { int i; for (i = 0; i < 8; i++) func_0022E388(&D_002EAF18[i]); D_00354648 = 0; D_00354674 = 0; D_00354644 = 0; }

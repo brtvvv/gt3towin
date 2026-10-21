@@ -1,0 +1,1 @@
+struct S { char p[0x20]; void (*cb)(S *, int); int arg; int cnt; }; extern "C" void func_001C0768(S *); extern "C" void func_001CD990(S *s) { if (--s->cnt < 0) { s->cb(s, s->arg); func_001C0768(s); } }

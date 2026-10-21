@@ -1,0 +1,1 @@
+extern "C" int func_00219680(void); extern "C" int func_00219F60(int); extern "C" void func_001C5E88(int); extern int D_00311660[]; extern "C" int *func_0011BEE8(void) { if (func_00219F60(func_00219680()) == 0) { func_001C5E88(4); return D_00311660; } return 0; }

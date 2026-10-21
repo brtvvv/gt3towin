@@ -1,0 +1,1 @@
+extern "C" char *func_0027FDBC(char *, const char *); extern int D_003267D8[]; struct S { int *vt; char name[1]; }; extern "C" S *func_00172980(S *s, const char *n) { s->vt = D_003267D8; func_0027FDBC(s->name, n); return s; }

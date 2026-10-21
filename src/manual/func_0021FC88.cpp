@@ -1,0 +1,1 @@
+struct S { int *vt; int a; int b; float c; int arr[4]; float d; }; extern int D_00342598[]; extern "C" S *func_0021FC88(S *s) { int i; s->vt = D_00342598; s->b = -1; s->c = 220.0f; s->a = 0; for (i = 3; i >= 0; i--) s->arr[i] = 0; s->d = 0.5f; return s; }

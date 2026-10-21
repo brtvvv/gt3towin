@@ -1,0 +1,1 @@
+extern "C" { void func_00271190(int, int); void func_002711D8(int, int); void func_002711F0(int); void func_002711F8(int, int); void func_00270A30(int p, int b) { func_00271190(p, 16); func_002711D8(p, b & 0xFF); func_002711F0(p); func_002711F8(p, 0); } }

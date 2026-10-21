@@ -1,0 +1,1 @@
+struct S { int a; int b; }; extern "C" void func_001C0768(int); extern "C" void func_001C08E0(int *); extern "C" void func_001B17E8(S *s) { if (s->a) { func_001C0768(s->a); s->a = 0; } func_001C08E0(&s->b); }

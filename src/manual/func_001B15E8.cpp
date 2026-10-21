@@ -1,0 +1,1 @@
+struct S { int a; int b; }; extern "C" int func_001B0AA0(int, int); extern "C" void func_001C0428(int, int *); extern "C" void func_001B15E8(S *s, int x, int y) { s->a = func_001B0AA0(x, y); func_001C0428(s->a, &s->b); }

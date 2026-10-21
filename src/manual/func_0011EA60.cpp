@@ -1,0 +1,1 @@
+extern "C" int func_001C5450(void); extern "C" int func_001C5290(int); extern "C" void func_001C52B8(int, int *, unsigned int); extern int D_0049D620[]; extern "C" int *func_0011EA60(int *p) { *p = func_001C5290(func_001C5450()); func_001C52B8(func_001C5450(), D_0049D620, 0x80000000); return D_0049D620; }
