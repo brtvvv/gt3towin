@@ -113,8 +113,23 @@ def strcpy_rewrite(c):
         out.append(lines[i]); i += 1
     return '\n'.join(out)
 
+_IDX4 = re.compile(r'\*\(\((\w+) \* 4\) \+ ((?:[^()]|\((?:[^()]|\([^()]*\))*\))+?)\)')
+
+def fix_deref_line(line):
+    # *((i * 4) + base) -> dostep do tablicy; inne dereferencje liczby -> rzutowanie na s32 *
+    line = _IDX4.sub(lambda m: 'M2C_INDEX(%s, s32, 0, %s)' % (m.group(2), m.group(1)), line)
+    return re.sub(r'(?<![\w)\]])\*(?=[\w(])', '*(s32 *)', line)
+
 def fix_after_error(c, err):
     """Poprawki stosowane dopiero po bledzie kompilacji."""
+    bad = set(int(x) for x in re.findall(r':(\d+): invalid type argument of `unary \*', err))
+    if bad:
+        ls = c.split('\n')
+        for i in bad:
+            # numer linii w pliku (to samo co w c)
+            if 0 < i <= len(ls):
+                ls[i - 1] = fix_deref_line(ls[i - 1])
+        c = '\n'.join(ls)
     # zmienne stosu (sp, spC, sp10...) - deklaracja bufora
     for v in sorted(set(re.findall(r"`(sp[0-9A-F]*)' undeclared", err))):
         c = re.sub(r'(extern "C" [^\n]*\{\n)', r'\1    s32 %s[4];\n' % v, c, count=1)
@@ -157,7 +172,7 @@ for name in cands[:limit][shard::nshards]:
     src = os.path.join(tempfile.gettempdir(), name + '.cpp')
     open(src, 'w').write(to_cpp(c, name))
     res = None
-    for attempt in range(3):
+    for attempt in range(5):
         try:
             res = T.run(src, verbose=False, extra=['-I', os.path.join(ROOT, 'include'), '-fpermissive', '-w'])
             break
