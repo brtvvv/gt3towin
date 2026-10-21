@@ -1,0 +1,1 @@
+struct E { char d[0x10]; }; struct S { char p[0x40]; E e[4]; char q[0x24]; float f; }; extern "C" int func_001BE158(E *, float); extern "C" void func_001D10C8(S *s, int *out) { int i; for (i = 0; i < 4; i++) out[i] = func_001BE158(&s->e[i], s->f); }

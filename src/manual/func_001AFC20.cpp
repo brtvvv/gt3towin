@@ -1,0 +1,1 @@
+struct E { char d[0x10]; }; struct S { char p[0x168]; char x[0xAC]; E e[5]; }; extern int D_002C5CA0[5]; extern "C" void func_001B0C28(E *, char *, int, int); extern "C" void func_001AFC20(S *s) { int i; for (i = 0; i < 5; i++) func_001B0C28(&s->e[i], s->x, D_002C5CA0[i], 0); }

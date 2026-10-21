@@ -1,0 +1,1 @@
+struct S { char p[0x18]; float a; float b; char q[0xC]; int c; }; extern volatile float D_00351724; extern "C" void func_00198AB0(S *s) { if (s->a < s->b) s->a += D_00351724; if (s->b >= 0.0f && s->c > 0) s->c--; }

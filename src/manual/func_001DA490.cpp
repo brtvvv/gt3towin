@@ -1,0 +1,1 @@
+struct E { char p[0xC]; float a; float b; char q[0x30]; }; struct S { char p[0x69C]; E e[1]; }; extern "C" float func_001DA490(S *s, int i, float unused, float f) { E *e = &s->e[i >> 1]; return e->a - e->b - f; }

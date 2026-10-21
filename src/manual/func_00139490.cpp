@@ -1,0 +1,1 @@
+struct E { char d[8]; }; extern E D_002A00F0[10]; extern "C" float func_00139468(E *, float); extern "C" float func_00139490(float x) { float s = 0.0f; int i; for (i = 0; i < 10; i++) s += func_00139468(&D_002A00F0[i], x); return s; }

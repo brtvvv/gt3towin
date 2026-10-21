@@ -1,0 +1,1 @@
+struct O { int a; unsigned int sz; }; struct N { N *next; O *owner; }; extern N *D_0035378C; extern unsigned int D_00353788; extern "C" N *func_0017C430(N *n, O *o) { n->next = D_0035378C; n->owner = o; D_0035378C = n; if (D_00353788 < o->sz) D_00353788 = o->sz; return n; }

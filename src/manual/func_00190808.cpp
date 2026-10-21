@@ -1,0 +1,1 @@
+extern int D_002BCB90[]; extern "C" void func_001AA078(int); extern "C" void func_0022DB58(int *, int); extern "C" void func_00190808(int *p) { if (*p) { func_001AA078(*p); func_0022DB58(D_002BCB90, *p); } *p = 0; }

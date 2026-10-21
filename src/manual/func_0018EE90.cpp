@@ -1,0 +1,1 @@
+struct T { char p[0x20E0]; int v; }; struct C { char p[8]; T **arr; }; struct B { char p[0x18]; C *c; }; struct E { int v; char p[0x1F4]; }; struct A { char p[0x484]; E e[6]; }; extern "C" void func_0018EE90(A *a, B *b) { int i; for (i = 0; i < 6; i++) b->c->arr[i]->v = a->e[i].v; }

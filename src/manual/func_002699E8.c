@@ -1,0 +1,1 @@
+extern unsigned short D_00347458[]; unsigned int func_002699E8(int a, int b) { int n = a - b; int sh = -2; unsigned short v; if (n < 0) { do { n += 0xC00; sh--; } while (n < 0); } else { while (n >= 0xC00) { n -= 0xC00; sh++; } } v = D_00347458[(unsigned int)n >> 3]; if (sh > 0) return (v << sh) & 0xFFFF; return (v >> -sh) & 0xFFFF; }

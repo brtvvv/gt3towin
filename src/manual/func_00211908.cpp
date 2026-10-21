@@ -1,0 +1,1 @@
+struct E { int a, b; }; extern E D_002E10D0[8]; extern "C" int func_00218848(int, int, int, int); extern "C" int func_00211908(int a, int b, int c, int mask) { int acc = 0; int i; for (i = 0; i < 8; i++) { int r = func_00218848(a, b, c, D_002E10D0[i].a); if (r != -1 && (mask & r)) acc |= D_002E10D0[i].b; } return acc; }
