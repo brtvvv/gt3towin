@@ -19,6 +19,9 @@ done = set(os.path.splitext(os.path.basename(f))[0] for f in glob.glob(os.path.j
 os.makedirs(os.path.join(ROOT, 'src/auto'), exist_ok=True)
 os.makedirs(os.path.join(ROOT, 'build'), exist_ok=True)
 
+import json
+_l4 = os.path.join(ROOT, 'build/lit4.json')
+LIT4 = json.load(open(_l4)) if os.path.exists(_l4) else {}
 PROTO = {}
 _fh = os.path.join(ROOT, 'include/funcs.h')
 if os.path.exists(_fh):
@@ -49,6 +52,11 @@ def to_cpp(c, name):
     c = '\n'.join(body)
     c = re.sub(r'^(\w[^\n;]*\b%s\()' % name, r'extern "C" \1', c, flags=re.M)
     c = c.replace('*(void *)', '*(s32 *)')
+    # stale float z .lit4 -> literaly
+    for sym in set(re.findall(r'\bD_[0-9A-F]+\b', c)):
+        if sym in LIT4:
+            c = re.sub(r'^extern [^\n]*\b%s\b[^\n]*\n' % sym, '', c, flags=re.M)
+            c = re.sub(r'\b%s\b' % sym, LIT4[sym], c)
     # wywolania metod wirtualnych -> prawdziwe wywolania C++
     c = vcall.rewrite(c)
     # wbudowany strcpy z literalem: m2c widzi kopiowanie niewyrownanych slow
