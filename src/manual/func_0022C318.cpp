@@ -1,0 +1,1 @@
+struct P { int a, b; P(int x, int y) : a(x), b(y) {} }; struct Q { char p[0x10]; int b, a; }; struct E { int x; P *p; }; extern E D_002EA0B8[] __attribute__((section(".data"))); extern Q *D_003544B4; extern "C" P func_0022C318(int i) { if (i == -1) return P(D_003544B4->a, D_003544B4->b); P *p = D_002EA0B8[i].p; if (!p) return P(0, 0); return P(p->a, p->b); }

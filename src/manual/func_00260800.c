@@ -1,0 +1,1 @@
+extern int D_00354CA8, D_00354CAC, D_00354CB0, D_00354CB4, D_00354CB8, D_00354CBC, D_00354CC0, D_00354CC4; void func_00260800(int a, int b) { int ab, pa, pb; ab = 1 << (b + a); pb = 1 << b; pa = 1 << a; D_00354CB0 = pa - 1; D_00354CBC = pb - 1; D_00354CC4 = ab - 1; D_00354CA8 = a; D_00354CB4 = b; D_00354CAC = pa; D_00354CB8 = pb; D_00354CC0 = ab; }
