@@ -1,0 +1,1 @@
+struct S { int a, b, c, n; int x[32]; int y[32]; int z[32]; float f; }; extern "C" void func_0017E7D0(S *s, float f) { s->f = f; s->n = 0; for (int i = 0; i < 32; i++) { s->x[i] = 0; s->y[i] = 0; s->z[i] = 0; } }

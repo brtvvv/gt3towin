@@ -1,0 +1,1 @@
+extern "C" int func_001F98C8(void *, int, int); struct T { char p[0x534]; char a; unsigned char f; }; struct S { char p[0xEC8]; char q[0xBC]; T t; }; extern "C" int func_001E4C48(S *s) { T *t = &s->t; if (!func_001F98C8(s->q, 3, 1)) return 0; t->a = 2; t->f |= 8; return 1; }

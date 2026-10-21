@@ -1,0 +1,1 @@
+extern "C" { int func_00219680(); int func_00219F60(int); const char *func_00235420(void *); char *func_0027FDBC(char *, const char *); } extern "C" void func_0011CB28(void *self, char *out) { int c = func_00219F60(func_00219680()); if (c) func_0027FDBC(out, func_00235420((char *)c + 0x10)); else *out = 0; }

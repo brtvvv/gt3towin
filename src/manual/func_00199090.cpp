@@ -1,0 +1,1 @@
+struct E0 { char p[0x14]; virtual void d0(); virtual void d1(); virtual void d2(); virtual void d3(); virtual void v4(); }; struct E : E0 { char q[0x88 - 0x18]; }; struct S { char p[0x3C]; E e[8]; }; extern "C" void func_00199090(S *s) { for (int i = 0; i < 8; i++) s->e[i].v4(); }
