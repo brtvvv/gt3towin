@@ -1,0 +1,1 @@
+struct S { int a; int p1; int *cur; char q[0x14]; int b20; char r[0x18]; int b3C; char t[0x18]; int s58; int s5C; }; extern "C" void func_00187460(S *s, int f) { if (f) { int v = s->a; int w = s->s5C; s->s58 = v; if (w == 0) { w = s->s5C = v != 0; } s->cur = &s->b3C; s->a = w; s->b3C = s->b20; return; } int t = s->a; s->s5C = t; s->a = s->s58; s->cur = &s->b20; }

@@ -1,0 +1,1 @@
+extern "C" { int func_001A0540(int); void func_0019F5F0(int, int, int, float, float, int, float, int); void func_0019FF40(int a, int b, int c, float x, float y, int d, float z, int e) { int o = func_001A0540(a); if (o) func_0019F5F0(o, b, c, x, y, d, z, e); } }

@@ -1,0 +1,1 @@
+extern "C" void func_0021BCB8(void *); struct E { char p[0xA]; unsigned short id; char q[4]; }; struct S { unsigned int n; short c; char p[0xA]; E e[1]; }; extern "C" void func_0021BD58(S *s) { func_0021BCB8(s); unsigned int n = s->n; unsigned int i = 0; s->c = 0; if (n) { unsigned short *e = &s->e[0].id; do { *e = i; i++; e += 8; } while (i < n); } }

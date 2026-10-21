@@ -1,0 +1,1 @@
+extern "C" { int func_0027EBC8(char *, char *, int); int func_00218B10(char *, char *); void func_00219538(); void func_002195A8(char *); int func_00219490(char *a, char *b) { func_0027EBC8(a, b, 0x638); int r = func_00218B10(a + 0x638, b + 0x638); func_00219538(); func_002195A8(a); return r; } }

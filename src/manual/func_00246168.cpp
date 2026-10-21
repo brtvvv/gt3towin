@@ -1,0 +1,1 @@
+struct S { int a, b, c, d, e; }; extern "C" { void func_00244BB8(const char *, int); void func_0026D5B8(int); extern char D_002F5880[]; void func_00246168(S *s) { func_00244BB8(D_002F5880, s->a); if (s->e) func_0026D5B8(s->c); s->e = 0; s->b = 0; s->c = 0; s->a = -1; } }
