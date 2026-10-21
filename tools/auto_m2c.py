@@ -8,6 +8,7 @@ import glob, os, re, subprocess, sys, tempfile
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import try_ as T
 import permute
+import vcall
 
 ROOT = T.ROOT
 maxsz = int(sys.argv[1], 16)
@@ -47,6 +48,8 @@ def to_cpp(c, name):
     c = '\n'.join(body)
     c = re.sub(r'^(\w[^\n;]*\b%s\()' % name, r'extern "C" \1', c, flags=re.M)
     c = c.replace('*(void *)', '*(s32 *)')
+    # wywolania metod wirtualnych -> prawdziwe wywolania C++
+    c = vcall.rewrite(c)
     # wbudowany strcpy z literalem: m2c widzi kopiowanie niewyrownanych slow
     c = strcpy_rewrite(c)
     # wynik_funkcji + duzy offset (podobiekt): osobna instrukcja, inaczej kompilator sklada offsety
