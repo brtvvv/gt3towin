@@ -1,6 +1,10 @@
+#define DEF_func_0027E9F8
+#define DEF_func_00275BC0
 #define DEF_func_00275BC0
 #include "m2c.h"
 #include "funcs.h"
+extern "C" s32 func_0027E9F8(s32, s32, s32, s32, s32, s32, s32, s32);
+extern "C" s32 func_00275BC0(s32, s32, s32, s32, s32, s32, s32, s32);
 extern M2C_UNK D_00349570 __attribute__((section(".data")));
 extern M2C_UNK D_00349580 __attribute__((section(".data")));
 

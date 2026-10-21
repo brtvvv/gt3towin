@@ -11,6 +11,15 @@ FARGS = ['f%d' % i for i in range(12, 20)]
 STORE_OPS = ('sb', 'sh', 'sw', 'sd', 'sq', 'swc1', 'sdc1', 'swl', 'swr', 'sdl', 'sdr', 'sqc2')
 
 SIGS = {}
+VARARGS = set()
+
+def is_varargs(lines):
+    regs = set()
+    for op, args in lines[:16]:
+        m = re.match(r'\$(a[0-3]|t[0-3]), 0x[0-9A-F]+\(\$sp\)', args)
+        if op in ('sd', 'sq') and m:
+            regs.add(m.group(1))
+    return 't3' in regs and len(regs) >= 4
 
 def analyze(lines):
     read, written = set(), set()
@@ -35,7 +44,7 @@ def analyze(lines):
             written.add(r)
         if op in ('jal', 'j') and stop_after is None:
             m = re.match(r'(func_[0-9A-F]+)', args)
-            if m and m.group(1) in SIGS:
+            if m and m.group(1) in SIGS and m.group(1) not in VARARGS:
                 ni, nf = SIGS[m.group(1)]
                 # slot opozniajacy moze jeszcze ustawic argument
                 ds = re.findall(r'\$([a-z]+[0-9]*|f[0-9]+)', lines[i + 1][1])[:1] if i + 1 < len(lines) else []
@@ -50,6 +59,10 @@ def analyze(lines):
 def sig(path):
     t = open(path).read()
     lines = re.findall(r'\*/\s+([a-z0-9.]+)\s*([^\n]*)', t)
+    if is_varargs(lines):
+        VARARGS.add(os.path.basename(path)[:-2])
+        first = [r for r in IARGS[:3] if any(r in a for o, a in lines[:3])]
+        return 's32', ['s32', '...']
     read, written = analyze(lines)
     ia = [r for r in IARGS if r in read]
     fa = [r for r in FARGS if r in read]
