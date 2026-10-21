@@ -1,0 +1,16 @@
+#define BITS_PER_UNIT 8
+#define MIN_UNITS_PER_WORD 4
+#define UNITS_PER_WORD 8
+#define BITS_PER_WORD 64
+#define LONG_LONG_TYPE_SIZE 64
+#define WORDS_BIG_ENDIAN 0
+#define BYTES_BIG_ENDIAN 0
+#define FLOAT_WORDS_BIG_ENDIAN 0
+#define LONG_DOUBLE_TYPE_SIZE 64
+#define HOST_BITS_PER_INT 32
+#define HOST_BITS_PER_LONG 32
+#define HOST_BITS_PER_CHAR 8
+#define HOST_BITS_PER_SHORT 16
+#define PROTO(x) x
+#define PARAMS(x) x
+#define VPROTO(x) x
