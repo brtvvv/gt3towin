@@ -35,7 +35,7 @@ for name in open(sys.argv[1]).read().split():
     if r.returncode:
         log.write(f'{name} setup-fail\n'); log.flush(); continue
     try:
-        subprocess.run([sys.executable, PERM, d, '-j2', '--stop-on-zero', '--best-only'],
+        subprocess.run([sys.executable, PERM, d, '-j' + os.environ.get('PERM_JOBS', '2'), '--stop-on-zero', '--best-only'],
                        capture_output=True, text=True, timeout=secs)
     except subprocess.TimeoutExpired:
         pass
