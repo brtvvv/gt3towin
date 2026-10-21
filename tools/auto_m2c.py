@@ -4,6 +4,7 @@
 auto_m2c.py <max_rozmiar_hex> [limit]
 Dopasowane laduja w src/auto/<func>.cpp, raport w build/auto_report.txt
 """
+import shutil
 import glob, os, re, subprocess, sys, tempfile
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import try_ as T
@@ -152,7 +153,7 @@ def try_c(src, name):
     except SystemExit:
         return False
     if r and not r[0][3]:
-        os.replace(p, os.path.join(ROOT, 'src/auto', name + '.c'))
+        shutil.move(p, os.path.join(ROOT, 'src/auto', name + '.c'))
         return True
     return False
 
@@ -210,7 +211,7 @@ for name in cands[:limit][shard::nshards]:
             r = [(name, r[0][1], r[0][2], [])]
     if r and not r[0][3]:
         stats['match'] += 1
-        os.replace(src, os.path.join(ROOT, 'src/auto', name + '.cpp'))
+        shutil.move(src, os.path.join(ROOT, 'src/auto', name + '.cpp'))
         report.append(f'{name} MATCH')
     elif try_c(src, name):
         stats['match'] += 1

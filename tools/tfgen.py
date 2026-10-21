@@ -3,6 +3,7 @@
 
 tfgen.py <lista>  -> src/tf/<func>.cpp (tylko dopasowane)
 """
+import shutil
 import os, re, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import try_ as T
@@ -53,5 +54,5 @@ for name in open(sys.argv[1]).read().split():
     if r and not r[0][3]:
         ok += 1
     else:
-        os.rename(p, '/tmp/tf_' + name + '.cpp')
+        shutil.move(p, '/tmp/tf_' + name + '.cpp')
 print('dopasowano', ok)
