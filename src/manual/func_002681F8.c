@@ -1,0 +1,1 @@
+typedef struct { int st; char p[0xB8]; int sema; } S; void func_00286EE0(int); void func_00286EC0(int); void func_00267F30(S *); void func_002681F8(S *s, int st) { func_00286EE0(s->sema); s->st = st; func_00267F30(s); func_00286EC0(s->sema); }

@@ -1,0 +1,1 @@
+struct P { int a; int b; float c; }; struct S { P x; P y; float f18, f1C; }; extern "C" void func_001D0178(int self, S *s, float a, float b) { s->x.a = 0; s->x.b = 0; s->y.a = 0; s->y.b = 0; s->x.c = a; s->y.c = b; s->f18 = a; s->f1C = b; }

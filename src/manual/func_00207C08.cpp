@@ -1,0 +1,1 @@
+extern "C" long long func_002513D0(); struct S { int a, b; short c, d; int e; int t; }; extern "C" void func_00207C08(S *s) { long long t = func_002513D0(); s->e = 0; s->c = 0; s->d = 0; s->b = 0; s->a = 0; s->t = t; }

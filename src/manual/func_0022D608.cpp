@@ -1,0 +1,1 @@
+struct E { int a, b; }; struct T { char h[0x10]; E e[1]; }; extern E D_002EA9B0[] __attribute__((section(".data"))); extern T *D_00354530; extern "C" int func_0022D608(int i) { return D_00354530->e[D_002EA9B0[i].b].b; }
