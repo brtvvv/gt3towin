@@ -81,11 +81,35 @@ for it in range(3):
         new[os.path.basename(f)[:-2]] = (params.count('s32'), params.count('f32'))
     SIGS = new
 
+# typ zwracany z uzycia u wolajacych: v0/f0 czytane po jal przed zapisem
+RET = {}
+for f in files:
+    lines = re.findall(r'\*/\s+([a-z0-9.]+)\s*([^\n]*)', open(f).read())
+    for i, (op, a) in enumerate(lines):
+        if op != 'jal':
+            continue
+        callee = a.strip()
+        for op2, a2 in lines[i + 2:i + 12]:
+            regs = re.findall(r'\$(v0|f0|[a-z]+[0-9]*)', a2)
+            if not regs:
+                continue
+            store = op2 in STORE_OPS or op2.startswith('b') or op2 in ('jr', 'mtc1')
+            srcs = regs if store else regs[1:]
+            dsts = [] if store else regs[:1]
+            if 'v0' in srcs:
+                RET[callee] = 's32'; break
+            if 'f0' in srcs:
+                RET[callee] = 'f32'; break
+            if 'v0' in dsts or 'f0' in dsts or op2 in ('jal', 'jalr', 'j', 'jr'):
+                break
+
 out = ['/* Wygenerowane przez tools/gen_context.py - zgadywane sygnatury funkcji. */',
        '#ifndef FUNCS_H', '#define FUNCS_H', '#ifdef __cplusplus', 'extern "C" {', '#endif']
 for f in files:
     name = os.path.basename(f)[:-2]
     rt, params = sig(f)
+    if rt == 'void' and name in RET:
+        rt = RET[name]
     out.append(f'#ifndef DEF_{name}\n{rt} {name}({", ".join(params) or "void"});\n#endif')
 out += ['#ifdef __cplusplus', '}', '#endif', '#endif']
 open(os.path.join(ROOT, 'include/funcs.h'), 'w').write('\n'.join(out) + '\n')
