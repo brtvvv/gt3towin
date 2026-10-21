@@ -86,3 +86,11 @@ def variants(src):
     if r != src:
         out.append(r)
     return out + _old_variants2(src)
+
+import vcall as _vc
+_old_variants3 = variants
+def variants(src):
+    out = []
+    if 'struct VC_' in src:
+        pass
+    return out + _old_variants3(src)
