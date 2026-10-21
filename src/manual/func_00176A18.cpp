@@ -1,0 +1,1 @@
+extern "C" int func_00176610(void *); extern int D_002C5A78[], D_002C5A80[]; struct S { char p[0x18]; int m; char q[4]; int f; }; extern "C" int func_00176A18(S *s) { if (s->f == 0) return func_00176610(s); if (s->m == 0) return D_002C5A78[0]; return D_002C5A80[0]; }

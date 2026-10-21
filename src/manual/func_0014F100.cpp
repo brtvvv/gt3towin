@@ -1,0 +1,1 @@
+struct E { int a, b, c, d; }; struct S { E *e; int n; int x; int cnt; }; extern "C" void func_0014F100(S *s) { s->cnt = 0; for (int i = 0; i < s->n; i++) { s->e[i].a = -1; s->e[i].c = 0; s->e[i].b = 0; } }
