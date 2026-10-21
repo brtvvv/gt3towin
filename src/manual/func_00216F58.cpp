@@ -1,0 +1,1 @@
+struct E { char p[0x1F0]; }; struct S { int a; char b[0x40]; char c[0x20]; char d[0x20]; int e, f; }; extern "C" void func_00216F58(S *s) { s->a = 0; s->b[0] = 0; s->c[0] = 0; s->d[0] = 0; s->e = 0; s->f = 0; for (int i = 7; i >= 0; i--) *(int *)((char *)s + 0x278 + i * 0x1F0) = 0; }

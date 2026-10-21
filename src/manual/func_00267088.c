@@ -1,0 +1,1 @@
+typedef struct { char p[0x38]; int h; char q[0x340 - 0x3C]; int v[4]; } T; extern T D_004AB240; unsigned int func_00268240(int, int); int func_00267088(int a) { unsigned int i = func_00268240(D_004AB240.h, a); if (i >= 4) return -1; return D_004AB240.v[i]; }
