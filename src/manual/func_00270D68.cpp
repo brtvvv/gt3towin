@@ -1,0 +1,1 @@
+struct S { char p[0x6C]; int v; }; extern "C" { void func_00271190(S *, int); void func_002711D8(S *, int); void func_002711F0(S *); void func_002711F8(S *, int); } extern "C" void func_00270D68(S *s, unsigned char b) { func_00271190(s, 0x20); func_002711D8(s, b); func_002711F0(s); func_002711F8(s, s->v); }
