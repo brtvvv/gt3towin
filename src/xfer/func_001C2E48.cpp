@@ -1,0 +1,1 @@
+struct T { char p[0x1C];  virtual void d0(); virtual void d1(); virtual void d2(); virtual void d3(); virtual void d4(); virtual void d5(); virtual void d6(); virtual void d7(); virtual void d8(); virtual void d9(); virtual void d10(); virtual void m(); }; struct S { char p[0x160]; T *t; }; extern "C" void func_001C2E48(S *s) { s->t->m(); }
