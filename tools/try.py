@@ -18,7 +18,14 @@ CC = os.environ.get('CC', 'ee-gcc2.9-991111-01')
 FLAGS = ['-O2', '-G8', '-I', os.path.join(ROOT, 'include'), '-fpermissive', '-w']
 
 def run(src, verbose=True, extra=()):
-    obj = compile_obj(CC, src, FLAGS + list(extra))
+    # dodatkowe flagi z komentarza '// @flags ...' (sciezki wzgledem katalogu repo)
+    fl = []
+    for m in re.findall(r'//\s*@flags\s+(.*)', open(src).read()):
+        for a in m.split():
+            if a.startswith('-I') and len(a) > 2 and not os.path.isabs(a[2:]):
+                a = '-I' + os.path.join(ROOT, a[2:])
+            fl.append(a)
+    obj = compile_obj(CC, src, FLAGS + fl + list(extra))
     explicit = dict((s, int(a, 16)) for s, a in re.findall(r'//\s*@(\S+)\s+(0x[0-9A-Fa-f]+)', open(src).read()))
     elf = ELFFile(open(obj, 'rb'))
     syms = [s for s in elf.get_section_by_name('.symtab').iter_symbols()
