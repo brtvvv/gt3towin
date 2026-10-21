@@ -77,7 +77,8 @@ def substitute(src, a_toks, b_toks, a_name, b_name):
                 out = out.replace('"%s"' % esc(sa), '"%s"' % esc(sb))
     if re.search(r'"[^"]*"', out) and out.count('"') != src.count('"'):
         return None
-    # adres w komentarzu // @
+    # adres w komentarzu // @ -> adres funkcji docelowej
+    out = re.sub(r'(//\s*@\S+\s+)0x%s\b' % a_name[5:].lstrip('0'), lambda mm: mm.group(1) + '0x' + b_name[5:].lstrip('0'), out, flags=re.I)
     return out
 
 
