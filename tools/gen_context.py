@@ -83,6 +83,21 @@ for it in range(3):
 
 # typ zwracany z uzycia u wolajacych: v0/f0 czytane po jal przed zapisem
 RET = {}
+WIDE = {}   # funkcja -> zbior indeksow argumentow ladowanych przez 'ld' (64 bity)
+for f in files:
+    lines0 = re.findall(r'\*/\s+([a-z0-9.]+)[ \t]*([^\n]*)', open(f).read())
+    for i, (op, a) in enumerate(lines0):
+        if op != 'jal':
+            continue
+        callee = a.strip()
+        last = {}
+        for op2, a2 in lines0[max(0, i - 8):i + 2]:
+            m2 = re.match(r'\$(a[0-3]|t[0-3])\b', a2)
+            if m2 and op2 not in STORE_OPS and not op2.startswith('b'):
+                last[m2.group(1)] = op2
+        for r, op2 in last.items():
+            if op2 == 'ld':
+                WIDE.setdefault(callee, set()).add(IARGS.index(r))
 for f in files:
     lines = re.findall(r'\*/\s+([a-z0-9.]+)[ \t]*([^\n]*)', open(f).read())
     for i, (op, a) in enumerate(lines):
@@ -110,6 +125,9 @@ for f in files:
     rt, params = sig(f)
     if rt == 'void' and name in RET:
         rt = RET[name]
+    for k in WIDE.get(name, ()):
+        if k < len(params) and params[k] == 's32':
+            params[k] = 's64'
     out.append(f'#ifndef DEF_{name}\n{rt} {name}({", ".join(params) or "void"});\n#endif')
 out += ['#ifdef __cplusplus', '}', '#endif', '#endif']
 open(os.path.join(ROOT, 'include/funcs.h'), 'w').write('\n'.join(out) + '\n')

@@ -1,6 +1,8 @@
+#define DEF_func_00232658
 #define DEF_func_00232E30
 #include "m2c.h"
 #include "funcs.h"
+extern "C" s32 func_00232658(s32, s32, s32);
 extern "C" s32 func_00232E30(s32 arg0, s32 arg1) {
     s32 temp_v0;
 

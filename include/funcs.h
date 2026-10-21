@@ -2621,7 +2621,7 @@ s32 func_0012F330(s32, s32, s32);
 s32 func_0012F390(s32, s32, s32);
 #endif
 #ifndef DEF_func_0012F3F8
-s32 func_0012F3F8(s32, s32, s32, s32, s32);
+s32 func_0012F3F8(s32, s64, s64, s32, s32);
 #endif
 #ifndef DEF_func_0012F528
 s32 func_0012F528(s32, s32, s32);
@@ -2633,7 +2633,7 @@ s32 func_0012F618(s32, s32, s32);
 s32 func_0012F748(s32, s32, s32);
 #endif
 #ifndef DEF_func_0012F8A8
-s32 func_0012F8A8(s32, s32, s32, s32, s32, s32);
+s32 func_0012F8A8(s32, s32, s32, s64, s32, s32);
 #endif
 #ifndef DEF_func_0012FA68
 s32 func_0012FA68(s32, s32);
@@ -4913,7 +4913,7 @@ s32 func_0014B380(s32);
 s32 func_0014B3D0(s32, s32, s32, s32, s32, s32, s32, s32);
 #endif
 #ifndef DEF_func_0014B4F0
-s32 func_0014B4F0(s32, s32, s32, s32, s32, s32, s32, s32);
+s32 func_0014B4F0(s32, s64, s32, s32, s32, s32, s32, s32);
 #endif
 #ifndef DEF_func_0014BB58
 s32 func_0014BB58(s32, s32);
@@ -5975,7 +5975,7 @@ s32 func_0015D698(s32, s32);
 s32 func_0015D778(s32, s32);
 #endif
 #ifndef DEF_func_0015D7D0
-s32 func_0015D7D0(s32, s32);
+s32 func_0015D7D0(s64, s32);
 #endif
 #ifndef DEF_func_0015DC80
 s32 func_0015DC80(void);
@@ -11477,7 +11477,7 @@ void func_00190800(void);
 void func_00190808(s32);
 #endif
 #ifndef DEF_func_00190850
-s32 func_00190850(s32, s32);
+s32 func_00190850(s32, s64);
 #endif
 #ifndef DEF_func_001908B0
 void func_001908B0(s32, s32);
@@ -22859,7 +22859,7 @@ void func_00213488(s32, s32, s32, s32);
 s32 func_002134C8(s32, s32, s32);
 #endif
 #ifndef DEF_func_002134F8
-void func_002134F8(s32, s32, s32, s32);
+void func_002134F8(s32, s32, s64, s32);
 #endif
 #ifndef DEF_func_00213538
 s32 func_00213538(s32, s32, s32);
@@ -22961,7 +22961,7 @@ s32 func_00213EC8(s32, s32, s32, s32);
 void func_00213F08(s32, s32, s32);
 #endif
 #ifndef DEF_func_00213F38
-void func_00213F38(s32, s32, s32, s32);
+void func_00213F38(s32, s32, s64, s32);
 #endif
 #ifndef DEF_func_00213F78
 s32 func_00213F78(s32, s32, s32);
@@ -26240,7 +26240,7 @@ s32 func_002325F8(s32);
 s32 func_00232618(s32, s32);
 #endif
 #ifndef DEF_func_00232658
-s32 func_00232658(s32, s32, s32);
+s32 func_00232658(s32, s32, s64);
 #endif
 #ifndef DEF_func_002326D0
 void func_002326D0(s32, s32, s32);
@@ -26258,7 +26258,7 @@ s32 func_00232720(void);
 s32 func_00232730(s32);
 #endif
 #ifndef DEF_func_00232768
-s32 func_00232768(s32, s32);
+s32 func_00232768(s32, s64);
 #endif
 #ifndef DEF_func_002327C0
 s32 func_002327C0(s32, s32);
@@ -26369,7 +26369,7 @@ s32 func_00232C40(s32);
 s32 func_00232CD0(s32, s32);
 #endif
 #ifndef DEF_func_00232E30
-s32 func_00232E30(s32, s32);
+s32 func_00232E30(s32, s64);
 #endif
 #ifndef DEF_func_00232FE0
 s32 func_00232FE0(s32, s32);
@@ -27515,7 +27515,7 @@ s32 func_00238C98(s32, s32);
 s32 func_00238D00(s32, s32, s32);
 #endif
 #ifndef DEF_func_00238E38
-s32 func_00238E38(s32, s32);
+s32 func_00238E38(s32, s64);
 #endif
 #ifndef DEF_func_00238E98
 void func_00238E98(s32);
@@ -27635,16 +27635,16 @@ s32 func_00239958(s32, s32);
 s32 func_002399D0(s32, s32);
 #endif
 #ifndef DEF_func_00239A20
-s32 func_00239A20(s32, s32);
+s32 func_00239A20(s32, s64);
 #endif
 #ifndef DEF_func_00239A48
-s32 func_00239A48(s32, s32);
+s32 func_00239A48(s32, s64);
 #endif
 #ifndef DEF_func_00239A80
-s32 func_00239A80(s32, s32);
+s32 func_00239A80(s32, s64);
 #endif
 #ifndef DEF_func_00239AC8
-void func_00239AC8(s32, s32);
+void func_00239AC8(s32, s64);
 #endif
 #ifndef DEF_func_00239B00
 s32 func_00239B00(s32, s32);
@@ -28049,10 +28049,10 @@ s32 func_0023AF50(s32);
 void func_0023AF88(s32);
 #endif
 #ifndef DEF_func_0023AFB0
-s32 func_0023AFB0(s32);
+s32 func_0023AFB0(s64);
 #endif
 #ifndef DEF_func_0023AFD8
-s32 func_0023AFD8(s32);
+s32 func_0023AFD8(s64);
 #endif
 #ifndef DEF_func_0023B000
 s32 func_0023B000(void);
@@ -28067,19 +28067,19 @@ s32 func_0023B050(s32);
 s32 func_0023B090(s32);
 #endif
 #ifndef DEF_func_0023B0D0
-s32 func_0023B0D0(s32);
+s32 func_0023B0D0(s64);
 #endif
 #ifndef DEF_func_0023B158
-s32 func_0023B158(s32);
+s32 func_0023B158(s64);
 #endif
 #ifndef DEF_func_0023B1E0
 s32 func_0023B1E0(s32);
 #endif
 #ifndef DEF_func_0023B270
-s32 func_0023B270(s32);
+s32 func_0023B270(s64);
 #endif
 #ifndef DEF_func_0023B2B0
-s32 func_0023B2B0(s32);
+s32 func_0023B2B0(s64);
 #endif
 #ifndef DEF_func_0023B2F0
 s32 func_0023B2F0(s32, s32);
@@ -28244,7 +28244,7 @@ s32 func_0023C808(s32, s32);
 s32 func_0023C850(s32, s32);
 #endif
 #ifndef DEF_func_0023C8E8
-s32 func_0023C8E8(s32, s32);
+s32 func_0023C8E8(s32, s64);
 #endif
 #ifndef DEF_func_0023C9B0
 s32 func_0023C9B0(s32, s32);
@@ -30485,10 +30485,10 @@ s32 func_0025C948(void);
 s32 func_0025C968(s32, s32);
 #endif
 #ifndef DEF_func_0025CC40
-s32 func_0025CC40(s32, s32);
+s32 func_0025CC40(s32, s64);
 #endif
 #ifndef DEF_func_0025CC80
-s32 func_0025CC80(s32, s32);
+s32 func_0025CC80(s32, s64);
 #endif
 #ifndef DEF_func_0025CCC0
 void func_0025CCC0(void);
@@ -32522,13 +32522,13 @@ s32 func_002764B8(s32, s32);
 s32 func_002769D8(s32);
 #endif
 #ifndef DEF_func_00276CE0
-s32 func_00276CE0(s32, s32);
+s32 func_00276CE0(s64, s64);
 #endif
 #ifndef DEF_func_00276F30
 s32 func_00276F30(s32, s32, s32, s32, s32, s32);
 #endif
 #ifndef DEF_func_00277A98
-s32 func_00277A98(s32, s32, s32);
+s32 func_00277A98(s64, s64, s32);
 #endif
 #ifndef DEF_func_00277C70
 s32 func_00277C70(s32);
@@ -32636,7 +32636,7 @@ s32 func_002798A8(f32);
 s32 func_002799A0(s32);
 #endif
 #ifndef DEF_func_00279A38
-s32 func_00279A38(s32);
+s32 func_00279A38(s64);
 #endif
 #ifndef DEF_func_00279B18
 s32 func_00279B18(s32, s32, s32, s32);
@@ -32657,22 +32657,22 @@ s32 func_0027A318(s32, s32);
 s32 func_0027A3B8(s32, s32, s32);
 #endif
 #ifndef DEF_func_0027A5F8
-s32 func_0027A5F8(s32, s32);
+s32 func_0027A5F8(s64, s64);
 #endif
 #ifndef DEF_func_0027A650
-s32 func_0027A650(s32, s32);
+s32 func_0027A650(s64, s64);
 #endif
 #ifndef DEF_func_0027A6B8
-s32 func_0027A6B8(s32, s32);
+s32 func_0027A6B8(s64, s64);
 #endif
 #ifndef DEF_func_0027A960
-s32 func_0027A960(s32, s32);
+s32 func_0027A960(s32, s64);
 #endif
 #ifndef DEF_func_0027AAC8
 s32 func_0027AAC8(s32, s32);
 #endif
 #ifndef DEF_func_0027ABE0
-s32 func_0027ABE0(s32, s32);
+s32 func_0027ABE0(s64, s64);
 #endif
 #ifndef DEF_func_0027AC30
 s32 func_0027AC30(s32);
