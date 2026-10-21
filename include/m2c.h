@@ -17,6 +17,16 @@ typedef float f32;        typedef double f64;
 #define M2C_SYNC() __asm__ volatile("sync")
 #define M2C_BREAK(n) __asm__ volatile("break")
 #define M2C_UNALIGNED32(x) (x)
+/* wywolanie metody wirtualnej gcc 2.9: wpis vtable {short delta; short index; fn} */
+#ifdef __cplusplus
+typedef s32 (*VFNPTR)(...);
+#else
+typedef s32 (*VFNPTR)();
+#endif
+typedef struct VTE { s16 d; s16 i; VFNPTR f; } VTE;
+#define VTAB(o, P) (*(VTE **)((char *)(o) + (P)))
+#define VFN(o, P, K) (VTAB(o, P)[(K) + 1].f)
+#define VTHIS(o, P, K) ((char *)(o) + VTAB(o, P)[(K) + 1].d)
 #ifdef __cplusplus
 extern "C" char *strcpy(char *, const char *);
 /* dostep do tablicy w strukturze: daje taka sama kolejnosc operandow jak oryginal */

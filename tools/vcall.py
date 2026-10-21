@@ -62,7 +62,7 @@ def rewrite(c, drop_last=False):
             rest = rest[:-1]  # m2c dopisuje rejestr z obiektem jako argument
         name = 'VC_%X_%d_%d' % (p, k, len(rest))
         decls[name] = (p, k, len(rest))
-        call = '((%s *)(%s))->v%d(%s)' % (name, obj, k, ', '.join('(s32)(%s)' % a for a in rest))
+        call = 'VFN(%s, 0x%X, %d)(%s)' % (obj, p, k, ', '.join(['VTHIS(%s, 0x%X, %d)' % (obj, p, k)] + rest))
         out = out[:m.start()] + call + out[end:]
         pos = m.start() + len(call)
     if not decls:
@@ -73,17 +73,18 @@ def rewrite(c, drop_last=False):
             out = re.sub(r'\n\s*%s = M2C_FIELD\([\w&]+, void \*\*, (?:0x[0-9A-F]+|\d+)\);' % re.escape(tv), '', out)
             out = re.sub(r'\n\s*[\w *]+\b%s;' % re.escape(tv), '', out)
     # obiekt w zmiennej tymczasowej uzytej tylko w wywolaniu: wstaw wyrazenie (jak w zrodle)
-    for obj in set(re.findall(r'\(\(VC_\w+ \*\)\((\w+)\)\)', out)):
+    for obj in set(re.findall(r'VFN\((\w+), ', out)):
         if not obj.startswith('temp_'):
             continue
         am = re.search(r'\n(\s*)%s = ([^;\n]+);' % re.escape(obj), out)
-        if not am or len(re.findall(r'\b%s\b' % re.escape(obj), out)) != 3:
+        if not am or len(re.findall(r'\b%s\b' % re.escape(obj), out)) != 4:
             continue
         expr = am.group(2)
         out = out[:am.start()] + out[am.end():]
         out = out.replace('((VC_', '((VC_')  # bez zmian
-        out = re.sub(r'(\(\(VC_\w+ \*\)\()%s(\)\))' % re.escape(obj), lambda mm: mm.group(1) + expr + mm.group(2), out, count=1)
+        out = re.sub(r'\b%s\b(?=, 0x[0-9A-F]+, \d+\))' % re.escape(obj), lambda mm: expr, out)
         out = re.sub(r'\n\s*[\w *]+\b%s;' % re.escape(obj), '', out)
+    return out
     text = []
     for name, (p, k, n) in sorted(decls.items()):
         body = ''.join('virtual void d%d(); ' % i for i in range(k))

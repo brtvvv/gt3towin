@@ -37,7 +37,7 @@ open(os.path.join(d, 'compile.sh'), 'w').write(f'''#!/bin/bash
 DIR=$(dirname "$0")
 IN="$1"; OUT="$3"
 T=$(mktemp --suffix=.cpp)
-{{ echo 'extern "C" {{'; sed -E "s/^(extern [^(;]*\\b($(paste -sd'|' $DIR/nongp.txt))\\b[^;(]*);/\\1 __attribute__((section(\\".data\\")));/" "$IN"; echo '}}'; }} > $T
+{{ echo 'extern "C" {{'; sed -E 's/\(\*VFNPTR\)\(\)/(*VFNPTR)(...)/' "$IN" | sed -E "s/^(extern [^(;]*\\b($(paste -sd'|' $DIR/nongp.txt))\\b[^;(]*);/\\1 __attribute__((section(\\".data\\")));/"; echo '}}'; }} > $T
 {CC} -c -O2 -G8 -fpermissive -w $T -o "$OUT"; R=$?
 rm -f $T; exit $R
 ''')
