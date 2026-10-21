@@ -1,0 +1,1 @@
+struct S { S *self; char p[0x88]; int ptr[32]; }; extern "C" void func_0022BAF8(S *s) { S *old = s->self; int i; int d; s->self = s; d = (char *)s - (char *)old; for (i = 0; i < 32; i++) s->ptr[i] += d; }

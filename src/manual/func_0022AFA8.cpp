@@ -1,0 +1,1 @@
+struct H { char p[0x2C]; int x; }; struct S { H *h; char x4[4]; }; extern "C" void func_0022AB90(H *, char *); extern "C" void func_00225950(int); extern "C" void func_0022AFA8(S *s) { if (s->h) { func_0022AB90(s->h, s->x4); func_00225950(s->h->x); } }

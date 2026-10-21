@@ -1,0 +1,1 @@
+extern int D_00354B48; extern unsigned char D_003007F9[]; extern "C" void func_00269B30(void); extern "C" void func_00269BC8(int); extern "C" void func_00269668(void) { if (D_00354B48) { D_00354B48 = 0; func_00269B30(); if (D_003007F9[0]) func_00269BC8(0); } }
