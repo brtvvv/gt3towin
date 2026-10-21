@@ -52,6 +52,8 @@ def to_cpp(c, name):
     c = '\n'.join(body)
     c = re.sub(r'^(\w[^\n;]*\b%s\()' % name, r'extern "C" \1', c, flags=re.M)
     c = c.replace('*(void *)', '*(s32 *)')
+    # baza adresu stalego (scratchpad/rejestry) uzywana z offsetem
+    c = re.sub(r'M2C_FIELD\(\(void \*\)(0x[0-9A-F]{8})', r'M2C_FIELD(M2C_SPR(\1)', c)
     # stale float z .lit4 -> literaly
     for sym in set(re.findall(r'\bD_[0-9A-F]+\b', c)):
         if sym in LIT4:
