@@ -13,7 +13,7 @@ ROOT = T.ROOT
 maxsz = int(sys.argv[1], 16)
 limit = int(sys.argv[2]) if len(sys.argv) > 2 else 10**9
 shard, nshards = (int(x) for x in (sys.argv[3] if len(sys.argv) > 3 else '0/1').split('/'))
-done = set(os.path.basename(f)[:-4] for f in glob.glob(os.path.join(ROOT, 'src/*/*.cpp')))
+done = set(os.path.splitext(os.path.basename(f))[0] for f in glob.glob(os.path.join(ROOT, 'src/*/*.cpp')) + glob.glob(os.path.join(ROOT, 'src/*/*.c')))
 os.makedirs(os.path.join(ROOT, 'src/auto'), exist_ok=True)
 os.makedirs(os.path.join(ROOT, 'build'), exist_ok=True)
 
@@ -47,6 +47,8 @@ def to_cpp(c, name):
     c = '\n'.join(body)
     c = re.sub(r'^(\w[^\n;]*\b%s\()' % name, r'extern "C" \1', c, flags=re.M)
     c = c.replace('*(void *)', '*(s32 *)')
+    # wbudowany strcpy z literalem: m2c widzi kopiowanie niewyrownanych slow
+    c = strcpy_rewrite(c)
     # wynik_funkcji + duzy offset (podobiekt): osobna instrukcja, inaczej kompilator sklada offsety
     c = re.sub(r'\((func_[0-9A-F]+\(\) \+ 0x[0-9A-F]{5,})\)', r'({ s32 _g = \1; _g; })', c)
     c = re.sub(r'(?<![({ ] )(?<!_g = )\b(func_[0-9A-F]+\(\) \+ 0x[0-9A-F]{5,})', r'({ s32 _g = \1; _g; })', c)
@@ -72,6 +74,42 @@ def to_cpp(c, name):
     c = re.sub(r'^(extern [^\n(]*?\b(D_[0-9A-F]+)(?:\[[^\]]*\])?);', _sec, c, flags=re.M)
     return '#define DEF_%s\n#include "m2c.h"\n#include "funcs.h"\n' % name + c + '\n'
 
+_BIN = open(os.path.join(ROOT, 'orig/core_100000.bin'), 'rb').read()
+
+def _cstr(sym):
+    a = int(sym[2:], 16) - 0x100000
+    if not 0 <= a < len(_BIN): return None
+    e = _BIN.find(b'\0', a)
+    s = _BIN[a:e]
+    return s.decode('latin1') if all(32 <= ch < 127 for ch in s) else None
+
+_SZ = {'M2C_UNK': 4, 's32': 4, 'u32': 4, 's16': 2, 'u16': 2, 's8': 1, 'u8': 1}
+
+def strcpy_rewrite(c):
+    lines = c.split('\n')
+    out = []
+    i = 0
+    first = re.compile(r'^(\s*)M2C_FIELD\((.+?), M2C_UNK \*, 0\) = M2C_UNALIGNED32\(M2C_FIELD\(&(D_[0-9A-F]+), M2C_UNK \*, 0\)\);$')
+    nxt = re.compile(r'^\s*M2C_FIELD\((.+?), (\w+) \*, (\w+)\) = (?:\(\w+\) )?(?:M2C_UNALIGNED32\()?M2C_FIELD\(&(D_[0-9A-F]+), \w+ \*, (\w+)\)\)?;$')
+    while i < len(lines):
+        m = first.match(lines[i])
+        if m:
+            ind, dst, sym = m.groups()
+            end = 4; j = i + 1
+            while j < len(lines):
+                n = nxt.match(lines[j])
+                if not n or n.group(1) != dst or n.group(4) != sym or n.group(3) != n.group(5): break
+                off = int(n.group(3), 0)
+                if off != end: break
+                end = off + _SZ.get(n.group(2), 4); j += 1
+            s = _cstr(sym)
+            if s is not None and len(s) + 1 == end:
+                lit = s.replace('\\', '\\\\').replace('"', '\\"')
+                out.append('%sstrcpy((char *)(%s), "%s");' % (ind, dst, lit))
+                i = j; continue
+        out.append(lines[i]); i += 1
+    return '\n'.join(out)
+
 def fix_after_error(c, err):
     """Poprawki stosowane dopiero po bledzie kompilacji."""
     # zmienne stosu (sp, spC, sp10...) - deklaracja bufora
@@ -82,6 +120,23 @@ def fix_after_error(c, err):
         c = re.sub(r'(extern "C" [^\n]*\b%s)\(([^)\n]*)\)' % f,
                    lambda m: m.group(0) if 'f32' in m.group(2) or 'f64' in m.group(2) else m.group(1) + '(...)', c)
     return c
+
+def try_c(src, name):
+    # biblioteki Sony sa w C (np. wywolania ogonowe 'j'): sprobuj jako C
+    c = open(src).read()
+    if 'M2C_INDEX' in c:
+        return False
+    c = c.replace('extern "C" ', '')
+    p = src[:-4] + '.c'
+    open(p, 'w').write(c)
+    try:
+        r = [x for x in T.run(p, verbose=False, extra=['-I', os.path.join(ROOT, 'include'), '-w']) if x[0] == name]
+    except SystemExit:
+        return False
+    if r and not r[0][3]:
+        os.replace(p, os.path.join(ROOT, 'src/auto', name + '.c'))
+        return True
+    return False
 
 stats = {'match': 0, 'diff': 0, 'compile': 0, 'm2c': 0}
 report = []
@@ -137,6 +192,9 @@ for name in cands[:limit][shard::nshards]:
         stats['match'] += 1
         os.replace(src, os.path.join(ROOT, 'src/auto', name + '.cpp'))
         report.append(f'{name} MATCH')
+    elif try_c(src, name):
+        stats['match'] += 1
+        report.append(f'{name} MATCH-C')
     else:
         stats['diff'] += 1; report.append(f'{name} diff')
 open(os.path.join(ROOT, 'build/auto_report.txt'), 'a').write('\n'.join(report) + '\n')

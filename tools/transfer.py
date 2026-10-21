@@ -83,8 +83,8 @@ def substitute(src, a_toks, b_toks, a_name, b_name):
 
 def main():
     srcs = {}
-    for f in glob.glob(os.path.join(ROOT, 'src/*/*.cpp')):
-        n = os.path.basename(f)[:-4]
+    for f in glob.glob(os.path.join(ROOT, 'src/*/*.cpp')) + glob.glob(os.path.join(ROOT, 'src/*/*.c')):
+        n = os.path.splitext(os.path.basename(f))[0]
         if n.startswith('func_'):
             srcs[n] = f
     groups = collections.defaultdict(list)
@@ -110,7 +110,7 @@ def main():
                 if not new:
                     continue
                 tried += 1
-                p = os.path.join(ROOT, 'src/xfer', b + '.cpp')
+                p = os.path.join(ROOT, 'src/xfer', b + os.path.splitext(srcs[a])[1])
                 open(p, 'w').write(new)
                 try:
                     r = [x for x in T.run(p, verbose=False) if x[0] == b]

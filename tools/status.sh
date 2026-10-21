@@ -2,7 +2,7 @@
 # Aktualizuje STATUS.md (postep dopasowan) i wypycha do repo.
 cd "$(dirname "$0")/.."
 TOTAL=$(grep -c '^nonmatching func_' asm/0.s)
-AUTO=$(ls src/auto src/perm src/tf src/xfer src/manual 2>/dev/null | grep -c "^func_.*\.cpp$")
+AUTO=$(ls src/auto src/perm src/tf src/xfer src/manual 2>/dev/null | grep -cE "^func_.*\.(cpp|c)$")
 MAN=$(( $(grep -vc '^#' src/matched/manifest.txt) + $(grep -ho "^// @" src/classes/*.cpp 2>/dev/null | wc -l) ))
 TRIED=$(( $(ls /tmp/func_*.cpp 2>/dev/null | wc -l) + AUTO ))
 RUN=$(pgrep -f "^python3 tools/(auto_m2c|perm_run)" >/dev/null && echo "trwa" || echo "zakonczony")

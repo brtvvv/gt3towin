@@ -3,7 +3,7 @@
 import collections, glob, os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from transfer import load, ROOT
-done = set(os.path.basename(f)[:-4] for f in glob.glob(os.path.join(ROOT, 'src/*/*.cpp')))
+done = set(os.path.splitext(os.path.basename(f))[0] for f in glob.glob(os.path.join(ROOT, 'src/*/*.cpp')) + glob.glob(os.path.join(ROOT, 'src/*/*.c')))
 g = collections.defaultdict(list)
 for f in glob.glob(os.path.join(ROOT, 'asm/funcs/func_*.s')):
     n = os.path.basename(f)[:-2]

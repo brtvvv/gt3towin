@@ -12,9 +12,9 @@ PERM = os.environ.get('PERMUTER', '/home/claude/decomp-permuter/permuter.py')
 WORK = os.environ.get('PERM_WORK', '/tmp/gt3perm')
 secs = int(sys.argv[2]) if len(sys.argv) > 2 else 90
 os.makedirs(os.path.join(ROOT, 'src/perm'), exist_ok=True)
-done = set(os.path.basename(f)[:-4] for f in glob.glob(os.path.join(ROOT, 'src/*/*.cpp')))
+done = set(os.path.splitext(os.path.basename(f))[0] for f in glob.glob(os.path.join(ROOT, 'src/*/*.cpp')) + glob.glob(os.path.join(ROOT, 'src/*/*.c')))
 _lp = os.path.join(ROOT, 'build/perm_log.txt')
-tried = set(l.split()[0] for l in open(_lp)) if os.path.exists(_lp) else set()
+tried = set(l.split()[0] for l in open(_lp)) if os.path.exists(_lp) and not os.environ.get('PERM_RETRY') else set()
 log = open(_lp, 'a')
 
 def wrap(src, nongp):
