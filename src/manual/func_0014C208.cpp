@@ -1,0 +1,1 @@
+struct R { char p[8]; long long v; }; extern "C" R *func_0014C9B8(int, char *); extern "C" void func_0023C8E8(char *, long long); extern "C" void func_0014C208(int a, char *buf) { R *r = func_0014C9B8(a, buf); if (r) func_0023C8E8(buf, r->v); }

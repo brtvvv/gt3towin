@@ -1,0 +1,1 @@
+struct T { long long v; char p[0x38]; char e[1]; }; extern T D_002FE040; extern "C" void func_002876F0(void *, void *); extern "C" long long func_0025D620(void) { func_002876F0(&D_002FE040, D_002FE040.e); return D_002FE040.v; }

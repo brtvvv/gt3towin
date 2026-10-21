@@ -1,0 +1,1 @@
+struct G { char p[0x18]; long long v; }; extern "C" G *func_00219680(void); extern "C" void func_0023C8E8(char *, long long); extern "C" void func_0011CD08(int self, char *buf) { func_0023C8E8(buf, func_00219680()->v); }
