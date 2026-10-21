@@ -1,0 +1,1 @@
+extern "C" void func_0022BEB8(void *, int, int); struct E { char p[0x14]; }; struct S { char *base; unsigned int n; }; extern "C" void func_0022BF08(S *s, int d, int x) { s->base += d; for (unsigned int i = 0; i < s->n; i++) func_0022BEB8(s->base + i * 0x14, d, x); }

@@ -1,0 +1,1 @@
+struct N { N *next; }; struct S { char p[0x4]; N *used; N *free; }; extern "C" N *func_001A0540(S *s) { N *n = s->free; if (!n) return 0; s->free = n->next; n->next = s->used; s->used = n; return n; }

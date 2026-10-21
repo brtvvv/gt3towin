@@ -1,0 +1,1 @@
+struct T { char p[0x98C]; float x, y; }; struct S { float a, b, c, d; float e, f, g; }; extern "C" void func_0020FC70(S *s, T *t) { s->e = 0; s->f = 0; s->g = 0; s->c = s->a = t->x; s->d = s->b = t->y; }

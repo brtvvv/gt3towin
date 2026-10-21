@@ -1,0 +1,1 @@
+struct P { float a; float b; float c; void set(float v) { a = 0; b = 0; c = v; } }; struct S { char p[0x20]; P x; P y; float f38, f3C; }; extern "C" void func_001D2578(S *s, float a, float b, float c, float d) { s->x.set(a); s->y.set(b); s->f38 = c; s->f3C = d; }
