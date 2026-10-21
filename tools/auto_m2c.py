@@ -34,7 +34,7 @@ def m2c(asm):
     asm2 = os.path.join(tempfile.gettempdir(), name + '.m2c.s')
     open(asm2, 'w').write(re.sub(r'\$t([0-3])\b', lambda m: '$a%d' % (int(m.group(1)) + 4), open(asm).read()))
     asm = asm2
-    r = subprocess.run([sys.executable, '-m', 'm2c.main', '-t', os.environ.get('M2C_TARGET', 'mipsee-gcc-c'), '--valid-syntax'] + args + [asm],
+    r = subprocess.run([sys.executable, '-m', 'm2c.main', '-t', os.environ.get('M2C_TARGET', 'mipsee-gcc-c'), '--valid-syntax'] + os.environ.get('M2C_FLAGS', '').split() + args + [asm],
                        capture_output=True, text=True)
     return r.stdout if r.returncode == 0 else None
 
