@@ -47,6 +47,9 @@ def to_cpp(c, name):
     c = '\n'.join(body)
     c = re.sub(r'^(\w[^\n;]*\b%s\()' % name, r'extern "C" \1', c, flags=re.M)
     c = c.replace('*(void *)', '*(s32 *)')
+    # wynik_funkcji + duzy offset (podobiekt): osobna instrukcja, inaczej kompilator sklada offsety
+    c = re.sub(r'\((func_[0-9A-F]+\(\) \+ 0x[0-9A-F]{5,})\)', r'({ s32 _g = \1; _g; })', c)
+    c = re.sub(r'(?<![({ ] )(?<!_g = )\b(func_[0-9A-F]+\(\) \+ 0x[0-9A-F]{5,})', r'({ s32 _g = \1; _g; })', c)
     # brakujace parametry (np. tylko arg1): dopisz nieuzywane, zeby rejestry sie zgadzaly
     def _params(m):
         ps = [p.strip() for p in m.group(2).split(',') if p.strip() and p.strip() != 'void']
