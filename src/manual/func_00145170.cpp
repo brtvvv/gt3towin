@@ -1,0 +1,1 @@
+extern "C" int func_00145120(int); extern "C" long long func_00145170(char *s) { long long acc = 0, mul = 1; int i; char *p = s + 0xD; for (i = 0; i < 7; i++) { int v = func_00145120(*p++); if (v < 0) return -1; acc += mul * v; mul <<= 6; } return acc; }

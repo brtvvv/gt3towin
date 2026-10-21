@@ -1,0 +1,1 @@
+struct S { char p[0x11C]; int top; char q[0x18]; void (*cb)(int, int, int, int, int); }; int func_00250BE8(struct S *s, int a, int b, int c, int n) { int t = s->top - ((n + 1) >> 1) * 16; s->top = t; s->cb(0, 0, 0, 0, 0); s->cb(t, a, b, c, n); return t; }
