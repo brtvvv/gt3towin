@@ -1,0 +1,1 @@
+int func_0026AD38(void); typedef struct { char p[0x308]; char a; char q[0x23]; char b; } S; void func_0025D4D0(S *s, int a, int b) { int r = func_0026AD38(); s->a = a; s->b = b; if (r) __asm__ volatile ("ei"); }
