@@ -70,3 +70,19 @@ def variants(src):
     if r != src:
         out.append(r)
     return out + _old_variants(src)
+
+_IFRET = re.compile(r'(\n(\s*)if \((.+)\) \{\n\s*return ([^;]+);\n\2\}\n\2return ([^;]+);)')
+
+def invert_ifret(src):
+    def r(m):
+        ind = m.group(2)
+        return '\n%sif (!(%s)) {\n%s    return %s;\n%s}\n%sreturn %s;' % (ind, m.group(3), ind, m.group(5), ind, ind, m.group(4))
+    return _IFRET.sub(r, src)
+
+_old_variants2 = variants
+def variants(src):
+    out = []
+    r = invert_ifret(src)
+    if r != src:
+        out.append(r)
+    return out + _old_variants2(src)

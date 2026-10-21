@@ -1,0 +1,1 @@
+struct S { char p[0x10]; unsigned char k; }; extern "C" S *func_00235C00(int); extern int D_002EDB60[]; extern "C" int func_00236200(int a) { S *s = func_00235C00(a); if (s == 0) return 0xA; return D_002EDB60[s->k]; }

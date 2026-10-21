@@ -169,9 +169,11 @@ for name in cands[:limit][shard::nshards]:
     if res is None:
         stats['compile'] += 1; report.append(f'{name} compile-fail'); continue
     r = [x for x in res if x[0] == name]
-    # near-miss: probuj zamiany operandow (maks. 2 rundy, 16 prob)
-    if r and r[0][3] and r[0][2] * 4 == T.SIZES.get(r[0][1]) and len(r[0][3]) <= max(3, r[0][2] // 4):
-        best = (len(r[0][3]), open(src).read())
+    # near-miss: warianty (zamiany operandow, odwrocone if/return...), maks. 2 rundy, 16 prob
+    def _score(x):
+        return (abs(x[2] * 4 - T.SIZES.get(x[1], 0)) // 4, len(x[3]))
+    if r and r[0][3] and _score(r[0])[0] <= 2 and len(r[0][3]) <= max(4, r[0][2] // 3):
+        best = (_score(r[0]), open(src).read())
         tries = 0
         for rnd in range(2):
             improved = False
@@ -184,12 +186,12 @@ for name in cands[:limit][shard::nshards]:
                     rr = [x for x in T.run(vs, verbose=False) if x[0] == name]
                 except SystemExit:
                     continue
-                if rr and rr[0][2] * 4 == T.SIZES.get(rr[0][1]) and len(rr[0][3]) < best[0]:
-                    best = (len(rr[0][3]), v); improved = True
-                    if not rr[0][3]: break
-            if not improved or best[0] == 0: break
+                if rr and _score(rr[0]) < best[0]:
+                    best = (_score(rr[0]), v); improved = True
+                    if best[0] == (0, 0): break
+            if not improved or best[0] == (0, 0): break
         open(src, 'w').write(best[1])
-        if best[0] == 0:
+        if best[0] == (0, 0):
             r = [(name, r[0][1], r[0][2], [])]
     if r and not r[0][3]:
         stats['match'] += 1
