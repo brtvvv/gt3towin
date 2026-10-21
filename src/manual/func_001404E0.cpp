@@ -1,0 +1,1 @@
+extern "C" int func_00140450(int); struct R { const char *n; int (*f)(int); }; extern R D_002A1E40[] __attribute__((section(".data"))); extern char D_0031B838[], D_0031B850[]; extern "C" void func_001404E0() { R *r = D_002A1E40; r->f = func_00140450; r->n = D_0031B838; r++; r->f = func_00140450; r->n = D_0031B850; }
