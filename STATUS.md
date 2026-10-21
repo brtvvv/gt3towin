@@ -1,6 +1,6 @@
 # Postep
 
-Ostatnia aktualizacja: 2026-10-21 11:14
+Ostatnia aktualizacja: 2026-10-21 11:15
 
 | | |
 |---|---|
@@ -8,4 +8,4 @@ Ostatnia aktualizacja: 2026-10-21 11:14
 | Dopasowane (automat + permuter) | 5858 |
 | Dopasowane (recznie) | 6 |
 | **Razem** | **5864** (51%) |
-| Automatyczny przebieg | zakonczony, sprawdzono ok. 12121 funkcji |
+| Automatyczny przebieg | trwa, sprawdzono ok. 12121 funkcji |
