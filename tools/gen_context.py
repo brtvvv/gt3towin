@@ -58,7 +58,7 @@ def analyze(lines):
 
 def sig(path):
     t = open(path).read()
-    lines = re.findall(r'\*/\s+([a-z0-9.]+)\s*([^\n]*)', t)
+    lines = re.findall(r'\*/\s+([a-z0-9.]+)[ \t]*([^\n]*)', t)
     if is_varargs(lines):
         VARARGS.add(os.path.basename(path)[:-2])
         first = [r for r in IARGS[:3] if any(r in a for o, a in lines[:3])]
@@ -84,7 +84,7 @@ for it in range(3):
 # typ zwracany z uzycia u wolajacych: v0/f0 czytane po jal przed zapisem
 RET = {}
 for f in files:
-    lines = re.findall(r'\*/\s+([a-z0-9.]+)\s*([^\n]*)', open(f).read())
+    lines = re.findall(r'\*/\s+([a-z0-9.]+)[ \t]*([^\n]*)', open(f).read())
     for i, (op, a) in enumerate(lines):
         if op != 'jal':
             continue

@@ -17,7 +17,7 @@ TOK = re.compile(r'-?0x[0-9A-Fa-f]+|\b\d+\b|D_[0-9A-F]+|func_[0-9A-F]+')
 
 def load(name):
     t = open(os.path.join(ROOT, 'asm/funcs', name + '.s')).read()
-    ins = re.findall(r'\*/\s+([a-z0-9.]+)\s*([^\n]*)', t)
+    ins = re.findall(r'\*/\s+([a-z0-9.]+)[ \t]*([^\n]*)', t)
     key = tuple(o + ' ' + re.sub(r'-?0x[0-9A-Fa-f]+|\b\d+\b|D_\w+|func_\w+|\.L\w+', '', a) for o, a in ins)
     toks = []
     for o, a in ins:
