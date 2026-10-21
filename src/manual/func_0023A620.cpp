@@ -1,0 +1,1 @@
+extern "C" int func_00232768(void *, long long); struct H { char p[0xA]; unsigned short sz; char q[4]; char data[1]; }; struct S { H *h; int a; char *cur; }; extern "C" int func_0023A620(S *s, long long k) { int i = func_00232768(s->h, k); if (i == -1) return 0; H *h = s->h; char *d = h->data; s->cur = d + h->sz * i; return 1; }

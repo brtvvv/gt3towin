@@ -1,0 +1,1 @@
+struct T { int a; int step; int init; char p[0x20]; int r; }; struct S { int a, b; int pos; int cnt; }; extern "C" int func_001BCB90(S *s, T *t) { if (s->cnt == -0x80) s->cnt = t->init; if (--s->cnt < 0) { s->cnt = -0x80; s->pos++; } else s->pos += t->step; return t->r; }

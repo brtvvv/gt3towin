@@ -1,0 +1,1 @@
+struct N { N *next; N *prev; }; struct L { N *head; N *tail; }; extern "C" L *func_0023D208(L *l, N *n) { if (!n) return l; if (l->tail) { l->tail->next = n; n->prev = l->tail; } else l->head = n; l->tail = n; return l; }

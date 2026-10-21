@@ -1,0 +1,1 @@
+struct S { unsigned char a, b, c, d, e, f; }; extern "C" int func_002315B8(S *s) { int r = 0; if (s->a) r = 1; if (s->c) r |= 2; if (s->e) r |= 4; if (s->b) r |= 8; if (s->d) r |= 0x10; if (s->f) r |= 0x20; return r; }

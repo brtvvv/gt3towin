@@ -1,0 +1,1 @@
+typedef struct { void *buf; int size; int a, b; int r, w; int x; int sema; } Q; void func_00286EE0(int); void func_00286EC0(int); void *func_0027ED70(void *, int, int); void func_00261548(Q *q) { func_00286EE0(q->sema); q->w = 0; q->r = 0; func_0027ED70(q->buf, 0, q->size); func_00286EC0(q->sema); }

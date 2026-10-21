@@ -1,0 +1,1 @@
+typedef struct { int a[8]; } U; void func_0027A318(long long *, U *); void func_0027AAC8(U *, U *); void func_0027ABE0(long long a, long long b) { U x, y; func_0027A318(&a, &x); func_0027A318(&b, &y); func_0027AAC8(&x, &y); }

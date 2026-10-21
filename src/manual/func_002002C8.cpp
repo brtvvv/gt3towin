@@ -1,0 +1,1 @@
+struct S { char p[8]; short v[7]; unsigned short id; char q[0x40 - 0x18]; float x, y, z; char r[0x74 - 0x4C]; int o[7]; unsigned short id2; short one; float x2, y2, z2; }; extern "C" void func_002002C8(S *s) { s->one = 1; for (int i = 0; i < 7; i++) s->o[i] = s->v[i]; s->id2 = s->id; s->x2 = s->x; s->y2 = s->y; s->z2 = s->z; }
