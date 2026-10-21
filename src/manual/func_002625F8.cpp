@@ -1,0 +1,1 @@
+extern int D_00354AF8, D_00354ACC, D_00354AD0, D_00354AD4, D_00354AC8; extern "C" void func_002625F8(void) { if (D_00354AF8 == 3) { D_00354AD4 = D_00354AD0; } else { int t = D_00354ACC; D_00354AD4 = t; D_00354ACC = D_00354AC8; D_00354AC8 = t; } }
