@@ -1,0 +1,1 @@
+typedef struct { char p[0x14]; int a, b; } S; typedef struct { char b[0x100]; } B; void func_0025EB80(S *, B *, int); int func_0025EC18(S *, B *); int func_0028E2D0(B *, int, int); void func_0026ADD8(void); void func_0025EE98(S *s, int x) { B b; func_0025EB80(s, &b, x); if (func_0025EC18(s, &b)) return; while (func_0028E2D0(&b, s->a, s->b) < 0) func_0026ADD8(); }

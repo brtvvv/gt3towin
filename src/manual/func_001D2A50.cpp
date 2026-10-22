@@ -1,0 +1,1 @@
+extern "C" int func_00245E38(void *); struct R { int a, b, w, h; }; extern R D_002D0850 __attribute__((section(".data"))), D_002D0888 __attribute__((section(".data"))); extern "C" void func_001D2A50() { D_002D0850.w = 640; D_002D0850.h = 256; D_002D0850.b = 0; func_00245E38(&D_002D0850); D_002D0888.w = 640; D_002D0888.h = 256; D_002D0888.b = 0; func_00245E38(&D_002D0888); }

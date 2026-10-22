@@ -1,0 +1,1 @@
+struct S { int n; char p[0x10]; virtual void d0(); virtual void d1(); virtual int v2(int); }; extern "C" int func_00103430(S *s) { int c = 0; for (int i = 0; i < s->n; i++) if (s->v2(i)) c++; return c; }
