@@ -1,0 +1,1 @@
+extern "C" void func_0019BAD8(int, int, int); struct S { char p[0x74]; int h; }; extern "C" void func_001AA528(S *s, int a, unsigned short *l) { int h = s->h; if (l) { int c = *l++; if (c) { unsigned short *p = l; int n = c; do { func_0019BAD8(h, a, *p); p++; n--; } while (n); } } else func_0019BAD8(h, a, -1); }

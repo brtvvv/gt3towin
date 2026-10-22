@@ -1,0 +1,1 @@
+typedef struct { char p[0x6C]; int id; char q[0x4C]; unsigned char v; } S; int func_00271308(S *, int, int, int); void func_00271018(S *, int); int func_00270DE0(S *s, unsigned char *out) { if (!func_00271308(s, s->id, 0x20, 0)) return 0; if (s->id != 15) func_00271018(s, s->id); func_00271308(s, s->id, 0x20, 1); *out = s->v; return 1; }

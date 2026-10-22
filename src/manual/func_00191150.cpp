@@ -1,0 +1,1 @@
+extern "C" int func_0017A080(void *, int, int *, int); struct S { int a; virtual int v0(); virtual void d1(); virtual void v2(int); }; extern "C" int func_00191150(S *s, char *t) { int r[4]; int k = s->v0(); if (func_0017A080(t + 0x84, k, r, 1)) { s->v2(r[0]); return 1; } return 0; }
