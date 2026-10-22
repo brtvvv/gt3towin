@@ -1,0 +1,1 @@
+struct R { const char *n; void *f; }; extern R D_00291BC8[] __attribute__((section(".data"))); extern char D_0030AFC8[], D_00352590[]; extern "C" { int func_00104FD0(); int func_00104FC8(); } extern "C" void func_00104FD8() { R *r = D_00291BC8; r->f = (void *)func_00104FD0; r->n = D_0030AFC8; r++; r->n = D_00352590; r->f = (void *)func_00104FC8; }

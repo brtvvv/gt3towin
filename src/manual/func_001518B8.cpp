@@ -1,0 +1,1 @@
+extern "C" { void func_001513A0(void *); void func_00151990(void *, int, int); } struct S { char p[0x24]; int a; char q[0xC]; int b, c; }; extern "C" void func_001518B8(S *s) { func_001513A0(s); if (s->a) { if (!s->b) func_00151990(s, 1, 1); } else if (s->c && s->b) func_00151990(s, 0, 1); }
