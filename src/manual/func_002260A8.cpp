@@ -1,0 +1,1 @@
+extern "C" { void func_00225F98(void *); void func_00226158(void *, int); void func_00226068(void *); } struct S { char p[0x10]; unsigned short n; }; extern "C" void func_002260A8(S *s) { if (!s) return; func_00225F98(s); for (int i = 0; i < s->n; i++) func_00226158(s, i); func_00226068(s); }
