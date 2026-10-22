@@ -1,0 +1,1 @@
+struct E { unsigned short t, id; int x; }; struct S { char p[0x22]; unsigned short n; E *e; }; extern "C" int func_00229B30(S *s, int id) { int c = 0; for (int i = 0; i < s->n; i++) { E *e = &s->e[i]; if (e->id == id && e->t == 2) c++; } return c; }

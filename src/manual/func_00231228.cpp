@@ -1,0 +1,1 @@
+struct V { int st; virtual void d0(); virtual void d1(); virtual void d2(); virtual void v3(int, int); }; struct S { int a, b; V *alt; V *cur; }; extern "C" void func_00231228(S *s, int x, int y) { if (s->cur->st == 1) s->cur->v3(x, y); else s->alt->v3(x, y); }
