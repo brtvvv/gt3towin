@@ -1,0 +1,1 @@
+extern "C" { int func_00242638(int, int, int, int, int, void *); void func_002429B8(); void func_00242798(); void func_002427C8(void *); } extern "C" void func_002428C8(int a, int b, int c, int d, int e) { char buf[0x20]; while (!func_00242638(e, a, b, c, d, buf)) func_002429B8(); func_00242798(); func_002427C8(buf); }

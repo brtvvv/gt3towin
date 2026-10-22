@@ -1,0 +1,1 @@
+struct E { int a; float k; char p[0x78]; }; struct S { char p[0x24]; int n; E *e; }; extern "C" int func_001A50F0(S *s, float x) { if (x < s->e[0].k) return -1; int lo = 0, hi = s->n; while (lo < hi) { int m = (lo + hi) >> 1; if (x < s->e[m].k) hi = m; else lo = m + 1; } return lo - 1; }
