@@ -17,6 +17,8 @@ typedef float f32;        typedef double f64;
 #define M2C_SYNC() __asm__ volatile("sync")
 #define M2C_BREAK(n) __asm__ volatile("break")
 #define M2C_UNALIGNED32(x) (x)
+/* stala baza adresu (scratchpad 0x70000000, rejestry sprzetowe) trzymana w rejestrze, bez skladania offsetu */
+#define M2C_SPR(addr) ({ char *_spr = (char *)(addr); __asm__("" : "+r"(_spr)); _spr; })
 /* wywolanie metody wirtualnej gcc 2.9: wpis vtable {short delta; short index; fn} */
 #ifdef __cplusplus
 typedef s32 (*VFNPTR)(...);
