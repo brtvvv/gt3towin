@@ -1,0 +1,23 @@
+extern char D_003111C0[];
+extern char D_003111D0[];
+extern char D_003111E0[];
+extern char D_003111F0[];
+extern char D_00311208[];
+extern char D_00311218[];
+extern char D_00311230[];
+extern char D_00311240[];
+extern char D_00311250[];
+extern char D_00311260[];
+extern "C" void func_0011A398();
+extern "C" void func_0011A5D0();
+extern "C" void func_0011A7E8();
+extern "C" void func_0011A9C8();
+extern "C" void func_0011AC60();
+extern "C" void func_0011AE58();
+extern "C" void func_0011B000();
+extern "C" void func_0011B3B8();
+extern "C" void func_0011B550();
+extern "C" void func_0011B660();
+struct C { const char * f0; void * f1; C(const char * a0, void * a1) : f0(a0), f1(a1) {} };
+C D_00297240[10] = { C((const char *)D_003111C0, (void *)func_0011B000), C((const char *)D_003111D0, (void *)func_0011B3B8), C((const char *)D_003111E0, (void *)func_0011A398), C((const char *)D_003111F0, (void *)func_0011A5D0), C((const char *)D_00311208, (void *)func_0011AE58), C((const char *)D_00311218, (void *)func_0011AC60), C((const char *)D_00311230, (void *)func_0011B660), C((const char *)D_00311240, (void *)func_0011B550), C((const char *)D_00311250, (void *)func_0011A7E8), C((const char *)D_00311260, (void *)func_0011A9C8) };
+// @_GLOBAL_$I$D_00297240 0x11B7A0

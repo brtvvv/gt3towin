@@ -1,0 +1,22 @@
+extern char D_0030D3B8[];
+extern char D_0030D3C8[];
+extern char D_0030D3D8[];
+extern char D_0030D3E8[];
+extern char D_0030D400[];
+extern char D_0030D418[];
+extern char D_0030D428[];
+extern char D_0030D440[];
+extern char D_0030D450[];
+extern char D_0030D468[];
+extern char D_0030D478[];
+extern char D_0030D488[];
+extern char D_00352818[];
+extern "C" void func_0010FC28();
+extern "C" void func_0010FD60();
+extern "C" void func_0010FD90();
+extern "C" void func_0010FDA0();
+extern "C" void func_0010FDD0();
+extern "C" void func_00125E68();
+struct C { const char * f0; void * f1; C(const char * a0, void * a1) : f0(a0), f1(a1) {} };
+C D_00293A40[13] = { C((const char *)D_0030D428, (void *)func_0010FD90), C((const char *)D_0030D3C8, (void *)func_0010FC28), C((const char *)D_0030D440, (void *)func_0010FDA0), C((const char *)D_0030D450, (void *)func_0010FDD0), C((const char *)D_00352818, (void *)func_0010FC28), C((const char *)D_0030D418, (void *)func_0010FC28), C((const char *)D_0030D468, (void *)func_0010FD60), C((const char *)D_0030D478, (void *)func_0010FD60), C((const char *)D_0030D400, (void *)func_0010FC28), C((const char *)D_0030D488, (void *)func_00125E68), C((const char *)D_0030D3B8, (void *)func_0010FC28), C((const char *)D_0030D3D8, (void *)func_0010FC28), C((const char *)D_0030D3E8, (void *)func_0010FC28) };
+// @_GLOBAL_$I$D_00293A40 0x10FE00
