@@ -1,0 +1,1 @@
+struct E { int key; char p[0x34]; E *next; }; struct G { char p[8]; E *list; char q[8]; G *next; }; struct O { char p[0x28]; G *g; }; extern "C" E *func_00289AD8(int key, O *o) { for (G *g = o->g; g; g = g->next) for (E *e = g->list; e; e = e->next) if (e->key == key) return e; return 0; }

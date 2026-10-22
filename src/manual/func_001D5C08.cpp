@@ -1,0 +1,1 @@
+struct N { char p[0x1EC]; N *next; }; struct L { char p[0x208]; N *head; int q; N *last; int n; }; extern "C" N *func_001D5C08(L *l, int i) { if (i < 0) return l->last; if (i >= l->n) return 0; N *e = l->head; while (i && e) { e = e->next; i--; } return e; }

@@ -1,0 +1,1 @@
+struct C { char p[0x18]; float k, a, b; }; extern "C" float func_001F8890(C *c, float t) { if (t <= 0.0f) return c->a; float x = c->k * t; if (x >= 1.0f) return c->b; return c->a + x * (c->b - c->a); }

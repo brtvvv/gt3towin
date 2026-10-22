@@ -1,0 +1,1 @@
+extern "C" float func_00135B18(float x0, float x1, float y0, float y1, float lo, float hi) { if (x1 < lo || hi < x0) return 0.0f; if (x0 < lo || hi < x1) { float b, r, d; r = 1.0f / (x1 - x0); b = y0 * x1 - y1 * x0; d = y1 - y0; if (x0 < lo) { y0 = (d * lo + b) * r; x0 = lo; } if (hi < x1) { y1 = (d * hi + b) * r; x1 = hi; } } return (y0 + y1) * (x1 - x0) * 0.5f; }
