@@ -1,0 +1,1 @@
+struct E { int type; char p[0x2C]; }; struct S; typedef int (S::*PF)(E *, int); extern PF D_002C9E10[]; struct S { E *tab; int x; int idx; void run(int a); }; void S::run(int a) { if (!tab) return; E *e; do { e = &tab[idx]; } while ((this->*D_002C9E10[e->type])(e, a) != 1); } // @run__1Si 0x1BDFF8

@@ -1,0 +1,1 @@
+extern "C" { int func_00235580(void *); unsigned char *func_00235D20(void *); } extern int D_003546C0[2]; extern "C" int func_00236380(void *a) { switch (func_00235580(a)) { case 1: case 3: case 4: return 0x58; } unsigned char *p = func_00235D20(a); if (!p) return 0x2E; return D_003546C0[p[0x10]]; }

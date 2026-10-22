@@ -1,0 +1,1 @@
+extern "C" void func_00179F40(void *, int); struct E { short id; int v; }; struct S { E e[0x100]; unsigned char used[0x18]; int n; }; extern "C" int func_0017A080(S *s, int id, int *out, int rm) { if (!s->used[id]) return 0; for (int i = 0; i < s->n; i++) { if (s->e[i].id == id) { if (out) *out = s->e[i].v; if (rm) func_00179F40(s, i); return 1; } } return 0; }

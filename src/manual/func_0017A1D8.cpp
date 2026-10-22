@@ -1,0 +1,1 @@
+struct E { short id; int v; }; struct S { E e[0x100]; unsigned char used[0x18]; int n; }; extern "C" int func_0017A1D8(S *s, int id, int *out, int k) { if (k < s->used[id]) { E *e = s->e; for (int i = 0; i < s->n; i++, e++) { if (e->id == id) { if (k == 0) { if (out) *out = e->v; return 1; } k--; } } } return 0; }

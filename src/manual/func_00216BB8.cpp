@@ -1,0 +1,1 @@
+extern "C" int func_00216500(void *, int); struct T { char p[0x154]; }; struct S { T t[6][8]; }; extern "C" int func_00216BB8(S *s, int v) { for (int i = 0; i < 6; i++) { T *p = s->t[i]; for (int j = 7; j >= 0; j--) { v = func_00216500(p, v); p++; } } return v; }

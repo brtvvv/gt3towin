@@ -1,0 +1,1 @@
+struct G { char p[0x9C]; float a, b, c, d; }; extern G D_002F8900; extern "C" float func_0024AF70(unsigned int k) { G *g = &D_002F8900; switch (k) { case 0x1100: return g->c; case 0x1101: return g->d; case 0x1102: return g->a; case 0x1103: return g->b; } return 0.0f; }

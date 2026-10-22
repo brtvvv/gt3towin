@@ -1,0 +1,1 @@
+extern "C" int func_00149AA8(void *, int); struct S { char p[0xFB68]; int n; char q[0x38]; int c; }; extern "C" int func_00149A00(S *s) { for (int i = 0; i < s->n; i++) { int r = func_00149AA8(s, s->c - i); if (r != 1) return r; r = func_00149AA8(s, s->c + i + 1); if (r != 1) return r; } return 1; }
