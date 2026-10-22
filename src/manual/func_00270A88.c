@@ -1,0 +1,1 @@
+typedef struct { char p[0x58]; int cur; int cnt[15]; int prio[1]; } S; void func_00270A88(S *s, int id, int p) { int *prio = s->prio; int *slot = &prio[id]; int *cnt; if (*slot != p) { cnt = s->cnt; { int *a = cnt + *slot; (*a)--; cnt += p; (*cnt)++; } *slot = p; s->cur = p; } }
