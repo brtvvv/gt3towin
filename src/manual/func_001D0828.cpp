@@ -1,0 +1,1 @@
+struct E { char p[0x20]; unsigned long l; }; struct T { char p[0x18]; E *e; }; struct S { char p[0xCC]; T *t; int q; int i; }; extern "C" int func_001D0828(S *s) { return ((s->t->e[s->i].l >> 34) & 0x3FF) + 1; }

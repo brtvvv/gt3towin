@@ -1,0 +1,1 @@
+struct N { char p[0x1EC]; N *next; }; struct S { char p[0x208]; N *head; int q; N *cur; }; extern "C" int func_001D5BD0(S *s, N *x) { if (!x) x = s->cur; int i = 0; for (N *p = s->head; p; p = p->next, i++) if (x == p) return i; return -1; }
