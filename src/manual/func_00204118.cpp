@@ -1,0 +1,1 @@
+extern float D_003520E8, D_003520EC; extern "C" float func_00246D18(float, float); extern "C" float func_00204118(float x, float y, float z) { return (-func_00246D18(x, z) + D_003520E8) * D_003520EC; }

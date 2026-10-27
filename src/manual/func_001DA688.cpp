@@ -1,0 +1,1 @@
+extern volatile float D_00351AB8; struct S { char p[8]; unsigned short h; char q[0x11DC - 0xA]; float f; }; extern "C" int func_001DA688(S *s, int, int k) { if (k && s->h) return s->h; return (int)(s->f * D_00351AB8); }
