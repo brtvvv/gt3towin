@@ -1,0 +1,1 @@
+struct N { struct N *a, *b; }; struct L { struct N *head; struct N *end; }; struct N *func_0026BB90(struct L *l, struct N *p, int sz) { struct N *nx = p->b; struct N *q = (struct N *)((char *)p + sz); if (nx < l->end) nx->a = q; q->b = nx; p->b = q; q->a = p; return q; }

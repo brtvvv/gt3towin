@@ -1,0 +1,1 @@
+struct G { char p[0x18]; void *q; }; extern G D_002BCB90; extern char D_0032F670[]; extern "C" int func_0022D9E0(G *, int); extern "C" void func_00190D50() { D_002BCB90.q = D_0032F670; func_0022D9E0(&D_002BCB90, 2); }

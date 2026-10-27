@@ -1,0 +1,1 @@
+struct S { virtual void d0(); virtual void d1(); virtual void d2(); virtual void d3(); virtual int v4(); }; extern "C" int func_001A71B0(int); extern "C" void func_00188518(S *s) { func_001A71B0(s->v4()); }
