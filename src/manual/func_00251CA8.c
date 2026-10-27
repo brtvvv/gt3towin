@@ -1,0 +1,1 @@
+struct D { char p[0x99]; unsigned char a, b, c; }; extern struct D D_004A8380; void func_0028F810(int, int, int, int); void func_00251CA8(void) { func_0028F810(5, D_004A8380.a, D_004A8380.b, D_004A8380.c); }

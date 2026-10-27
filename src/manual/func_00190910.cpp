@@ -1,0 +1,1 @@
+typedef unsigned int u128 __attribute__((mode(TI))); struct B { char p[0x2C]; u128 *arr; }; struct A { char p[0x70]; B *b; }; struct S { A *a; }; extern "C" u128 func_00190910(S *s, int i) { return s->a->b->arr[i]; }

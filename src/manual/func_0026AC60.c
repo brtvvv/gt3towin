@@ -1,0 +1,1 @@
+struct S { char p[4]; unsigned short h4; char q[0x16]; unsigned short x1C; }; void func_0026AB80(void *, int, int, int); void func_0026AC60(struct S *s, int a, int b) { s->x1C = 0; func_0026AB80(&s->x1C, s->h4, (unsigned short)a, b); }

@@ -1,0 +1,1 @@
+struct D { char p[0x8C]; short a, b; }; extern struct D D_004A8380; void func_00251D18(struct D *); void func_00251E38(int a, int b) { D_004A8380.a = a; D_004A8380.b = b; func_00251D18(&D_004A8380); }
