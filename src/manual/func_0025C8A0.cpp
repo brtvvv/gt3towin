@@ -1,0 +1,1 @@
+struct G { char p[0x40]; int a; char q[0x3C]; int b; }; extern G D_004A84C0; extern "C" int func_00286EE0(int); extern "C" int func_0025C8A0() { func_00286EE0(D_004A84C0.a); return D_004A84C0.b == 0; }

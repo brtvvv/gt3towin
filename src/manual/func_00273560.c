@@ -1,0 +1,1 @@
+extern char *D_003074E8[]; extern char D_00349440[]; char *func_0027FDBC(char *, const char *); void func_00273560(unsigned k, char *buf) { if (k < 4) func_0027FDBC(buf, D_003074E8[k]); else *buf = D_00349440[0]; }

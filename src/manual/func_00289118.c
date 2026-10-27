@@ -1,0 +1,1 @@
+extern int D_004AF994[]; extern int D_00309844[]; int func_00287998(int); int func_00286BD0(int, int); void func_00289118(void) { func_00287998(5); func_00286BD0(5, D_004AF994[0]); D_00309844[0] = 0; }
