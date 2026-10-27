@@ -1,0 +1,1 @@
+struct V { float x, y, z, w; }; extern char D_0049EB10[]; extern "C" int func_0025920C(void *, V *); extern "C" void func_002200D8(float x, float y, float z) { V v; v.x = x; v.z = z; v.y = 0; v.w = 0; func_0025920C(D_0049EB10, &v); }

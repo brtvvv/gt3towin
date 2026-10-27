@@ -1,0 +1,1 @@
+struct S { int a; int base; char p[0x28]; int o; }; extern "C" int func_00249EB0(int); extern "C" void func_00172368(S *s) { int d = (int)s - s->base; s->base = (int)s; s->o += d; func_00249EB0(s->o); }
