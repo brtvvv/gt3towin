@@ -1,0 +1,1 @@
+struct D { char p[6]; unsigned short h6; char q[4]; unsigned short xC; }; extern struct D D_00300FE8; void func_0026AB80(void *, int, int, int); void func_0026AC80(int a, int b) { D_00300FE8.xC = 0; func_0026AB80(&D_00300FE8.xC, D_00300FE8.h6, (unsigned short)a, b); }

@@ -1,0 +1,1 @@
+struct L { int a, b; void *c, *d; char x[1]; }; extern struct L D_004AF480; struct L *func_00287F88(int a) { D_004AF480.a = a; D_004AF480.b = 0; D_004AF480.d = D_004AF480.x; D_004AF480.c = D_004AF480.x; return &D_004AF480; }

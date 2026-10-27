@@ -1,0 +1,1 @@
+struct D { char p[0x88]; short h88, h8A; char q[4]; short h90, h92; }; extern struct D D_004A8380; void func_00251D18(struct D *); void func_00251E00(int a, int b, int c, int d) { D_004A8380.h8A = a; D_004A8380.h88 = b; D_004A8380.h90 = c; D_004A8380.h92 = d; func_00251D18(&D_004A8380); }
