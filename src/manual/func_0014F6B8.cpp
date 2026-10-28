@@ -1,0 +1,4 @@
+struct O { virtual void f0(); virtual void f1(); virtual void f2(); virtual void f3(); virtual void f4(); virtual void f5(); virtual void f6(); virtual void f7(); virtual void f8(); virtual void f9(); virtual void f10(); virtual void f11(); virtual void f12(); virtual void f13(); virtual void f14(); virtual void f15(); virtual void f16(); virtual void f17(); virtual void f18(); virtual void f19(); virtual void f20(); virtual void f21(); virtual void f22(); virtual void f23(); virtual void f24(); virtual void f25(); virtual void f26(); virtual void f27(); virtual void f28(); virtual void f29();  virtual int g(); };
+extern "C" O *func_0014BCF8(int);
+extern "C" int func_0014F648(int);
+extern "C" int func_0014F6B8(int a, int b, int c) { if (b >= func_0014BCF8(a)->g()) return 1; int idx = c * func_0014BCF8(a)->g() + b; return idx >= func_0014F648(a); }
