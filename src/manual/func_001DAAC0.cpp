@@ -1,0 +1,1 @@
+extern "C" float func_001DAAC0(unsigned *p, float x) { if (x <= 0.0f) return 0.0f; int h = (int)x / 2; unsigned v = *p + h; *p = v; if (v > 0xEE6B27A5u) { *p = 0xEE6B27A6u; return 0.0f; } return x - (float)(h * 2); }

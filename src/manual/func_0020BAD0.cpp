@@ -1,0 +1,3 @@
+struct O { virtual void f0(); virtual void f1(); virtual void f2(); virtual void f3(); virtual void f4(); virtual void f5(); virtual void f6(); virtual void f7(); virtual void f8(); virtual void f9(); virtual void f10(); virtual void f11(); virtual void f12(); virtual void f13(); virtual void f14(); virtual void f15(); virtual void f16(); virtual void f17(); virtual void f18(); virtual void f19(); virtual void f20();  virtual float g(); };
+struct S { char p[0x268]; int k; float v; };
+extern "C" void func_0020BAD0(S *s, O *o) { float v = o->g(); if (4.0f < v) v = 4.0f; if (0.0f < v) { s->v = v; s->k = 1; } }
