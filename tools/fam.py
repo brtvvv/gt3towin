@@ -196,9 +196,8 @@ def main():
         rows = []
         for k, v in g.items():
             if len(v) > 1 and not any(n in srcs for n in v):
-                heads = [n for n in sorted(v) if n not in skip]
-                if heads:
-                    rows.append((len(v) * len(k), len(v), len(k), heads[0]))
+                if not any(n in skip for n in v):
+                    rows.append((len(v) * len(k), len(v), len(k), sorted(v)[0]))
         rows.sort(reverse=True)
         for r in rows[:int(sys.argv[2]) if len(sys.argv) > 2 else 30]:
             print('%s  %d x %d instr' % (r[3], r[1], r[2]))
