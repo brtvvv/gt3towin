@@ -1,0 +1,2 @@
+struct S { char p[8]; short h8; char q[0xC]; short h16; int x18; int x1C; char r[0x14]; short h34; short h36; char t[0x5A]; short h92; char u[0xC]; int xA0, xA4, xA8; char v[0x24]; short hD0, hD2; };
+extern "C" void func_00200348(S *s, int k, int v) { s->h36 = 0; int h = s->h92; if (h == 1 && s->h8 != k) { s->h34 = h; s->h92 = 0; } switch (s->h16) { case 0: s->xA0 = 0; s->xA4 = s->x18; break; case 1: s->xA0 = s->h16; s->xA4 = s->x18; s->xA8 = s->x1C; break; } if (v > 50) v = 50; s->hD0 = v; if (v < 0) v = 1; s->hD2 = v; }
