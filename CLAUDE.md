@@ -120,6 +120,13 @@ Listy robocze są w `work/`:
   `return R(a, b);`. Struktura 8-bajtowa zbudowana na stosie: `return *(long *)&p;`.
 - **Placement new:** `inline void *operator new(size_t, void *p) throw() { return p; }`
   (`throw()` daje sprawdzenie null).
+- **Destruktor z tablicą składowych** (`beqz` na adresie tablicy, pętla od końca, wywołania z a1=2):
+  zwykła funkcja `t->vt = D; E *b = t->e; if (b) { E *p = b + N; if (b != p) do { p--; dtor(&p->sub, 2); } while (b != p); }`,
+  potem `base_dtor(t, c)` albo `if (c & 1) delete_fn(t);`.
+- **Konstruktor z bazą out-of-line:** jeśli vptr klasy pochodnej leży zaraz za danymi bazy,
+  baza jest polimorficzna (`struct Bs { Bs(); ~Bs(); char p[N]; virtual void w(); };`).
+  Wywołanie wirtualne na elemencie tablicy obiektów wymaga wskaźnika (`M *m = &s->m[i]; m->g();`),
+  inaczej gcc wywoła metodę bezpośrednio.
 - **Przekazywanie argumentów:** nietknięte rejestry a0–a3/t0–t3 oznaczają, że funkcja
   przekazuje argumenty dalej. Zadeklaruj je i przekaż jawnie.
 - **Pętle:** licznik z wskaźnikiem i `slt` na końcu to zwykle `for (i=0;i<N;i++) s->e[i]...`.
