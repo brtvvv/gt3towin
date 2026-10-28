@@ -1,5 +1,118 @@
+diff --git a/ps2xIOP/src/emulator/core/iop_kernel.cpp b/ps2xIOP/src/emulator/core/iop_kernel.cpp
+index 4832d8f..a43ea8e 100644
+--- a/ps2xIOP/src/emulator/core/iop_kernel.cpp
++++ b/ps2xIOP/src/emulator/core/iop_kernel.cpp
+@@ -1,3 +1,4 @@
++#include <cstdio>
+ #include "iop_kernel.h"
+ 
+ #include "iop_memory.h"
+@@ -255,11 +256,31 @@ namespace ps2x::iop::detail
+             return true;
+         }
+         case 33: // DelayThread
++            {
++                static int calls = 0;
++                if (++calls == 20000)
++                {
++                    std::fprintf(stderr, "[iop-thread] current=%d pc=0x%x ra=0x%x\n", m_currentThread ? m_currentThread->id : -1, cpu.pc, cpu.gpr[31]);
++                    for (const auto &kv : m_threads)
++                    {
++                        const IopThread &t = kv.second;
++                        std::fprintf(stderr, "[iop-thread] id=%d state=%d entry=0x%x pc=0x%x ra=0x%x waitId=%d prio=%u\n",
++                                     t.id, static_cast<int>(t.state), t.entry, t.cpu.pc, t.cpu.gpr[31], t.waitId, t.priority);
++                    }
++                }
++            }
+             if (m_currentThread != nullptr)
+             {
+                 const uint64_t delayCycles = (static_cast<uint64_t>(cpu.gpr[4]) * kIopClockHz + 999'999ull) / 1'000'000ull;
+                 delayCurrentUntil(currentCycle + std::max<uint64_t>(delayCycles, 1u), cpu);
+             }
++            else if (m_idleRunner && m_idleDepth < 4)
++            {
++                const uint64_t delayCycles = (static_cast<uint64_t>(cpu.gpr[4]) * kIopClockHz + 999'999ull) / 1'000'000ull;
++                ++m_idleDepth;
++                m_idleRunner(std::max<uint64_t>(delayCycles, 1u));
++                --m_idleDepth;
++            }
+             setV0(0);
+             return true;
+         case 34: // GetSystemTime
+@@ -401,9 +422,28 @@ namespace ps2x::iop::detail
+                 setV0(-1);
+                 return true;
+             }
+-            if (it->second.current > 0)
++            if (it->second.current <= 0 && ordinal == 8 && m_currentThread == nullptr && m_idleRunner && m_idleDepth < 4)
++            {
++                // WaitSema spoza watku (np. handler RPC): pozwol innym watkom dzialac, az semafor sie zwolni.
++                ++m_idleDepth;
++                for (int spin = 0; spin < 20000; ++spin)
++                {
++                    const auto again = m_semaphores.find(id);
++                    if (again == m_semaphores.end() || again->second.current > 0)
++                        break;
++                    m_idleRunner(2000u);
++                }
++                --m_idleDepth;
++            }
++            const auto cur = m_semaphores.find(id);
++            if (cur == m_semaphores.end())
++            {
++                setV0(-1);
++                return true;
++            }
++            if (cur->second.current > 0)
+             {
+-                --it->second.current;
++                --cur->second.current;
+                 setV0(0);
+             }
+             else if (ordinal == 9)
+diff --git a/ps2xIOP/src/emulator/core/iop_kernel.h b/ps2xIOP/src/emulator/core/iop_kernel.h
+index 4977102..731b60a 100644
+--- a/ps2xIOP/src/emulator/core/iop_kernel.h
++++ b/ps2xIOP/src/emulator/core/iop_kernel.h
+@@ -3,6 +3,7 @@
+ #include "iop_cpu.h"
+ 
+ #include <cstddef>
++#include <functional>
+ #include <cstdint>
+ #include <map>
+ 
+@@ -45,10 +46,15 @@ namespace ps2x::iop::detail
+ 
+     class IopKernel
+     {
++        std::function<void(uint64_t)> m_idleRunner;
++        int m_idleDepth = 0;
+     public:
+         explicit IopKernel(IopMemory &memory) noexcept;
+ 
+         void reset();
++        // Wywolywane, gdy DelayThread przychodzi spoza watku (np. handler RPC w callFunction):
++        // pozwala pozostalym watkom IOP dzialac przez czas opoznienia.
++        void setIdleRunner(std::function<void(uint64_t)> runner) { m_idleRunner = std::move(runner); }
+ 
+         [[nodiscard]] bool dispatchThreadImport(uint16_t ordinal, IopCpuState &cpu, uint64_t currentCycle);
+         [[nodiscard]] bool dispatchSemaphoreImport(uint16_t ordinal, IopCpuState &cpu);
+@@ -67,6 +73,12 @@ namespace ps2x::iop::detail
+         void terminateThreadsInRange(uint32_t base, uint32_t size);
+ 
+         [[nodiscard]] size_t threadCount() const noexcept { return m_threads.size(); }
++        [[nodiscard]] int currentThreadId() const noexcept { return m_currentThread ? m_currentThread->id : 0; }
++        [[nodiscard]] IopThread *findThread(int id)
++        {
++            const auto it = m_threads.find(id);
++            return it == m_threads.end() ? nullptr : &it->second;
++        }
+ 
+     private:
+         struct Semaphore
 diff --git a/ps2xIOP/src/emulator/core/iop_memory.cpp b/ps2xIOP/src/emulator/core/iop_memory.cpp
-index 25e9b36..a6fc268 100644
+index 25e9b36..451e595 100644
 --- a/ps2xIOP/src/emulator/core/iop_memory.cpp
 +++ b/ps2xIOP/src/emulator/core/iop_memory.cpp
 @@ -1,3 +1,4 @@
@@ -16,18 +129,29 @@ index 25e9b36..a6fc268 100644
          for (;;)
          {
              bool overlap = false;
-@@ -316,7 +317,10 @@ namespace ps2x::iop::detail
+@@ -316,7 +317,21 @@ namespace ps2x::iop::detail
                  break;
          }
          if (candidate > HeapLimit || size > HeapLimit - candidate)
 +        {
-+            std::fprintf(stderr, "[iop-alloc-fail] size=0x%x cursor=0x%x\n", size, m_heapCursor);
++            static bool dumped = false;
++            if (!dumped)
++            {
++                dumped = true;
++                uint32_t total = 0;
++                for (const auto &b : m_allocations)
++                {
++                    std::fprintf(stderr, "[iop-heap] 0x%x size=0x%x\n", b.address, b.size);
++                    total += b.size;
++                }
++                std::fprintf(stderr, "[iop-heap] total=0x%x blocks=%zu\n", total, m_allocations.size());
++            }
              return 0u;
 +        }
          m_allocations.push_back({candidate, size});
          markOwned(candidate, size);
          m_heapCursor = std::max(m_heapCursor, candidate + size);
-@@ -334,6 +338,10 @@ namespace ps2x::iop::detail
+@@ -334,6 +349,10 @@ namespace ps2x::iop::detail
                    m_owned.begin() + block->address + block->size,
                    uint8_t{0});
          m_allocations.erase(block);
@@ -39,7 +163,7 @@ index 25e9b36..a6fc268 100644
      }
  
 diff --git a/ps2xIOP/src/emulator/core/iop_memory.h b/ps2xIOP/src/emulator/core/iop_memory.h
-index a932a5d..cf04360 100644
+index a932a5d..63aa38f 100644
 --- a/ps2xIOP/src/emulator/core/iop_memory.h
 +++ b/ps2xIOP/src/emulator/core/iop_memory.h
 @@ -22,8 +22,8 @@ namespace ps2x::iop::detail
@@ -48,19 +172,30 @@ index a932a5d..cf04360 100644
          static constexpr uint32_t SifEnd = 0x1D001000u;
 -        static constexpr uint32_t HeapBase = 0x00120000u;
 -        static constexpr uint32_t HeapLimit = 0x001F0000u;
-+        static constexpr uint32_t HeapBase = 0x000A0000u;
-+        static constexpr uint32_t HeapLimit = 0x001FC000u;
++        static constexpr uint32_t HeapBase = 0x00080000u;
++        static constexpr uint32_t HeapLimit = 0x00200000u;
  
          struct Allocation
          {
 diff --git a/ps2xIOP/src/emulator/imports/iop_cdvd.cpp b/ps2xIOP/src/emulator/imports/iop_cdvd.cpp
-index ad58fb4..db7f462 100644
+index ad58fb4..75b6fb4 100644
 --- a/ps2xIOP/src/emulator/imports/iop_cdvd.cpp
 +++ b/ps2xIOP/src/emulator/imports/iop_cdvd.cpp
-@@ -280,6 +280,16 @@ namespace ps2x::iop::detail
+@@ -1,3 +1,4 @@
++#include <cstdio>
+ #include "iop_cdvd.h"
+ 
+ #include "../core/iop_cpu.h"
+@@ -280,6 +281,22 @@ namespace ps2x::iop::detail
                  cpu.gpr[2] = kCdvdReadyComplete;
                  return true;
  
++            case 14: // sceCdTrayReq(mode, u32 *traycheck): taca zamknieta, bez zmian
++                if (a1 != 0u)
++                    memory.write32(a1, 0u);
++                cpu.gpr[2] = 1u;
++                return true;
++
 +            case 24: // sceCdReadClock: sceCdCLOCK {stat, second, minute, hour, pad, day, month, year} w BCD
 +                if (a0 != 0u)
 +                {
@@ -74,3 +209,171 @@ index ad58fb4..db7f462 100644
              case 28: // sceCdStatus
                  cpu.gpr[2] = kCdvdStatusPause;
                  return true;
+@@ -601,6 +618,10 @@ namespace ps2x::iop::detail
+ 
+             const std::string guestPath = memory.readString(nameAddress, 1024u);
+             IsoNode *node = findVirtualIsoNode(guestPath);
++            {
++                static int logged = 0;
++                if (logged < 40) { ++logged; std::fprintf(stderr, "[cd-search] '%s' -> %s\n", guestPath.c_str(), node ? "found" : "MISSING"); }
++            }
+             if (!node)
+                 return false;
+ 
+@@ -653,6 +674,10 @@ namespace ps2x::iop::detail
+ 
+         bool readSectors(uint32_t lsn, uint32_t sectors, uint32_t destination)
+         {
++            {
++                static int logged = 0;
++                if (logged < 60) { ++logged; std::fprintf(stderr, "[cd-read] lsn=%u n=%u dst=0x%x owns=%d\n", lsn, sectors, destination, memory.ownsRamRange(destination, static_cast<size_t>(sectors) * kSectorSize) ? 1 : 0); }
++            }
+             if (sectors == 0u)
+             {
+                 lastError = kCdvdErrorNone;
+diff --git a/ps2xIOP/src/emulator/imports/iop_sysmem.cpp b/ps2xIOP/src/emulator/imports/iop_sysmem.cpp
+index 2c8d8f7..16a38d9 100644
+--- a/ps2xIOP/src/emulator/imports/iop_sysmem.cpp
++++ b/ps2xIOP/src/emulator/imports/iop_sysmem.cpp
+@@ -1,3 +1,4 @@
++#include <cstdio>
+ #include "iop_sysmem.h"
+ 
+ #include "../core/iop_cpu.h"
+@@ -30,11 +31,17 @@ namespace ps2x::iop::detail
+             const uint32_t address = a0 == 2u
+                                          ? m_memory.allocate(a1, 16u, a2)
+                                          : m_memory.allocate(a1, 16u);
++            static int failLogged = 0;
++            if (address == 0u && failLogged < 20 && ++failLogged)
++                std::fprintf(stderr, "[iop-alloc-fail-ra] type=%u size=0x%x ra=0x%x\n", a0, a1, cpu.gpr[31]);
+             setV0(address);
+             return true;
+         }
+         case 5: // FreeSysMemory
+-            setV0(m_memory.freeAllocation(a0) ? 0u : 0xFFFFFFFFu);
++        {
++            const bool ok = m_memory.freeAllocation(a0);
++            setV0(ok ? 0u : 0xFFFFFFFFu);
++        }
+             return true;
+         case 6: // QueryMemSize
+             setV0(IopMemory::RamSize);
+diff --git a/ps2xIOP/src/emulator/iop_emulator.cpp b/ps2xIOP/src/emulator/iop_emulator.cpp
+index e5f63a9..3c43ca4 100644
+--- a/ps2xIOP/src/emulator/iop_emulator.cpp
++++ b/ps2xIOP/src/emulator/iop_emulator.cpp
+@@ -110,6 +110,7 @@ namespace ps2x::iop::detail
+               imports(memory),
+               loadcore(memory, imports)
+         {
++            kernel.setIdleRunner([this](uint64_t cycles) { runCycles(cycles); });
+             reset();
+         }
+ 
+@@ -459,6 +460,44 @@ namespace ps2x::iop::detail
+             return cpu.gpr[2];
+         }
+ 
++        bool executeOnThread(int threadId, uint32_t address, uint32_t a0, uint32_t a1, uint32_t a2, uint32_t a3,
++                             uint32_t gp, uint32_t &result) override
++        {
++            if (kernel.currentThreadId() != 0 || activeCpu != nullptr)
++                return false;
++            IopThread *thread = kernel.findThread(threadId);
++            if (!thread || thread->state != IopThreadState::Sleep)
++                return false;
++            const IopCpuState saved = thread->cpu;
++            const IopThreadState savedState = thread->state;
++            thread->cpu.pc = address;
++            thread->cpu.gpr[4] = a0;
++            thread->cpu.gpr[5] = a1;
++            thread->cpu.gpr[6] = a2;
++            thread->cpu.gpr[7] = a3;
++            thread->cpu.gpr[28] = gp;
++            thread->cpu.gpr[29] = (saved.gpr[29] - 0x200u) & ~15u;
++            thread->cpu.gpr[31] = kThreadReturnSentinel;
++            thread->cpu.stopped = false;
++            thread->cpu.yielded = false;
++            thread->state = IopThreadState::Ready;
++            bool done = false;
++            for (int slice = 0; slice < 200000 && !done; ++slice)
++            {
++                runCycles(4096u);
++                thread = kernel.findThread(threadId);
++                if (!thread)
++                    return false;
++                done = thread->state == IopThreadState::Dormant && thread->cpu.pc == kThreadReturnSentinel;
++            }
++            if (!done)
++                log(LogLevel::Warning, "[IOP] RPC handler on server thread did not finish");
++            result = thread->cpu.gpr[2];
++            thread->cpu = saved;
++            thread->state = savedState;
++            return done;
++        }
++
+         uint32_t executeGuestFunction(uint32_t address,
+                                       uint32_t a0,
+                                       uint32_t a1,
+diff --git a/ps2xIOP/src/emulator/services/iop_rpc.cpp b/ps2xIOP/src/emulator/services/iop_rpc.cpp
+index cf4fdc6..6b69aa2 100644
+--- a/ps2xIOP/src/emulator/services/iop_rpc.cpp
++++ b/ps2xIOP/src/emulator/services/iop_rpc.cpp
+@@ -220,6 +220,7 @@ namespace ps2x::iop::detail
+             server.callback = m_memory.read32(stackPointer + 16u);
+             server.callbackBuffer = m_memory.read32(stackPointer + 20u);
+             server.queue = m_memory.read32(stackPointer + 24u);
++            server.threadId = m_kernel.currentThreadId();
+             m_servers[server.sid] = server;
+             if (server.serverData != 0u)
+             {
+@@ -292,12 +293,16 @@ namespace ps2x::iop::detail
+             }
+         }
+ 
+-        uint32_t returnPointer = executor.executeGuestFunction(server.function,
+-                                                               request.function,
+-                                                               server.buffer,
+-                                                               request.send.size,
+-                                                               0u,
+-                                                               server.gp);
++        uint32_t returnPointer = 0u;
++        if (server.threadId == 0 ||
++            !executor.executeOnThread(server.threadId, server.function, request.function, server.buffer,
++                                      request.send.size, 0u, server.gp, returnPointer))
++            returnPointer = executor.executeGuestFunction(server.function,
++                                                          request.function,
++                                                          server.buffer,
++                                                          request.send.size,
++                                                          0u,
++                                                          server.gp);
+         if (returnPointer == 0u)
+             returnPointer = server.buffer;
+         if (request.receive.address != 0u && request.receive.size != 0u && returnPointer != 0u)
+diff --git a/ps2xIOP/src/emulator/services/iop_rpc.h b/ps2xIOP/src/emulator/services/iop_rpc.h
+index a4286ba..ed05eb1 100644
+--- a/ps2xIOP/src/emulator/services/iop_rpc.h
++++ b/ps2xIOP/src/emulator/services/iop_rpc.h
+@@ -38,6 +38,13 @@ namespace ps2x::iop::detail
+         {
+             return executeGuestFunction(address, a0, a1, a2, a3, gp);
+         }
++        // Uruchamia funkcje w kontekscie istniejacego watku IOP (np. watku serwera RPC uspionego w RpcLoop).
++        [[nodiscard]] virtual bool executeOnThread(int threadId, uint32_t address, uint32_t a0, uint32_t a1,
++                                                   uint32_t a2, uint32_t a3, uint32_t gp, uint32_t &result)
++        {
++            (void)threadId; (void)address; (void)a0; (void)a1; (void)a2; (void)a3; (void)gp; (void)result;
++            return false;
++        }
+     };
+ 
+     class IopRpcBridge
+@@ -66,6 +73,7 @@ namespace ps2x::iop::detail
+             uint32_t callback = 0;
+             uint32_t callbackBuffer = 0;
+             uint32_t queue = 0;
++            int threadId = 0;
+         };
+ 
+         IopHost &m_host;

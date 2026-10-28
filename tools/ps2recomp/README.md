@@ -10,7 +10,10 @@ i łączy go z runtime (grafika GS/VU1, IOP z oryginalnymi modułami IRX, pad, d
 - `gt3-iop-fixes.patch` (ten katalog): poprawki do PS2Recomp potrzebne dla GT3:
   - alokator pamięci IOP nie oddawał zwolnionej pamięci (MEMCLEAR.IRX zajmował całą stertę),
   - sterta IOP 0xA0000–0x1FC000 zamiast 0x120000–0x1F0000 (moduły PDI chcą ok. 1,3 MB),
-  - import `cdvdman:24` (`sceCdReadClock`).
+  - importy `cdvdman:14` (`sceCdTrayReq`) i `cdvdman:24` (`sceCdReadClock`),
+  - procedury RPC działają w wątku serwera uśpionym w `sceSifRpcLoop` (jak na prawdziwym IOP),
+    a nie bezpośrednio; moduły Polyphony (LIBPDI/PDICDVD) inaczej się zakleszczają,
+  - `DelayThread`/`WaitSema` wywołane poza wątkiem oddają czas pozostałym wątkom.
 - Prywatne repo `gt3-data/recomp/`: gotowy `CORE.elf` i `gt3_recompiled.zip`
   (wynik `ps2_recomp`, nigdy nie trafia do tego publicznego repo).
 
@@ -29,4 +32,5 @@ ffmpeg (libavcodec-dev itd.), libzstd-dev.
 ## Stan (28.10)
 
 Gra startuje, ustawia tryb wideo PAL, ładuje wszystkie 15 modułów IRX, przechodzi
-inicjalizację SIF/RPC i zaczyna czytać `GT3.VOL` sektorami (potrzebny pełny folder płyty).
+inicjalizację SIF/RPC, czyta płytę (sektor 16, ISO9660) i szuka `gt3.vol`
+(w chmurze go nie ma, więc dalsze testy tylko z pełnym folderem płyty).
