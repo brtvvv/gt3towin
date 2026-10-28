@@ -188,7 +188,7 @@ def attempt(b, donors, srcs, info):
                 p = os.path.join(OUT, b + ext)
                 open(p, 'w').write(new)
                 try:
-                    r = [x for x in T.run(p, verbose=False) if x[0] == b]
+                    r = [x for x in T.run(p, verbose=False) if x[0] == b or x[1] == int(b[5:], 16)]
                 except SystemExit:
                     r = None
                 if r and not r[0][3]:
