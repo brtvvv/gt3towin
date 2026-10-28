@@ -42,13 +42,24 @@ img += b'\0' * (off_text - len(img)) + text + data + shstr
 img += b'\0' * (off_sh - len(img)) + shdrs
 open(os.path.join(out, 'CORE.elf'), 'wb').write(img)
 
-# --- mapa funkcji z asm/funcs (nazwa = adres, rozmiar = liczba instrukcji) ---
+# --- mapa funkcji z asm/0.s (glabel + dlabel func_*, koniec = początek następnej) ---
 rows = []
-for f in glob.glob(os.path.join(ROOT, 'asm/funcs/*.s')):
-    n = os.path.basename(f)[:-2]
-    adr = re.findall(r'^\s*/\* [0-9A-F]+ ([0-9A-F]{8}) [0-9A-F]{8} \*/', open(f).read(), re.M)
-    if adr:
-        rows.append((int(adr[0], 16), n, len(adr) * 4))
+starts = []
+lab = None
+for line in open(os.path.join(ROOT, 'asm/0.s')):
+    m = re.match(r'(?:glabel|dlabel) (\w+)', line)
+    if m and (line.startswith('glabel') or m.group(1).startswith('func_')):
+        lab = m.group(1)
+        continue
+    if lab:
+        a = re.match(r'\s*/\* [0-9A-F]+ ([0-9A-F]{8}) ', line)
+        if a:
+            starts.append((int(a.group(1), 16), lab))
+            lab = None
+starts.sort()
+for i, (a, n) in enumerate(starts):
+    end = starts[i + 1][0] if i + 1 < len(starts) else TEXT_END
+    rows.append((a, n, min(end, TEXT_END) - a))
 rows.sort()
 with open(os.path.join(out, 'functions.csv'), 'w') as w:
     w.write('Name,Start,End,Size\n')
