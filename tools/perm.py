@@ -21,4 +21,4 @@ for i, perm in enumerate(itertools.permutations(stm)):
         continue
     if r and not r[0][3]:
         print('MATCH', i); shutil.copy(p, sys.argv[1] + '.match'); sys.exit(0)
-print('brak', i + 1)
+print('brak', i + 1); sys.exit(1)
