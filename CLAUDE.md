@@ -63,6 +63,7 @@ Kolejność pracy:
 | `python3 tools/fam.py all` | kod z szablonu dla całej gry (rodziny opcode'ów, warianty stałych/vtable/float) |
 | `python3 tools/fam.py spread F` | po ręcznym MATCH rozsiewa F na rodzeństwo (zawsze uruchamiaj!) |
 | `python3 tools/fam.py heads 30` | głowy rodzin bez dawcy: dopasuj ręcznie, potem `spread` |
+| `python3 tools/perm.py plik [max]` | permutuje instrukcje między `/*P*/` i `/*E*/` (np. kolejność zapisów), zapisuje `plik.match` (ok. 15 ms na próbę) |
 | `sh tools/d.sh func_X plik` | pełny asm obok siebie: moja wersja / oryginał (rejestry, offsety) |
 | `python3 tools/ginit2.py` | generator statycznych inicjalizatorów (`_GLOBAL_$I$`) |
 | `python3 tools/mkwrap.py`, `libmatch.py` | dopasowania funkcji bibliotecznych (newlib) |
