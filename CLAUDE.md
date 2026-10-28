@@ -41,7 +41,7 @@ Kolejność pracy:
    i stałych) zamiast pisać je ręcznie.
 3. **Dopiero potem ręcznie.** Pobieraj partie: `sh tools/nexta.sh 20 | grep -v '^nop$'`.
    Uwaga: `nexta.sh` usuwa `nop`, więc nie widać pustych delay slotów. Gdy argument wywołania
-   wygląda na „niezainicjalizowany” albo gałąź jest niejasna, sprawdź `python3 tools/funcasm.py func_X`.
+   wygląda na „niezainicjalizowany” albo gałąź jest niejasna, użyj `KEEPNOP=1 sh tools/nexta.sh ...`.
    Pisz wszystkie szkice partii naraz (heredoki do katalogu roboczego),
    potem jedno `python3 tools/wf.py <katalog>/*.c*`.
    Przy nietrafionych `python3 tools/dd.py <plik>` pokazuje różnicę opcode'ów.
