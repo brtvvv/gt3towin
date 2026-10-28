@@ -13,7 +13,8 @@ i łączy go z runtime (grafika GS/VU1, IOP z oryginalnymi modułami IRX, pad, d
   - importy `cdvdman:14` (`sceCdTrayReq`) i `cdvdman:24` (`sceCdReadClock`),
   - procedury RPC działają w wątku serwera uśpionym w `sceSifRpcLoop` (jak na prawdziwym IOP),
     a nie bezpośrednio; moduły Polyphony (LIBPDI/PDICDVD) inaczej się zakleszczają,
-  - `DelayThread`/`WaitSema` wywołane poza wątkiem oddają czas pozostałym wątkom.
+  - `DelayThread`/`WaitSema` wywołane poza wątkiem oddają czas pozostałym wątkom,
+  - `sifman:32` (`sceSifSetDmaIntr`): transfer IOP→EE + wywołanie procedury zakończenia.
 - Prywatne repo `gt3-data/recomp/`: gotowy `CORE.elf` i `gt3_recompiled.zip`
   (wynik `ps2_recomp`, nigdy nie trafia do tego publicznego repo).
 
@@ -32,5 +33,5 @@ ffmpeg (libavcodec-dev itd.), libzstd-dev.
 ## Stan (28.10)
 
 Gra startuje, ustawia tryb wideo PAL, ładuje wszystkie 15 modułów IRX, przechodzi
-inicjalizację SIF/RPC, czyta płytę (sektor 16, ISO9660) i szuka `gt3.vol`
+inicjalizację SIF/RPC, czyta płytę (sektor 16 i katalog główny, ISO9660) i szuka `gt3.vol`
 (w chmurze go nie ma, więc dalsze testy tylko z pełnym folderem płyty).

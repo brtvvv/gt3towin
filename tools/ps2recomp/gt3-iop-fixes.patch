@@ -260,7 +260,7 @@ index 2c8d8f7..16a38d9 100644
          case 6: // QueryMemSize
              setV0(IopMemory::RamSize);
 diff --git a/ps2xIOP/src/emulator/iop_emulator.cpp b/ps2xIOP/src/emulator/iop_emulator.cpp
-index e5f63a9..3c43ca4 100644
+index e5f63a9..aaf099b 100644
 --- a/ps2xIOP/src/emulator/iop_emulator.cpp
 +++ b/ps2xIOP/src/emulator/iop_emulator.cpp
 @@ -110,6 +110,7 @@ namespace ps2x::iop::detail
@@ -271,7 +271,23 @@ index e5f63a9..3c43ca4 100644
              reset();
          }
  
-@@ -459,6 +460,44 @@ namespace ps2x::iop::detail
+@@ -318,6 +319,15 @@ namespace ps2x::iop::detail
+                 return ImportDisposition::Handled;
+             if (iequals(call.library, "sifman"))
+             {
++                if (call.ordinal == 32) // sceSifSetDmaIntr(dmat, count, func, data): sceSifSetDma + wywolanie func(data) po transferze
++                {
++                    const uint32_t function = cpu.gpr[6];
++                    const uint32_t data = cpu.gpr[7];
++                    const bool ok = rpc.dispatchSifManImport(7, cpu);
++                    if (ok && cpu.gpr[2] != 0u && function != 0u)
++                        pendingGuestCallbacks.emplace(totalCycles + 64u, ScheduledGuestCallback{function, cpu.gpr[28], data});
++                    return ok ? ImportDisposition::Handled : ImportDisposition::Missing;
++                }
+                 return rpc.dispatchSifManImport(call.ordinal, cpu)
+                            ? ImportDisposition::Handled
+                            : ImportDisposition::Missing;
+@@ -459,6 +469,44 @@ namespace ps2x::iop::detail
              return cpu.gpr[2];
          }
  
