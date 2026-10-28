@@ -44,9 +44,10 @@ def variants(at, bt):
     alt = collections.defaultdict(list)
     for x, y in zip(at, bt):
         nx, ny = norm(x), norm(y)
-        if nx != ny and (x, y) not in alt[nx]:
+        if ny not in [norm(q[1]) for q in alt[nx]]:
             alt[nx].append((x, y))
-    amb = [v for v in alt.values() if len(v) > 1]
+    # wybor moze tez zostawic stala bez zmian (para tozsamosciowa)
+    amb = [v for v in alt.values() if len(v) > 1 and any(norm(q[0]) != norm(q[1]) for q in v)]
     yield []
     for combo in itertools.islice(itertools.product(*amb), 1, MAXVAR):
         yield list(combo)
@@ -153,6 +154,18 @@ def vshift(src, at, bt):
     return None
 
 
+def mapping(pre, at, bt):
+    """Pary (a, b) do transfer.substitute: pierwsze przypisanie wygrywa, wymuszona tozsamosc blokuje klucz."""
+    m = {}
+    for x, y in pre:
+        m.setdefault(norm(x), (x, y))
+    for x, y in zip(at, bt):
+        if norm(x) != norm(y):
+            m.setdefault(norm(x), (x, y))
+    keep = [v for v in m.values() if norm(v[0]) != norm(v[1])]
+    return [v[0] for v in keep], [v[1] for v in keep]
+
+
 def attempt(b, donors, srcs, info):
     ka = load(b)[1]
     for a in donors:
@@ -163,7 +176,7 @@ def attempt(b, donors, srcs, info):
         src = floats(src, info[a], ka)
         seen = set()
         for pre in variants(info[a], ka):
-            at, bt = [p[0] for p in pre] + info[a], [p[1] for p in pre] + ka
+            at, bt = mapping(pre, info[a], ka)
             sh = shifted(src, info[a], ka)
             vs = vshift(src, info[a], ka)
             o1 = offby1(src, info[a], ka)
