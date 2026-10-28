@@ -58,6 +58,10 @@ Kolejność pracy:
 | `python3 tools/try.py plik` | sprawdza wszystkie funkcje w pliku |
 | `python3 tools/funcasm.py func_X` | asm jednej funkcji |
 | `python3 tools/sib.py` | funkcje-rodzeństwo o identycznych opcode'ach |
+| `python3 tools/fam.py all` | kod z szablonu dla całej gry (rodziny opcode'ów, warianty stałych/vtable/float) |
+| `python3 tools/fam.py spread F` | po ręcznym MATCH rozsiewa F na rodzeństwo (zawsze uruchamiaj!) |
+| `python3 tools/fam.py heads 30` | głowy rodzin bez dawcy: dopasuj ręcznie, potem `spread` |
+| `sh tools/d.sh func_X plik` | pełny asm obok siebie: moja wersja / oryginał (rejestry, offsety) |
 | `python3 tools/ginit2.py` | generator statycznych inicjalizatorów (`_GLOBAL_$I$`) |
 | `python3 tools/mkwrap.py`, `libmatch.py` | dopasowania funkcji bibliotecznych (newlib) |
 | `sh tools/status.sh` | STATUS.md + commit + push |
@@ -89,6 +93,17 @@ Listy robocze są w `work/`:
   `struct B0 { char p[0x1C]; virtual void f0(); ... };` daje vptr na 0x1C.
   Liczbę dummy metod generuj w powłoce: `$(for i in $(seq 0 N); do printf 'virtual void f%d(); ' $i; done)`.
   Gdy w instrukcjach wywołania używany jest a1, metoda jest bez argumentów i zwraca int.
+- **vptr wewnątrz dużego obiektu:** `lw v1, 0x63A8(this+0x8000)` + `lh/lw` z v1 i `addu a0, a0, delta`
+  to wywołanie `this->g()`, gdzie vptr leży na 0xE3A8: `struct S { char p[0xE3A8]; virtual ...; };`.
+  Klasa z vptr na 0 i polami za nim: `struct O0 { virtual...; }; struct O : O0 { pola };`.
+- **Duży offset rozbity na stałą + przesunięcie** (`lui/ori 0x307C8; addu; lw 0x540(v0)`):
+  lokalny wskaźnik na składową, `Sub *s = &f()->sub; s->q`. Bez tego gcc składa offset.
+  Offset >0x7FFF przy `this` (`ori 0x8000` + `lw 0x37AE`): zwykłe pole struktury, bez osobnego wskaźnika.
+- **Kolejność operandów float** (`add.s f0, f2, f0`): pisz na polach w pamięci (`s->v = s->v + st`)
+  zamiast na zmiennej lokalnej.
+- **Wartość zwrotna przeżywa** (np. po memset/sprintf v0 nietknięte, stałe w v1): funkcja zwraca wynik wywołania.
+- **Argument wyliczony przed wywołaniem**: jeśli oryginał liczy adres/stałą po `jal`, użyj zmiennej lokalnej
+  dla wyniku wywołania (`int v = f(x); sprintf(buf, fmt, x, v);`). Prototyp sprintf bez `...`.
 - **Zwrot struktury przez ukryty wskaźnik:** struktura >8 bajtów z konstruktorem,
   `return R(a, b);`. Struktura 8-bajtowa zbudowana na stosie: `return *(long *)&p;`.
 - **Placement new:** `inline void *operator new(size_t, void *p) throw() { return p; }`
