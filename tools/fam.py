@@ -111,6 +111,25 @@ def floats(src, at, bt):
     return FLT.sub(rep, src)
 
 
+def offby1(src, at, bt):
+    """Licznik petli: w zrodle N, w asm N-1 (odliczanie do zera) - podmien N+k -> M+k dla k=+-1."""
+    d = {}
+    for x, y in zip(at, bt):
+        nx, ny = norm(x), norm(y)
+        if isinstance(nx, int) and isinstance(ny, int) and nx != ny:
+            for k in (1, -1):
+                d.setdefault(nx + k, ny + k)
+    def rep(m):
+        s = m.group(0)
+        v = norm(s)
+        if isinstance(v, int) and v in d and v not in [norm(t) for t in at]:
+            r = d[v]
+            return ('0x%X' % r if r >= 0 else '-0x%X' % -r) if 'x' in s.lower() else str(r)
+        return s
+    out = TOK.sub(rep, src)
+    return out if out != src else None
+
+
 def vshift(src, at, bt):
     """Inny indeks metody wirtualnej (para lh delta / lw fn: x, x+4 -> y, y+4): dodaj/usun atrapy."""
     n = [norm(t) for t in at]
@@ -147,8 +166,9 @@ def attempt(b, donors, srcs, info):
             at, bt = [p[0] for p in pre] + info[a], [p[1] for p in pre] + ka
             sh = shifted(src, info[a], ka)
             vs = vshift(src, info[a], ka)
+            o1 = offby1(src, info[a], ka)
             for new in (substitute(src, at, bt, a, b), sh and substitute(sh, at, bt, a, b),
-                        vs and substitute(vs, at, bt, a, b)):
+                        vs and substitute(vs, at, bt, a, b), o1 and substitute(o1, at, bt, a, b)):
                 if not new or new in seen:
                     continue
                 seen.add(new)
