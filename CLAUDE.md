@@ -92,6 +92,8 @@ Listy robocze są w `work/`:
   Pisz w kolejności: wywołanie, potem zapis.
 - **Pętla z wynikiem jako argumentem** (`daddu a1, v0` przed kolejnym `jal`): `r = f(&e[i], r);`, r startuje z parametru.
   Dla rodzin pisz liczbę iteracji jako `0x900 / 0x300`, żeby `fam.py` podmienił oba literały.
+  W głowie rodziny unikaj przypadkowych małych literałów (np. `t[2]`), bo `fam.py` podmienia
+  każdy literał o tej wartości. Użyj pól struktury zamiast indeksów.
 - **`dynamic_cast<D*>(b)`** daje `jal` z a0=typeinfo z vtable, a1/t0 = funkcje typeinfo, a2=1, t1=obiekt.
   vtable z RTTI: slot 0 zajęty, metody od offsetu 8.
 - **volatile** na zmiennej globalnej blokuje wypełnienie delay slotu (zakończenie `jr ra; nop`).
