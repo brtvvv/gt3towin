@@ -1,4 +1,19 @@
-# Przeniesienie projektu do Claude Code (na własnym PC)
+# Przeniesienie projektu do Claude Code
+
+Są dwie drogi:
+- w chmurze (claude.ai/code): działa z każdego komputera,
+- lokalnie (WSL2): darmowa moc obliczeniowa na własnym PC.
+
+## Wariant A: chmura (claude.ai/code)
+
+Plik gry jest w prywatnym repo `brtvvv/gt3-data`, a sesja instaluje się przez
+`bash tools/setup_cloud.sh`.
+
+Prompt startowy: ten sam co w kroku 7 niżej, ale punkt 1 zamień na
+„Uruchom bash tools/setup_cloud.sh, potem sh tools/verify_all.sh”.
+Jeśli klon gt3-data się nie uda, dodaj repo brtvvv/gt3-data do sesji.
+
+## Wariant B: lokalnie na PC
 
 Dlaczego lokalnie, a nie w chmurze: repo nie ma plików gry (`CORE.GT3`),
 więc środowisko musi mieć dostęp do twojej płyty. Na twoim PC m2c i permuter
@@ -77,7 +92,7 @@ Za pierwszym razem zaloguj się swoim kontem Claude.
 
 ## Krok 7: Prompt startowy
 
-Wklej do Claude Code:
+Wklej do Claude Code (w chmurze punkt 1 to: bash tools/setup_cloud.sh, potem sh tools/verify_all.sh):
 
 ```
 Kontynuujemy dekompilację GT3 (gt3towin). Przeczytaj CLAUDE.md, tam są zasady, narzędzia i sprawdzone wzorce kompilatora.

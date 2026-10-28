@@ -17,6 +17,15 @@ Instrukcje dla niego podawaj krok po kroku, jedną rzecz naraz.
 - Nie zgaduj w nieskończoność. Na funkcję daj maksymalnie 2–3 próby,
   potem dopisz ją do `work/skip.txt` i idź dalej.
 
+## Środowisko
+
+- W chmurze (claude.ai/code) najpierw uruchom `bash tools/setup_cloud.sh`.
+  Pobiera plik gry z PRYWATNEGO repo brtvvv/gt3-data; jeśli klon się nie uda,
+  dodaj to repo do sesji.
+- Lokalnie (WSL2): `bash tools/setup_local.sh /mnt/c/.../CORE.GT3`.
+- Kompilator jest w `$GT3_COMPILERS` (domyślnie `~/compilers`).
+- Nigdy nie kopiuj niczego z gt3-data do tego publicznego repo.
+
 ## Oszczędzanie tokenów (najważniejsze)
 
 Ręczne dopasowywanie kosztuje ok. 2 tys. tokenów na funkcję. Zostało ok. 4 tys. funkcji.
