@@ -84,6 +84,14 @@ Listy robocze są w `work/`:
   Jeśli oryginał używa `lui/%lo`, zadeklaruj jako tablicę: `extern int X[];` i użyj `X[0]`.
 - **Scratchpad (0x70003000)** wymaga makra-bariery przypisanego do zmiennej lokalnej:
   `#define SPR ({ char *_s = (char *)0x70003000; __asm__("" : "+r"(_s)); _s; })`
+  Gdy oryginał ma `lui/ori` SPR bez wtrąconych instrukcji, użyj `__asm__ __volatile__` w makrze.
+- **Typ zwracany wywoływanej funkcji** (np. `void *memcpy`) zmienia przydział v0/v1 dalej w funkcji.
+- **Zapis po wywołaniu w delay slocie `jal`**: gcc przenosi `s->h = -1;` stojące PO wywołaniu do delay slotu.
+  Pisz w kolejności: wywołanie, potem zapis.
+- **Pętla z wynikiem jako argumentem** (`daddu a1, v0` przed kolejnym `jal`): `r = f(&e[i], r);`, r startuje z parametru.
+  Dla rodzin pisz liczbę iteracji jako `0x900 / 0x300`, żeby `fam.py` podmienił oba literały.
+- **`dynamic_cast<D*>(b)`** daje `jal` z a0=typeinfo z vtable, a1/t0 = funkcje typeinfo, a2=1, t1=obiekt.
+  vtable z RTTI: slot 0 zajęty, metody od offsetu 8.
 - **volatile** na zmiennej globalnej blokuje wypełnienie delay slotu (zakończenie `jr ra; nop`).
 - `-ffast-math` (przez `// @flags -ffast-math` w pliku) daje `min.s`/`max.s` i `sqrt.s`.
   Uwaga: oryginalne `sqrt.s`/`rsqrt.s` mają inne kodowanie niż nasz gas, więc te funkcje pomijamy.
