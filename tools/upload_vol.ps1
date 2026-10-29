@@ -12,7 +12,11 @@ $PartSize = 90MB
 $PerPush = 8
 
 if (-not (Test-Path $Vol)) { throw "Brak pliku $Vol" }
-if (-not (Test-Path $Repo)) { git clone https://github.com/brtvvv/gt3-data $Repo }
+if (-not (Test-Path (Join-Path $Repo ".git"))) {
+    if (Test-Path $Repo) { Remove-Item -Recurse -Force $Repo }
+    git clone https://github.com/brtvvv/gt3-data $Repo
+    if ($LASTEXITCODE -ne 0) { throw "git clone nie powiodl sie (logowanie do GitHuba?)" }
+}
 $dir = Join-Path $Repo "vol"
 New-Item -ItemType Directory -Force -Path $dir | Out-Null
 
