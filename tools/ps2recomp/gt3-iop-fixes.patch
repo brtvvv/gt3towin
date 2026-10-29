@@ -178,7 +178,7 @@ index a932a5d..63aa38f 100644
          struct Allocation
          {
 diff --git a/ps2xIOP/src/emulator/imports/iop_cdvd.cpp b/ps2xIOP/src/emulator/imports/iop_cdvd.cpp
-index ad58fb4..75b6fb4 100644
+index ad58fb4..8ab9e05 100644
 --- a/ps2xIOP/src/emulator/imports/iop_cdvd.cpp
 +++ b/ps2xIOP/src/emulator/imports/iop_cdvd.cpp
 @@ -1,3 +1,4 @@
@@ -186,7 +186,19 @@ index ad58fb4..75b6fb4 100644
  #include "iop_cdvd.h"
  
  #include "../core/iop_cpu.h"
-@@ -280,6 +281,22 @@ namespace ps2x::iop::detail
+@@ -99,7 +100,10 @@ namespace ps2x::iop::detail
+         size_t directoryRecordSize(size_t identifierSize)
+         {
+             const size_t unpadded = 33u + identifierSize;
+-            return unpadded + (unpadded & 1u);
++            // Jak na plytach PS2 (XA): 14 bajtow System Use po nazwie, zaczynajacych sie od 0.
++            // Gry porownujace nazwe przez strcmp/strcasecmp (np. GT3) wymagaja zera za identyfikatorem.
++            // Rekordy '.'/'..' (1 bajt) zostaja 34-bajtowe, bo taki jest rekord root w PVD.
++            return unpadded + (unpadded & 1u) + (identifierSize > 1u ? 14u : 0u);
+         }
+ 
+         uint32_t directoryBytesFor(const std::vector<size_t> &identifierSizes)
+@@ -280,6 +284,22 @@ namespace ps2x::iop::detail
                  cpu.gpr[2] = kCdvdReadyComplete;
                  return true;
  
@@ -209,7 +221,7 @@ index ad58fb4..75b6fb4 100644
              case 28: // sceCdStatus
                  cpu.gpr[2] = kCdvdStatusPause;
                  return true;
-@@ -601,6 +618,10 @@ namespace ps2x::iop::detail
+@@ -601,6 +621,10 @@ namespace ps2x::iop::detail
  
              const std::string guestPath = memory.readString(nameAddress, 1024u);
              IsoNode *node = findVirtualIsoNode(guestPath);
@@ -220,7 +232,7 @@ index ad58fb4..75b6fb4 100644
              if (!node)
                  return false;
  
-@@ -653,6 +674,10 @@ namespace ps2x::iop::detail
+@@ -653,6 +677,10 @@ namespace ps2x::iop::detail
  
          bool readSectors(uint32_t lsn, uint32_t sectors, uint32_t destination)
          {
