@@ -345,18 +345,24 @@ index e5f63a9..aaf099b 100644
                                        uint32_t a0,
                                        uint32_t a1,
 diff --git a/ps2xIOP/src/emulator/services/iop_rpc.cpp b/ps2xIOP/src/emulator/services/iop_rpc.cpp
-index cf4fdc6..6b69aa2 100644
+index cf4fdc6..165cd4e 100644
 --- a/ps2xIOP/src/emulator/services/iop_rpc.cpp
 +++ b/ps2xIOP/src/emulator/services/iop_rpc.cpp
-@@ -220,6 +220,7 @@ namespace ps2x::iop::detail
+@@ -1,3 +1,4 @@
++#include <cstdio>
+ #include "iop_rpc.h"
+ 
+ #include "../core/iop_cpu.h"
+@@ -220,6 +221,8 @@ namespace ps2x::iop::detail
              server.callback = m_memory.read32(stackPointer + 16u);
              server.callbackBuffer = m_memory.read32(stackPointer + 20u);
              server.queue = m_memory.read32(stackPointer + 24u);
 +            server.threadId = m_kernel.currentThreadId();
++            std::fprintf(stderr, "[iop-RegisterRpc] sid=0x%x thread=%d fn=0x%x\n", server.sid, server.threadId, server.function);
              m_servers[server.sid] = server;
              if (server.serverData != 0u)
              {
-@@ -292,12 +293,16 @@ namespace ps2x::iop::detail
+@@ -292,12 +295,16 @@ namespace ps2x::iop::detail
              }
          }
  
@@ -405,3 +411,59 @@ index a4286ba..ed05eb1 100644
          };
  
          IopHost &m_host;
+diff --git a/ps2xRuntime/src/lib/Kernel/Syscalls/RPC.cpp b/ps2xRuntime/src/lib/Kernel/Syscalls/RPC.cpp
+index 07fcd29..3eecd86 100644
+--- a/ps2xRuntime/src/lib/Kernel/Syscalls/RPC.cpp
++++ b/ps2xRuntime/src/lib/Kernel/Syscalls/RPC.cpp
+@@ -1,3 +1,4 @@
++#include <cstdio>
+ #include "Common.h"
+ #include "RPC.h"
+ #include "../../ps2_iop_transport.h"
+@@ -315,6 +316,12 @@ namespace ps2_syscalls
+             }
+         }
+ 
++        if (!serverPtr)
++        {
++            static int unboundLogs = 0;
++            if (unboundLogs < 30 && (++unboundLogs))
++                std::fprintf(stderr, "[BindRpc] sid=0x%x not available (ra=0x%x)\n", rpcId, getRegU32(ctx, 31));
++        }
+         if (serverPtr)
+         {
+             t_SifRpcServerData *sd = reinterpret_cast<t_SifRpcServerData *>(getMemPtr(rdram, serverPtr));
+diff --git a/ps2xRuntime/src/lib/Kernel/Syscalls/Thread.cpp b/ps2xRuntime/src/lib/Kernel/Syscalls/Thread.cpp
+index 5110ee2..c577c9d 100644
+--- a/ps2xRuntime/src/lib/Kernel/Syscalls/Thread.cpp
++++ b/ps2xRuntime/src/lib/Kernel/Syscalls/Thread.cpp
+@@ -1,3 +1,4 @@
++#include <cstdio>
+ #include "Common.h"
+ #include "Thread.h"
+ #include "runtime/ee_scheduler.h"
+@@ -268,6 +269,9 @@ namespace ps2_syscalls
+         }
+         if (!runtime->hasFunction(target->entry))
+         {
++            static int logged = 0;
++            if (logged < 10 && ++logged)
++                std::fprintf(stderr, "[StartThread] id=%d entry=0x%x has no recompiled function\n", id, target->entry);
+             setReturnS32(ctx, KE_ERROR);
+             return;
+         }
+@@ -282,7 +286,13 @@ namespace ps2_syscalls
+             target->ownsStack = true;
+         }
+         const int result = ee.startThread(id, arg, *ctx, false);
+-        setReturnS32(ctx, result);
++        {
++            static int logged = 0;
++            if (result != id && logged < 10 && ++logged)
++                std::fprintf(stderr, "[StartThread] id=%d entry=0x%x result=%d\n", id, target->entry, result);
++        }
++        // Kernel EE przy powodzeniu zwraca ID watku (gry, np. GT3, porownuja wynik z ID).
++        setReturnS32(ctx, result == 0 ? id : result);
+         ee.transferIfRequested(false);
+     }
+ 

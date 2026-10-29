@@ -7,7 +7,7 @@ i łączy go z runtime (grafika GS/VU1, IOP z oryginalnymi modułami IRX, pad, d
 
 - `tools/mkelf.py` (to repo): z `orig/core_100000.bin` robi `CORE.elf`, mapę funkcji
   `functions.csv` i `config.toml` dla `ps2_recomp`. Wyniki zapisuj POZA repo.
-- `gt3-iop-fixes.patch` (ten katalog): poprawki do PS2Recomp potrzebne dla GT3:
+- `gt3-iop-fixes.patch` (ten katalog): poprawki do PS2Recomp (ps2xIOP + ps2xRuntime/src/lib) potrzebne dla GT3:
   - alokator pamięci IOP nie oddawał zwolnionej pamięci (MEMCLEAR.IRX zajmował całą stertę),
   - sterta IOP 0xA0000–0x1FC000 zamiast 0x120000–0x1F0000 (moduły PDI chcą ok. 1,3 MB),
   - importy `cdvdman:14` (`sceCdTrayReq`) i `cdvdman:24` (`sceCdReadClock`),
@@ -15,7 +15,8 @@ i łączy go z runtime (grafika GS/VU1, IOP z oryginalnymi modułami IRX, pad, d
     a nie bezpośrednio; moduły Polyphony (LIBPDI/PDICDVD) inaczej się zakleszczają,
   - `DelayThread`/`WaitSema` wywołane poza wątkiem oddają czas pozostałym wątkom,
   - `sifman:32` (`sceSifSetDmaIntr`): transfer IOP→EE + wywołanie procedury zakończenia,
-  - wirtualna płyta: 14 bajtów XA System Use po nazwie w rekordach katalogu (GT3 porównuje nazwy przez strcasecmp).
+  - wirtualna płyta: 14 bajtów XA System Use po nazwie w rekordach katalogu (GT3 porównuje nazwy przez strcasecmp),
+  - EE `StartThread` zwraca ID wątku zamiast 0 (GT3 porównuje wynik z ID i inaczej ponawia w nieskończoność).
 - Prywatne repo `gt3-data/recomp/`: gotowy `CORE.elf` i `gt3_recompiled.zip`
   (wynik `ps2_recomp`, nigdy nie trafia do tego publicznego repo).
 
@@ -31,8 +32,8 @@ Runtime wymaga flag SSE: `cmake -S . -B out/gt3 -DCMAKE_CXX_FLAGS="-msse4.2 -mav
 Pakiety: libxrandr/xinerama/xcursor/xi-dev, libgl1-mesa-dev, libasound2-dev,
 ffmpeg (libavcodec-dev itd.), libzstd-dev.
 
-## Stan (28.10)
+## Stan (29.10)
 
-Gra startuje, ustawia tryb wideo PAL, ładuje wszystkie 15 modułów IRX, przechodzi
-inicjalizację SIF/RPC, czyta płytę (sektor 16 i katalog główny, ISO9660) i szuka `gt3.vol`
-(w chmurze go nie ma, więc dalsze testy tylko z pełnym folderem płyty).
+Gra startuje, ładuje 15 modułów IRX, przechodzi SIF/RPC, czyta ISO9660, znajduje `gt3.vol`,
+wczytuje jego spis zawartości, sprawdza karty pamięci, uruchamia swoje wątki, czyta dziesiątki
+porcji danych z `GT3.VOL` i wysyła do GS prymitywy z teksturami (w chmurze tylko pierwsze 8 MB VOL).
