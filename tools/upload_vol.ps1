@@ -7,15 +7,16 @@ param(
     [string]$Vol = (Join-Path (Get-Location) "GT3.VOL"),
     [string]$Repo = "C:\gt3-data"
 )
-$ErrorActionPreference = "Stop"
+# Continue: Windows PowerShell 5 traktuje komunikaty gita na stderr jak bledy; kody wyjscia sprawdzamy sami.
+$ErrorActionPreference = "Continue"
 $PartSize = 90MB
 $PerPush = 8
 
-if (-not (Test-Path $Vol)) { throw "Brak pliku $Vol" }
+if (-not (Test-Path $Vol)) { Write-Error "Brak pliku $Vol"; exit 1 }
 if (-not (Test-Path (Join-Path $Repo ".git"))) {
     if (Test-Path $Repo) { Remove-Item -Recurse -Force $Repo }
     git clone https://github.com/brtvvv/gt3-data $Repo
-    if ($LASTEXITCODE -ne 0) { throw "git clone nie powiodl sie (logowanie do GitHuba?)" }
+    if ($LASTEXITCODE -ne 0) { Write-Error "git clone nie powiodl sie (logowanie do GitHuba?)"; exit 1 }
 }
 $dir = Join-Path $Repo "vol"
 New-Item -ItemType Directory -Force -Path $dir | Out-Null
@@ -32,8 +33,8 @@ try {
     for ($i = 0; $i -lt $parts; $i++) {
         $name = "part_{0:D3}.bin" -f $i
         $path = Join-Path $dir $name
-        git -C $Repo ls-files --error-unmatch "vol/$name" 2>$null | Out-Null
-        if ($LASTEXITCODE -eq 0) { continue }
+        $tracked = git -C $Repo ls-files "vol/$name"
+        if ($tracked) { continue }
         [void]$in.Seek([int64]$i * $PartSize, 0)
         $n = $in.Read($buf, 0, $PartSize)
         $out = [IO.File]::Create($path)
@@ -44,8 +45,9 @@ try {
         Write-Host "  $name ($n B)"
         if ($pending -ge $PerPush -or $i -eq $parts - 1) {
             git -C $Repo commit -q -m "vol: czesci do $name"
+            if ($LASTEXITCODE -ne 0) { Write-Error "git commit nie powiodl sie"; exit 1 }
             git -C $Repo push -q
-            if ($LASTEXITCODE -ne 0) { throw "git push nie powiodl sie" }
+            if ($LASTEXITCODE -ne 0) { Write-Error "git push nie powiodl sie (uruchom skrypt ponownie)"; exit 1 }
             Get-ChildItem $dir -Filter "part_*.bin" | Remove-Item
             $pending = 0
         }
