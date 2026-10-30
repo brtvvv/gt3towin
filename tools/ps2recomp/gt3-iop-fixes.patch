@@ -544,10 +544,32 @@ index 5110ee2..c577c9d 100644
      }
  
 diff --git a/ps2xRuntime/src/lib/gs/gs_cpu_backend.cpp b/ps2xRuntime/src/lib/gs/gs_cpu_backend.cpp
-index f0ad507..6912dbe 100644
+index f0ad507..971b926 100644
 --- a/ps2xRuntime/src/lib/gs/gs_cpu_backend.cpp
 +++ b/ps2xRuntime/src/lib/gs/gs_cpu_backend.cpp
-@@ -683,6 +683,7 @@ void GSCpuBackend::WriteVramUnlocked(uint32_t psm, uint32_t base, uint32_t bw, u
+@@ -391,7 +391,8 @@ namespace
+ 
+     GSSmode2State decodeSMode2(uint64_t smode2)
+     {
+-        return {(smode2 & 0x1ull) != 0ull, ((smode2 >> 1) & 0x1ull) != 0ull};
++        // SMODE2: bit0 INT (interlace), bit1 FFMD (0 = frame mode, 1 = field mode).
++        return {(smode2 & 0x1ull) != 0ull, ((smode2 >> 1) & 0x1ull) == 0ull};
+     }
+ 
+     void applyFieldPresentation(std::vector<uint8_t> &pixels, uint32_t width, uint32_t height, bool oddField)
+@@ -401,7 +402,10 @@ namespace
+         const std::vector<uint8_t> source = pixels;
+         for (uint32_t y = 0; y < height; ++y)
+         {
+-            uint32_t sourceY = ((y >> 1u) << 1u) + (oddField ? 1u : 0u);
++            // Field mode (SMODE2 INT=1, FFMD=1): the frame buffer holds one field (DH/2 lines)
++            // and every buffer line is shown on two display lines.
++            (void)oddField;
++            uint32_t sourceY = y >> 1u;
+             if (sourceY >= height)
+                 sourceY = height - 1u;
+             std::memcpy(pixels.data() + y * kHostFrameWidth * 4u,
+@@ -683,6 +687,7 @@ void GSCpuBackend::WriteVramUnlocked(uint32_t psm, uint32_t base, uint32_t bw, u
  {
      if (!m_vram)
          return;
@@ -555,7 +577,7 @@ index f0ad507..6912dbe 100644
      m_writeVramFuncs[psm & 0x3Fu](m_vram, base, bw, x, y, value);
  }
  
-@@ -710,6 +711,7 @@ GSTransferSnapshot GSCpuBackend::GetTransferSnapshot() const
+@@ -710,6 +715,7 @@ GSTransferSnapshot GSCpuBackend::GetTransferSnapshot() const
  
  void GSCpuBackend::DrawPrimitive(const GSPrimitiveBatch &batch)
  {
@@ -563,7 +585,7 @@ index f0ad507..6912dbe 100644
      const GSDrawState &state = batch.state;
      const auto &ctx = state.context;
      PS2_IF_AGRESSIVE_LOGS({
-@@ -1463,6 +1465,8 @@ void GSCpuBackend::DrawLine(const GSPrimitiveBatch &batch)
+@@ -1463,6 +1469,8 @@ void GSCpuBackend::DrawLine(const GSPrimitiveBatch &batch)
  void GSCpuBackend::BeginTransfer(const GSTransferCommand &command)
  {
      std::lock_guard<std::mutex> lock(m_mutex);
@@ -572,7 +594,7 @@ index f0ad507..6912dbe 100644
      m_transfer = command;
      m_transferState.x = command.trxpos.dsax;
      m_transferState.y = command.trxpos.dsay;
-@@ -1482,6 +1486,7 @@ void GSCpuBackend::UploadImage(const uint8_t *data, uint32_t sizeBytes)
+@@ -1482,6 +1490,7 @@ void GSCpuBackend::UploadImage(const uint8_t *data, uint32_t sizeBytes)
      std::lock_guard<std::mutex> lock(m_mutex);
      if (!data || sizeBytes == 0u || !m_vram || m_transferState.direction != 0u)
          return;

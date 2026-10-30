@@ -23,7 +23,8 @@ i łączy go z runtime (grafika GS/VU1, IOP z oryginalnymi modułami IRX, pad, d
     i `vsqi/vsqd` mają właściwe operandy (fs = źródło, it = adres); bez tego macierze GT3 nie trafiały do VU0
     i wszystkie wierzchołki miały w=0,
   - VU0 `vf0` wymuszone na (0,0,0,1) przed wykonaniem kodu gry,
-  - pamięć podręczna stron tekstur GS unieważniana przy wgrywaniu danych i rysowaniu.
+  - pamięć podręczna stron tekstur GS unieważniana przy wgrywaniu danych i rysowaniu,
+  - SMODE2.FFMD odczytywane poprawnie (1 = tryb półklatek) i półklatki rozciągane na pełną wysokość.
 - Prywatne repo `gt3-data/recomp/`: gotowy `CORE.elf` i `gt3_recompiled.zip`
   (wynik `ps2_recomp`, nigdy nie trafia do tego publicznego repo).
 
@@ -39,9 +40,14 @@ Runtime wymaga flag SSE: `cmake -S . -B out/gt3 -DCMAKE_CXX_FLAGS="-msse4.2 -mav
 Pakiety: libxrandr/xinerama/xcursor/xi-dev, libgl1-mesa-dev, libasound2-dev,
 ffmpeg (libavcodec-dev itd.), libzstd-dev.
 
-## Stan (30.10, wieczór)
+## Stan (30.10, noc)
 
-Gra dochodzi do ekranu wyboru języka i rysuje tło z teksturą (logo GT3) z płynnym rozjaśnianiem.
-Obraz zajmuje górną połowę ekranu (GT3 renderuje półklatki 640x224; runtime ich nie rozciąga).
+Ekran wyboru języka wyświetla się poprawnie na całym ekranie, pad (klawiatura) działa.
+Po wyborze języka GT3 odtwarza film intro sprzętowym dekoderem IPU (MPEG-2), którego PS2Recomp
+nie emuluje: gra czeka w pętli na dane z IPU. Próby obejścia (IPU zwracające koniec sekwencji,
+asynchroniczne RPC dla PDISTR/MPG1) pomijają film, ale gra potem odwołuje się do zniszczonej sceny
+(wątek renderujący nie zdążył odświeżyć wskaźnika). Następny krok: emulacja IPU albo pominięcie
+filmów na poziomie gry.
+
 Po zmianie generatora trzeba przegenerować kod (`ps2_recomp config.toml`); zmienione pliki są też
 w prywatnym `gt3-data/recomp/gt3_vu0fix.zip`.
