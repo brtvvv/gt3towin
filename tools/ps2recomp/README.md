@@ -16,7 +16,9 @@ i łączy go z runtime (grafika GS/VU1, IOP z oryginalnymi modułami IRX, pad, d
   - `DelayThread`/`WaitSema` wywołane poza wątkiem oddają czas pozostałym wątkom,
   - `sifman:32` (`sceSifSetDmaIntr`): transfer IOP→EE + wywołanie procedury zakończenia,
   - wirtualna płyta: 14 bajtów XA System Use po nazwie w rekordach katalogu (GT3 porównuje nazwy przez strcasecmp),
-  - EE `StartThread` zwraca ID wątku zamiast 0 (GT3 porównuje wynik z ID i inaczej ponawia w nieskończoność).
+  - EE `StartThread` zwraca ID wątku zamiast 0 (GT3 porównuje wynik z ID i inaczej ponawia w nieskończoność),
+  - stosy procedur przerwań (VBlank itd.) w 0x80000–0x100000 zamiast na końcu RAM, gdzie GT3 trzyma
+    stos głównego wątku (przerwanie nadpisywało zmienne dekodera gzip i gra pisała poza pamięć).
 - Prywatne repo `gt3-data/recomp/`: gotowy `CORE.elf` i `gt3_recompiled.zip`
   (wynik `ps2_recomp`, nigdy nie trafia do tego publicznego repo).
 
@@ -32,8 +34,7 @@ Runtime wymaga flag SSE: `cmake -S . -B out/gt3 -DCMAKE_CXX_FLAGS="-msse4.2 -mav
 Pakiety: libxrandr/xinerama/xcursor/xi-dev, libgl1-mesa-dev, libasound2-dev,
 ffmpeg (libavcodec-dev itd.), libzstd-dev.
 
-## Stan (29.10)
+## Stan (30.10)
 
-Gra startuje, ładuje 15 modułów IRX, przechodzi SIF/RPC, czyta ISO9660, znajduje `gt3.vol`,
-wczytuje jego spis zawartości, sprawdza karty pamięci, uruchamia swoje wątki, czyta dziesiątki
-porcji danych z `GT3.VOL` i wysyła do GS prymitywy z teksturami (w chmurze tylko pierwsze 8 MB VOL).
+Gra startuje, ładuje 15 modułów IRX, czyta `GT3.VOL`, rozpakowuje dane (gzip), uruchamia 9 wątków
+i rysuje klatki z podwójnym buforowaniem (640x512), cyklicznie sprawdzając karty pamięci.

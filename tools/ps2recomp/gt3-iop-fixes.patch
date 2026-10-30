@@ -467,3 +467,41 @@ index 5110ee2..c577c9d 100644
          ee.transferIfRequested(false);
      }
  
+diff --git a/ps2xRuntime/src/lib/ps2_runtime.cpp b/ps2xRuntime/src/lib/ps2_runtime.cpp
+index 45cb9d2..8c1bfc0 100644
+--- a/ps2xRuntime/src/lib/ps2_runtime.cpp
++++ b/ps2xRuntime/src/lib/ps2_runtime.cpp
+@@ -91,6 +91,8 @@ namespace
+     constexpr uint32_t kGuestHeapDefaultAlignment = 16u;
+     constexpr uint32_t kGuestHeapSafetyPad = 0x1000u;
+     constexpr uint32_t kGuestHeapHardLimit = 0x01F00000u;
++    constexpr uint32_t kAsyncCallbackStackFloor = 0x00080000u;
++    constexpr uint32_t kAsyncCallbackStackTop = 0x00100000u;
+ 
+     constexpr uint32_t COP0_CAUSE_EXCCODE_MASK = 0x0000007Cu;
+     constexpr uint32_t COP0_CAUSE_BD = 0x80000000u;
+@@ -503,8 +505,10 @@ PS2Runtime::PS2Runtime()
+     m_guestHeapLimit = std::min(kGuestHeapHardLimit, PS2_RAM_SIZE);
+     m_guestHeapSuggestedBase = kGuestHeapDefaultBase;
+     m_guestHeapConfigured = false;
+-    m_asyncCallbackStackFloor = std::min(kGuestHeapHardLimit, PS2_RAM_SIZE);
+-    m_asyncCallbackStackTop = PS2_RAM_SIZE;
++    // Callback/interrupt stacks live in 0x80000-0x100000 (between the kernel area and the
++    // usual ELF load address): games such as GT3 keep their main thread stack at the top of RAM.
++    m_asyncCallbackStackFloor = kAsyncCallbackStackFloor;
++    m_asyncCallbackStackTop = kAsyncCallbackStackTop;
+ }
+ 
+ void PS2Runtime::setDebugUiCallbacks(DebugUiCallback initCallback,
+@@ -971,9 +975,8 @@ bool PS2Runtime::loadELF(const std::string &elfPath)
+     }
+     {
+         std::lock_guard<std::mutex> lock(m_asyncCallbackStackMutex);
+-        const uint32_t hardLimit = std::min(kGuestHeapHardLimit, PS2_RAM_SIZE);
+-        m_asyncCallbackStackFloor = std::min(std::max(hardLimit, suggestedHeapBase), PS2_RAM_SIZE);
+-        m_asyncCallbackStackTop = PS2_RAM_SIZE;
++        m_asyncCallbackStackFloor = kAsyncCallbackStackFloor;
++        m_asyncCallbackStackTop = kAsyncCallbackStackTop;
+     }
+ 
+     LoadedModule module;
