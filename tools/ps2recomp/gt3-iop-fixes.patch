@@ -411,6 +411,82 @@ index a4286ba..ed05eb1 100644
          };
  
          IopHost &m_host;
+diff --git a/ps2xRecomp/src/lib/vu_translation_helpers.cpp b/ps2xRecomp/src/lib/vu_translation_helpers.cpp
+index 509fd07..8b81e6d 100644
+--- a/ps2xRecomp/src/lib/vu_translation_helpers.cpp
++++ b/ps2xRecomp/src/lib/vu_translation_helpers.cpp
+@@ -769,7 +769,7 @@ namespace ps2recomp
+     {
+         uint8_t vis = inst.rd;
+         uint8_t dest_mask = inst.vectorInfo.vectorField;
+-        return fmt::format("{{ uint32_t addr = ((uint32_t)(ctx->vi[{}] & 0x3FF)) << 4; "
++        return fmt::format("{{ uint32_t addr = 0x11004000u + (((uint32_t)(ctx->vi[{}] & 0xFF)) << 4); "
+                            "__m128 res = _mm_castsi128_ps(READ128(addr)); "
+                            "__m128i mask = _mm_set_epi32({}, {}, {}, {}); "
+                            "ctx->vu0_vf[{}] = _mm_blendv_ps(ctx->vu0_vf[{}], res, _mm_castsi128_ps(mask)); "
+@@ -783,15 +783,16 @@ namespace ps2recomp
+ 
+     std::string CodeGenerator::translateVU_VSQI(const Instruction &inst)
+     {
+-        uint8_t vis = inst.rd;
++        // VSQI fs, (it++): fs = bits 11-15 (rd), it = bits 16-20 (rt).
++        uint8_t vis = inst.rt;
+         uint8_t dest_mask = inst.vectorInfo.vectorField;
+-        return fmt::format("{{ uint32_t addr = ((uint32_t)(ctx->vi[{}] & 0x3FF)) << 4; "
++        return fmt::format("{{ uint32_t addr = 0x11004000u + (((uint32_t)(ctx->vi[{}] & 0xFF)) << 4); "
+                            "__m128i old_val = READ128(addr); "
+                            "__m128 res = _mm_blendv_ps(_mm_castsi128_ps(old_val), ctx->vu0_vf[{}], _mm_castsi128_ps(_mm_set_epi32({}, {}, {}, {}))); "
+                            "WRITE128(addr, _mm_castps_si128(res)); "
+                            "ctx->vi[{}] = (ctx->vi[{}] + 1) & 0x3FF; }}",
+                            vis,
+-                           inst.rt,
++                           inst.rd,
+                            (dest_mask & 0x1) ? -1 : 0, (dest_mask & 0x2) ? -1 : 0,
+                            (dest_mask & 0x4) ? -1 : 0, (dest_mask & 0x8) ? -1 : 0,
+                            vis, vis);
+@@ -802,7 +803,7 @@ namespace ps2recomp
+         uint8_t vis = inst.rd;
+         uint8_t dest_mask = inst.vectorInfo.vectorField;
+         return fmt::format("{{ ctx->vi[{}] = (ctx->vi[{}] - 1) & 0x3FF; "
+-                           "uint32_t addr = ((uint32_t)(ctx->vi[{}] & 0x3FF)) << 4; "
++                           "uint32_t addr = 0x11004000u + (((uint32_t)(ctx->vi[{}] & 0xFF)) << 4); "
+                            "__m128 res = _mm_castsi128_ps(READ128(addr)); "
+                            "__m128i mask = _mm_set_epi32({}, {}, {}, {}); "
+                            "ctx->vu0_vf[{}] = _mm_blendv_ps(ctx->vu0_vf[{}], res, _mm_castsi128_ps(mask)); }}",
+@@ -815,16 +816,17 @@ namespace ps2recomp
+ 
+     std::string CodeGenerator::translateVU_VSQD(const Instruction &inst)
+     {
+-        uint8_t vis = inst.rd;
++        // VSQD fs, (--it): fs = bits 11-15 (rd), it = bits 16-20 (rt).
++        uint8_t vis = inst.rt;
+         uint8_t dest_mask = inst.vectorInfo.vectorField;
+         return fmt::format("{{ ctx->vi[{}] = (ctx->vi[{}] - 1) & 0x3FF; "
+-                           "uint32_t addr = ((uint32_t)(ctx->vi[{}] & 0x3FF)) << 4; "
++                           "uint32_t addr = 0x11004000u + (((uint32_t)(ctx->vi[{}] & 0xFF)) << 4); "
+                            "__m128i old_val = READ128(addr); "
+                            "__m128 res = _mm_blendv_ps(_mm_castsi128_ps(old_val), ctx->vu0_vf[{}], _mm_castsi128_ps(_mm_set_epi32({}, {}, {}, {}))); "
+                            "WRITE128(addr, _mm_castps_si128(res)); }}",
+                            vis, vis,
+                            vis,
+-                           inst.rt,
++                           inst.rd,
+                            (dest_mask & 0x1) ? -1 : 0, (dest_mask & 0x2) ? -1 : 0,
+                            (dest_mask & 0x4) ? -1 : 0, (dest_mask & 0x8) ? -1 : 0);
+     }
+diff --git a/ps2xRuntime/src/lib/Kernel/EeScheduler.cpp b/ps2xRuntime/src/lib/Kernel/EeScheduler.cpp
+index c5e31c4..7fd25c9 100644
+--- a/ps2xRuntime/src/lib/Kernel/EeScheduler.cpp
++++ b/ps2xRuntime/src/lib/Kernel/EeScheduler.cpp
+@@ -296,6 +296,8 @@ void EeScheduler::run()
+         {
+             m_insideInterrupt = !running->invocations.empty() && running->invocations.back().kind == GuestInvocationKind::Interrupt;
+             m_guestExecuting.store(true, std::memory_order_release);
++            // VU0 vf0 is hardwired to (0,0,0,1); fresh contexts start zeroed.
++            context.vu0_vf[0] = _mm_set_ps(1.0f, 0.0f, 0.0f, 0.0f);
+             function(m_rdram, &context, &m_runtime);
+             m_guestExecuting.store(false, std::memory_order_release);
+             m_insideInterrupt = false;
 diff --git a/ps2xRuntime/src/lib/Kernel/Syscalls/RPC.cpp b/ps2xRuntime/src/lib/Kernel/Syscalls/RPC.cpp
 index 07fcd29..3eecd86 100644
 --- a/ps2xRuntime/src/lib/Kernel/Syscalls/RPC.cpp
@@ -467,16 +543,48 @@ index 5110ee2..c577c9d 100644
          ee.transferIfRequested(false);
      }
  
+diff --git a/ps2xRuntime/src/lib/gs/gs_cpu_backend.cpp b/ps2xRuntime/src/lib/gs/gs_cpu_backend.cpp
+index f0ad507..6912dbe 100644
+--- a/ps2xRuntime/src/lib/gs/gs_cpu_backend.cpp
++++ b/ps2xRuntime/src/lib/gs/gs_cpu_backend.cpp
+@@ -683,6 +683,7 @@ void GSCpuBackend::WriteVramUnlocked(uint32_t psm, uint32_t base, uint32_t bw, u
+ {
+     if (!m_vram)
+         return;
++    m_texturePageCache.Invalidate();
+     m_writeVramFuncs[psm & 0x3Fu](m_vram, base, bw, x, y, value);
+ }
+ 
+@@ -710,6 +711,7 @@ GSTransferSnapshot GSCpuBackend::GetTransferSnapshot() const
+ 
+ void GSCpuBackend::DrawPrimitive(const GSPrimitiveBatch &batch)
+ {
++    m_texturePageCache.Invalidate();
+     const GSDrawState &state = batch.state;
+     const auto &ctx = state.context;
+     PS2_IF_AGRESSIVE_LOGS({
+@@ -1463,6 +1465,8 @@ void GSCpuBackend::DrawLine(const GSPrimitiveBatch &batch)
+ void GSCpuBackend::BeginTransfer(const GSTransferCommand &command)
+ {
+     std::lock_guard<std::mutex> lock(m_mutex);
++    // VRAM is about to change: drop the cached texture page (games do not always TEXFLUSH).
++    m_texturePageCache.Invalidate();
+     m_transfer = command;
+     m_transferState.x = command.trxpos.dsax;
+     m_transferState.y = command.trxpos.dsay;
+@@ -1482,6 +1486,7 @@ void GSCpuBackend::UploadImage(const uint8_t *data, uint32_t sizeBytes)
+     std::lock_guard<std::mutex> lock(m_mutex);
+     if (!data || sizeBytes == 0u || !m_vram || m_transferState.direction != 0u)
+         return;
++    m_texturePageCache.Invalidate();
+     if (m_transfer.trxreg.rrw == 0u || m_transfer.trxreg.rrh == 0u || m_transferState.totalPixels == 0u)
+         return;
+ 
 diff --git a/ps2xRuntime/src/lib/ps2_runtime.cpp b/ps2xRuntime/src/lib/ps2_runtime.cpp
-index 45cb9d2..d460fa3 100644
+index 45cb9d2..8c1bfc0 100644
 --- a/ps2xRuntime/src/lib/ps2_runtime.cpp
 +++ b/ps2xRuntime/src/lib/ps2_runtime.cpp
-@@ -1,3 +1,4 @@
-+#include <cstdio>
- #include "ps2_runtime.h"
- #include "ps2_log.h"
- #include "ps2_stubs.h"
-@@ -91,6 +92,8 @@ namespace
+@@ -91,6 +91,8 @@ namespace
      constexpr uint32_t kGuestHeapDefaultAlignment = 16u;
      constexpr uint32_t kGuestHeapSafetyPad = 0x1000u;
      constexpr uint32_t kGuestHeapHardLimit = 0x01F00000u;
@@ -485,7 +593,7 @@ index 45cb9d2..d460fa3 100644
  
      constexpr uint32_t COP0_CAUSE_EXCCODE_MASK = 0x0000007Cu;
      constexpr uint32_t COP0_CAUSE_BD = 0x80000000u;
-@@ -503,8 +506,10 @@ PS2Runtime::PS2Runtime()
+@@ -503,8 +505,10 @@ PS2Runtime::PS2Runtime()
      m_guestHeapLimit = std::min(kGuestHeapHardLimit, PS2_RAM_SIZE);
      m_guestHeapSuggestedBase = kGuestHeapDefaultBase;
      m_guestHeapConfigured = false;
@@ -498,7 +606,7 @@ index 45cb9d2..d460fa3 100644
  }
  
  void PS2Runtime::setDebugUiCallbacks(DebugUiCallback initCallback,
-@@ -971,9 +976,8 @@ bool PS2Runtime::loadELF(const std::string &elfPath)
+@@ -971,9 +975,8 @@ bool PS2Runtime::loadELF(const std::string &elfPath)
      }
      {
          std::lock_guard<std::mutex> lock(m_asyncCallbackStackMutex);
@@ -510,18 +618,3 @@ index 45cb9d2..d460fa3 100644
      }
  
      LoadedModule module;
-@@ -2010,6 +2014,14 @@ uint32_t PS2Runtime::reserveAsyncCallbackStack(uint32_t size, uint32_t alignment
-     }
- 
-     m_asyncCallbackStackTop = base;
-+    {
-+        static int logged = 0;
-+        if (logged < 16)
-+        {
-+            ++logged;
-+            std::fprintf(stderr, "[cb-stack] top=0x%x size=0x%x floor=0x%x\n", top - 0x10u, allocSize, m_asyncCallbackStackFloor);
-+        }
-+    }
-     return top - 0x10u;
- }
- 

@@ -7,7 +7,7 @@ i łączy go z runtime (grafika GS/VU1, IOP z oryginalnymi modułami IRX, pad, d
 
 - `tools/mkelf.py` (to repo): z `orig/core_100000.bin` robi `CORE.elf`, mapę funkcji
   `functions.csv` i `config.toml` dla `ps2_recomp`. Wyniki zapisuj POZA repo.
-- `gt3-iop-fixes.patch` (ten katalog): poprawki do PS2Recomp (ps2xIOP + ps2xRuntime/src/lib) potrzebne dla GT3:
+- `gt3-iop-fixes.patch` (ten katalog): poprawki do PS2Recomp (ps2xIOP, ps2xRuntime/src/lib, ps2xRecomp) potrzebne dla GT3:
   - alokator pamięci IOP nie oddawał zwolnionej pamięci (MEMCLEAR.IRX zajmował całą stertę),
   - sterta IOP 0xA0000–0x1FC000 zamiast 0x120000–0x1F0000 (moduły PDI chcą ok. 1,3 MB),
   - importy `cdvdman:14` (`sceCdTrayReq`) i `cdvdman:24` (`sceCdReadClock`),
@@ -18,7 +18,12 @@ i łączy go z runtime (grafika GS/VU1, IOP z oryginalnymi modułami IRX, pad, d
   - wirtualna płyta: 14 bajtów XA System Use po nazwie w rekordach katalogu (GT3 porównuje nazwy przez strcasecmp),
   - EE `StartThread` zwraca ID wątku zamiast 0 (GT3 porównuje wynik z ID i inaczej ponawia w nieskończoność),
   - stosy procedur przerwań (VBlank itd.) w 0x80000–0x100000 zamiast na końcu RAM, gdzie GT3 trzyma
-    stos głównego wątku (przerwanie nadpisywało zmienne dekodera gzip i gra pisała poza pamięć).
+    stos głównego wątku (przerwanie nadpisywało zmienne dekodera gzip i gra pisała poza pamięć),
+  - generator (ps2xRecomp): `vlqi/vsqi/vlqd/vsqd` adresują pamięć danych VU0 (0x11004000), a nie RAM,
+    i `vsqi/vsqd` mają właściwe operandy (fs = źródło, it = adres); bez tego macierze GT3 nie trafiały do VU0
+    i wszystkie wierzchołki miały w=0,
+  - VU0 `vf0` wymuszone na (0,0,0,1) przed wykonaniem kodu gry,
+  - pamięć podręczna stron tekstur GS unieważniana przy wgrywaniu danych i rysowaniu.
 - Prywatne repo `gt3-data/recomp/`: gotowy `CORE.elf` i `gt3_recompiled.zip`
   (wynik `ps2_recomp`, nigdy nie trafia do tego publicznego repo).
 
@@ -34,7 +39,9 @@ Runtime wymaga flag SSE: `cmake -S . -B out/gt3 -DCMAKE_CXX_FLAGS="-msse4.2 -mav
 Pakiety: libxrandr/xinerama/xcursor/xi-dev, libgl1-mesa-dev, libasound2-dev,
 ffmpeg (libavcodec-dev itd.), libzstd-dev.
 
-## Stan (30.10)
+## Stan (30.10, wieczór)
 
-Gra startuje, ładuje 15 modułów IRX, czyta `GT3.VOL`, rozpakowuje dane (gzip), uruchamia 9 wątków
-i rysuje klatki z podwójnym buforowaniem (640x512), cyklicznie sprawdzając karty pamięci.
+Gra dochodzi do ekranu wyboru języka i rysuje tło z teksturą (logo GT3) z płynnym rozjaśnianiem.
+Obraz zajmuje górną połowę ekranu (GT3 renderuje półklatki 640x224; runtime ich nie rozciąga).
+Po zmianie generatora trzeba przegenerować kod (`ps2_recomp config.toml`); zmienione pliki są też
+w prywatnym `gt3-data/recomp/gt3_vu0fix.zip`.
