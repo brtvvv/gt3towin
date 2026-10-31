@@ -23,7 +23,7 @@ i łączy go z runtime (grafika GS/VU1, IOP z oryginalnymi modułami IRX, pad, d
     i `vsqi/vsqd` mają właściwe operandy (fs = źródło, it = adres); bez tego macierze GT3 nie trafiały do VU0
     i wszystkie wierzchołki miały w=0,
   - VU0 `vf0` wymuszone na (0,0,0,1) przed wykonaniem kodu gry,
-  - pamięć podręczna stron tekstur GS unieważniana przy wgrywaniu danych i rysowaniu,
+  - pamięć podręczna stron tekstur GS unieważniana przy wgrywaniu danych (transfery do VRAM),
   - SMODE2.FFMD odczytywane poprawnie (1 = tryb półklatek) i półklatki rozciągane na pełną wysokość.
 - Prywatne repo `gt3-data/recomp/`: gotowy `CORE.elf` i `gt3_recompiled.zip`
   (wynik `ps2_recomp`, nigdy nie trafia do tego publicznego repo).
