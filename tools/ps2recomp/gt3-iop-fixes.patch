@@ -586,8 +586,80 @@ index f0ad507..5599de5 100644
      if (m_transfer.trxreg.rrw == 0u || m_transfer.trxreg.rrh == 0u || m_transferState.totalPixels == 0u)
          return;
  
+diff --git a/ps2xRuntime/src/lib/ps2_memory.cpp b/ps2xRuntime/src/lib/ps2_memory.cpp
+index 37b6a4d..d184b8f 100644
+--- a/ps2xRuntime/src/lib/ps2_memory.cpp
++++ b/ps2xRuntime/src/lib/ps2_memory.cpp
+@@ -1,3 +1,4 @@
++#include <deque>
+ #include "runtime/ps2_memory.h"
+ #include "runtime/ps2_address.h"
+ #include "runtime/gs/gs_frontend.h"
+@@ -783,6 +784,27 @@ uint32_t PS2Memory::read32(uint32_t address)
+     return 0;
+ }
+ 
++// VIF1 IRQ (VIFcode bit 31): every such code raises INTC cause 5. Handlers read VIF1_CODE
++// once, so each queued interrupt sees the code that raised it.
++static std::vector<uint32_t> g_vif1IrqPending;
++static std::deque<uint32_t> g_vif1IrqCodeReads;
++
++void ps2PushVif1Irq(uint32_t code)
++{
++    g_vif1IrqPending.push_back(code);
++}
++
++size_t ps2TakeVif1Irqs()
++{
++    const size_t count = g_vif1IrqPending.size();
++    for (uint32_t code : g_vif1IrqPending)
++        g_vif1IrqCodeReads.push_back(code);
++    while (g_vif1IrqCodeReads.size() > 256u)
++        g_vif1IrqCodeReads.pop_front();
++    g_vif1IrqPending.clear();
++    return count;
++}
++
+ uint64_t PS2Memory::read64(uint32_t address)
+ {
+     if (address & 7)
+@@ -1548,10 +1570,13 @@ bool PS2Memory::writeIORegister(uint32_t address, uint32_t value)
+                             m_pendingVif0Transfers.push_back(std::move(pt));
+                         }
+                     }
+-                    // else if (channelBase == 0x10009000u)
+-                    // {
+-
+-                    // }
++                    else
++                    {
++                        // A chain segment without payload (e.g. a lone "end" tag after an
++                        // IRQ restart) still finishes the channel and raises its interrupt.
++                        const uint32_t cause = channelBase == 0x1000A000u ? 2u : (channelBase == 0x10009000u ? 1u : 0u);
++                        completeDmacChannel(channelBase, cause);
++                    }
+                 }
+                 else if (qwc > 0)
+                 {
+@@ -2280,6 +2305,16 @@ int PS2Memory::pollDmaRegisters()
+ 
+ uint32_t PS2Memory::readIORegister(uint32_t address)
+ {
++    if (address == 0x10003C80u)
++    {
++        if (!g_vif1IrqCodeReads.empty())
++        {
++            const uint32_t code = g_vif1IrqCodeReads.front();
++            g_vif1IrqCodeReads.pop_front();
++            return code;
++        }
++        return vif1_regs.code;
++    }
+     size_t timerIndex = 0u;
+     uint32_t timerOffset = 0u;
+     if (decodeEeTimerRegister(address, timerIndex, timerOffset))
 diff --git a/ps2xRuntime/src/lib/ps2_runtime.cpp b/ps2xRuntime/src/lib/ps2_runtime.cpp
-index 45cb9d2..8c1bfc0 100644
+index 45cb9d2..939ffd5 100644
 --- a/ps2xRuntime/src/lib/ps2_runtime.cpp
 +++ b/ps2xRuntime/src/lib/ps2_runtime.cpp
 @@ -91,6 +91,8 @@ namespace
@@ -624,3 +696,40 @@ index 45cb9d2..8c1bfc0 100644
      }
  
      LoadedModule module;
+@@ -1483,8 +1486,12 @@ void PS2Runtime::handleBreak(uint8_t *rdram, R5900Context *ctx)
+     raiseCop0Exception(ctx, EXCEPTION_BREAKPOINT);
+ }
+ 
++size_t ps2TakeVif1Irqs();
++
+ void PS2Runtime::drainCompletedDmacHandlers(uint8_t *rdram)
+ {
++    for (size_t i = ps2TakeVif1Irqs(); i > 0u; --i)
++        m_eeScheduler->dispatchIrq(false, 5u); // INTC VIF1
+     for (uint32_t cause : m_memory.consumeCompletedDmacCauses())
+     {
+         ps2_syscalls::dispatchDmacHandlersForCause(rdram, this, cause);
+diff --git a/ps2xRuntime/src/lib/ps2_vif1_interpreter.cpp b/ps2xRuntime/src/lib/ps2_vif1_interpreter.cpp
+index f872edd..ed66585 100644
+--- a/ps2xRuntime/src/lib/ps2_vif1_interpreter.cpp
++++ b/ps2xRuntime/src/lib/ps2_vif1_interpreter.cpp
+@@ -81,6 +81,8 @@ namespace
+     }
+ }
+ 
++void ps2PushVif1Irq(uint32_t code);
++
+ void PS2Memory::processVIF0Data(uint32_t srcPhys, uint32_t sizeBytes)
+ {
+     if (sizeBytes == 0u || srcPhys >= PS2_RAM_SIZE)
+@@ -344,7 +346,10 @@ void PS2Memory::processVIF1Data(const uint8_t *data, uint32_t sizeBytes)
+         vif1_regs.code = cmd;
+         vif1_regs.num = num;
+         if (irq)
++        {
+             vif1_regs.stat |= (1u << 11); // INT
++            ps2PushVif1Irq(cmd);
++        }
+ 
+         if (opcode == VIF_NOP)
+         {

@@ -24,7 +24,9 @@ i łączy go z runtime (grafika GS/VU1, IOP z oryginalnymi modułami IRX, pad, d
     i wszystkie wierzchołki miały w=0,
   - VU0 `vf0` wymuszone na (0,0,0,1) przed wykonaniem kodu gry,
   - pamięć podręczna stron tekstur GS unieważniana przy wgrywaniu danych (transfery do VRAM),
-  - SMODE2.FFMD odczytywane poprawnie (1 = tryb półklatek) i półklatki rozciągane na pełną wysokość.
+  - SMODE2.FFMD odczytywane poprawnie (1 = tryb półklatek) i półklatki rozciągane na pełną wysokość,
+  - odcinek łańcucha DMA bez danych (sam znacznik end po wznowieniu IRQ) kończy kanał i zgłasza przerwanie,
+  - kody VIF1 z bitem IRQ zgłaszają przerwanie INTC VIF1 (5); VIF1_CODE zwraca kod, który je wywołał.
 - Prywatne repo `gt3-data/recomp/`: gotowy `CORE.elf` i `gt3_recompiled.zip`
   (wynik `ps2_recomp`, nigdy nie trafia do tego publicznego repo).
 
@@ -50,4 +52,7 @@ asynchroniczne RPC dla PDISTR/MPG1) pomijają film, ale gra potem odwołuje się
 filmów na poziomie gry.
 
 Po zmianie generatora trzeba przegenerować kod (`ps2_recomp config.toml`); zmienione pliki są też
-w prywatnym `gt3-data/recomp/gt3_vu0fix.zip`.
+w prywatnym `gt3-data/recomp/gt3_vu0fix.zip`. `gt3_update2.zip` zawiera rozdzieloną funkcję
+`func_00266AB8` (wątek USB, splat połączył ją z `func_00266A88`) i obejście w `func_002520C0`
+(limit czekania na koniec DMA 2 zamiast 120 VSync; synchronizacja PATH2/PATH3 przez VIF1 jest
+emulowana niepełnie, bez tego gra robi 0,5 klatki na sekundę).
