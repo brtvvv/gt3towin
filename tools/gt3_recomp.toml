@@ -1,0 +1,16 @@
+# Konfiguracja PS2Recomp dla GT3 (PAL v2.00). Najpierw: sh tools/mkelf.sh
+# Uruchomienie z katalogu repo: <PS2Recomp>/out/build/ps2xRecomp/ps2_recomp tools/gt3_recomp.toml
+[general]
+input = "build/gt3_core.elf"
+ghidra_output = "build/gt3_funcs.csv"
+output = "build/recomp/"
+single_file_output = false
+output_worker_threads = 0
+patch_syscalls = false
+patch_cop0 = true
+patch_cache = true
+stubs = []
+skip = []
+
+[patches]
+instructions = []
