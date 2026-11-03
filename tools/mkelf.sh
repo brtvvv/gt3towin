@@ -35,6 +35,10 @@ src = open('asm/0.s').read()
 rows = re.findall(r'nonmatching (func_([0-9A-F]{8})), (0x[0-9A-F]+)', src)
 with open('build/gt3_funcs.csv', 'w') as f:
     f.write('Name,Start,End,Size\n')
+    starts = sorted(int(a, 16) for _, a, _ in rows)
+    if 0x100008 not in starts:  # punkt wejscia (crt0) - brak w mapie splata
+        nxt = min(x for x in starts if x > 0x100008)
+        f.write('entry_00100008,0x00100008,0x%08X,%d\n' % (nxt, nxt - 0x100008))
     for name, a, sz in rows:
         s = int(a, 16); n = int(sz, 16)
         f.write('%s,0x%08X,0x%08X,%d\n' % (name, s, s + n, n))

@@ -121,3 +121,18 @@ Listy robocze są w `work/`:
 
 Około 7740 z ~11 700 funkcji (66%), około 28% instrukcji.
 Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
+
+## Rekompilacja statyczna (PS2Recomp)
+
+- Narzędzie: github.com/ran-j/PS2Recomp. Build samego rekompilatora:
+  `cmake -S . -B out/build -DCMAKE_BUILD_TYPE=Release -DPS2X_BUILD_RUNTIME=OFF -DPS2X_BUILD_ANALYZER=OFF -DPS2X_BUILD_TEST=OFF -DPS2X_BUILD_STUDIO=OFF && cmake --build out/build`.
+- U nas: `sh tools/mkelf.sh` (ELF + mapa funkcji z asm/0.s, z wejściem 0x100008),
+  potem `<PS2Recomp>/out/build/ps2xRecomp/ps2_recomp tools/gt3_recomp.toml` → `build/recomp/`.
+- Wynik testu (2026-11-03): 11 433 funkcje przetłumaczone, 0 błędów,
+  0 nieobsłużonych instrukcji, 1614 skoków pośrednich (vtable) obsłużonych przez fallback.
+  300 losowych plików przechodzi kompilację (`-fsyntax-only`, includy:
+  ps2xRuntime/include, ps2xIOP/include, ps2xRuntime/src/lib, ps2xRuntime/src/lib/Kernel;
+  pusty `ps2_recompiled_stubs.h`).
+- `build/recomp/` to kod wygenerowany z gry: NIGDY do repo.
+- Następny etap: zbudować ps2xRuntime z wygenerowanym kodem (runner) i uruchomić.
+  Potrzebne moduły IOP (`*.IRX`) z płyty.
