@@ -136,3 +136,17 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
 - `build/recomp/` to kod wygenerowany z gry: NIGDY do repo.
 - Następny etap: zbudować ps2xRuntime z wygenerowanym kodem (runner) i uruchomić.
   Potrzebne moduły IOP (`*.IRX`) z płyty.
+
+### Diagnoza „<1 FPS” (2026-11-04)
+
+- Na PC: Release + `-DPS2X_ENABLE_AGRESSIVE_LOGS=OFF -DPS2X_ENABLE_RUNTIME_LOGS=OFF -DPS2X_ENABLE_IOP_RPC_TRACE=OFF`
+  (domyślnie logi są włączone i loguje każde wywołanie funkcji). Proces zużywa ~3% CPU, czyli czeka, nie liczy.
+- Kopia w chmurze: `/home/claude/ps2recomp` z `gt3.patch` (jest w prywatnym gt3-data/recomp),
+  build `out/rt` (Linux: `-march=native`, nagłówki `ps2_recompiled_*.h` przenieść do `ps2xRuntime/include`),
+  dane płyty złożone w `/home/claude/gt3run` (GT3.VOL z gt3-data/vol/part_*), uruchamianie pod Xvfb.
+- Pomiar: zegar gry idzie pełne 60 Hz (licznik 0x4A8380 = liczba vblank), wątek główny budzi się co vblank.
+  Prawie cały czas w pętli 0x1CCC38 (ekran tytułowy: czeka na przycisk, odlicza do dema),
+  a obraz (DMA VIF1) aktualizuje się raz na ~2 s. Hipoteza: to w dużej części statyczny ekran tytułowy,
+  nie spowolnienie. Do sprawdzenia: czy Enter (= Start) przechodzi dalej; szary pas to pewnie
+  nieprawidłowo rysowany napis „Press Start”.
+- Obsługa przerwania DMA w grze: 0x25B738 (wznawia łańcuch GIF przez CHCR.STR, odblokowuje VIF1 przez FBRST.STC).
