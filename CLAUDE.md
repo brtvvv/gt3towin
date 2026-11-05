@@ -376,6 +376,11 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   teksele trafiają w bajty. Cyjan bierze się z **palety 0x3E80**: wpisy mają R≈0x17, G≈B≈0x80 (np. 0x00828217),
   więc kanał R wychodzi ~5× za ciemny. Do sprawdzenia: skąd paleta 0x3E80 (upload z EE czy rysowana
   wcześniej w klatce; przebiegi do FBP 0x191 CT16/0x1F4) i czy na PS2 przejście też jest zabarwione.
+  **Trop:** paleta 0x3E80 jest wgrywana z EE co klatkę (BITBLT dir=0, CT32 32×32 do dbp 0x3E80), a jej
+  wpisy są niemonotoniczne/losowe (np. 00:0080200a 11:00302528 22:00c004b2…), więc to nie krzywa korekcji —
+  podejrzany błąd w kodzie EE liczącym tablicę (FPU/VU0 makro, jak wcześniej CVT.W.S). Następnie: znaleźć
+  źródło w RDRAM (MADR łańcucha PATH3 dla tego BITBLT albo szukanie wzorca w zrzucie RDRAM) i funkcję,
+  która tę tablicę wypełnia; porównać wynik z oczekiwaną krzywą (np. gamma/fade).
   Uwaga: `m_vtxQueue[0]` w logu frontendu to nie v0 bieżącego prymitywu (bufor cykliczny) — kolory
   wierzchołków logować z `batch.vertices` w backendzie.
 - **Do sprawdzenia:** zielony/fioletowy odcień przy przejściu z demo do ekranu tytułowego. Raz w powtórce demo (znak wodny „GRAN TURISMO 3”) obraz miał zepsute kolory
