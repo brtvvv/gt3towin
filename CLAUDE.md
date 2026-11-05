@@ -266,6 +266,11 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   Gradienty = wartości Z czytane jako tekstura → **wgrania tekstur (PATH3/GIF) docierają do VRAM za późno
   względem rysowania (PATH1/2 przez VIF1)**. Do sprawdzenia: łańcuch DMA GIF czytany z wyprzedzeniem (jak było
   z VIF1), kolejność w arbitrze GIF, MSKPATH3/FLUSHA.
+  **Korekta (log sekwencji GS):** w samym wyścigu ZBUF = 257 stron (blok 0x2020), więc tekstury NIE kolidują
+  z Z (417 było w innym momencie). Kolejność jest dobra: najpierw BITBLT (DPSM CT32, DBW 1) do 0x3420..0x36E4,
+  potem TEX0 PSMT4 (tbw 2, CLUT CT32 CSM1) z tego obszaru. Sprawdzone i poprawne w kodzie: ZMSK, LoadClut
+  (CLD/CSA/CSM1), TEX2. Pozostaje: przeliczenie CT32→T4 (swizzle) albo zawartość wgrań.
+  **Następny krok: zrzut VRAM GS w wyścigu + dekodowanie PSMT4 z paletą w Pythonie (tablice GSdx).**
 - Pliki RoFS (GT3.VOL): spis jest zaszyfrowany na płycie, w RAM rozpakowany (nazwy ok. 0x4CB000).
   Bazy: wyszukiwanie binarne po 64-bitowym hashu (0x232658/0x232768), rekordy `paramdb_eu.db` itd.
 - Diagnoza: wrappery `replaceFunction(addr, lambda)` + `lookupFunction` (oryginał) świetnie logują argumenty;
