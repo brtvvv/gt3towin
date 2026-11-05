@@ -323,6 +323,11 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   (VCALLMS 0x0/0x120/0x1D0/0x2D0, limit 4096 cykli nie jest osiągany). Brak błędów odczytu plików w logu.
   Następne kierunki: makro-instrukcje COP2 w kodzie EE (macierze aut), widoczność/LOD aut liczone na EE,
   porównanie łańcucha VIF1 (MSCAL/UNPACK) z PCSX2.
+  Dalej wykluczone: (4) test Z — wymuszony ZTST ALWAYS w scenie (fbw 10) nie pokazuje aut. Ekran wyboru
+  auta/koloru to zdjęcia 2D (pełnoekranowa tekstura CT32 0x1E20 z obrazów IPU), nie model 3D — nieprzydatny.
+  **Trop:** cień auta jest rysowany (trójkąty abe=1 zmsk=1, T4, np. tbp 0x3665, ok. 179 sztuk) w miejscu auta;
+  znaleźć funkcję EE budującą pakiet cienia (wywołanie VIF/MSCAL), karoseria powinna być rysowana obok —
+  sprawdzić, dlaczego jej gałąź jest pomijana.
 
 ### Wydajność (kamień 6, 2026-11-05)
 
