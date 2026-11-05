@@ -294,6 +294,28 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   Wyścig wygląda poprawnie (tor, banery, publiczność, niebo); menu bez zmian. Traci się tylko efekt DOF.
   Prawdziwa przyczyna (dlaczego kopia Z24 ma wartości > 1) nadal nieznana. **Następne: kamień 6, wydajność
   (wyścig ~3 kl./s, menu ~21 vblank/s).**
+
+### Wydajność (kamień 6, 2026-11-05)
+
+- Profilowanie: `xperf` (Windows Performance Toolkit, jest w `Program Files (x86)\Windows Kits\10`, konto ma
+  admina) + PDB z samymi symbolami publicznymi: w `out\build\dev` ustawione
+  `CMAKE_EXE_LINKER_FLAGS_RELEASE=/INCREMENTAL:NO /DEBUG` (tylko relink). Sesja:
+  `xperf -on PROC_THREAD+LOADER+PROFILE -stackwalk Profile`, `xperf -d t.etl`, potem z `_NT_SYMBOL_PATH`
+  na katalog exe: `xperf -i t.etl -symbols -a profile -detail` (płasko) lub `-a stack -butterfly` (HTML).
+  Funkcje statyczne/anonimowe są przypisywane do najbliższego symbolu publicznego (np. „vector::assign”).
+- Wynik (wyścig): wątek EE = 100% jednego rdzenia; z tego rasteryzacja GS ~60% (wywoływana synchronicznie
+  przez XGKICK VU1 → GIF → `GSCpuBackend::Submit`), interpreter VU1 ~30%, kod gry mało. Wyścig to ~5 mln
+  pikseli/klatkę (scena ~1,9 mln w trójkątach + ~6 pełnoekranowych przebiegów sprite'ów DOF/kopii) przy
+  ~40 ns/piksel → ~240 ms/klatkę. Na 60 kl./s potrzeba ~3 ns/piksel: bez wielowątkowej/SIMD rasteryzacji
+  (albo backendu GPU) się nie da.
+- Wykluczone / bez efektu: (1) „cache” stron tekstur (memcpy 8 KB przy zmianie strony) — wyłączony,
+  brak zmiany czasu; (2) kopiowanie reszty danych VIF1 przy każdym bicie I (O(n²)) — teraz przesunięcie,
+  brak zmiany czasu; (3) **wątek rasteryzacji** (kolejka poleceń, odczyty czekają na opróżnienie;
+  `PS2X_GS_THREAD=1`, domyślnie wyłączony): ekran języka 21 → 28 vblank/s, ale po wyborze języka gra
+  utyka na animacji przejścia (przyczyna nieznana; logika gry ucieka przed rysowaniem) — do zbadania.
+- Kierunki: szybsze ścieżki pikselowe (trójkąty: krawędzie inkrementalnie zamiast pełnych barycentrycznych
+  w float/double na całym bbox; specjalizacja WritePixel/SampleTexture pod PSMCT32/PSMT4/Z24), równoległe
+  pasy wierszy dla dużych sprite'ów, interpreter VU1 (normalizeFmac*/commitReadyPipelines są drogie).
 - Pliki RoFS (GT3.VOL): spis jest zaszyfrowany na płycie, w RAM rozpakowany (nazwy ok. 0x4CB000).
   Bazy: wyszukiwanie binarne po 64-bitowym hashu (0x232658/0x232768), rekordy `paramdb_eu.db` itd.
 - Diagnoza: wrappery `replaceFunction(addr, lambda)` + `lookupFunction` (oryginał) świetnie logują argumenty;
