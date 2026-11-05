@@ -245,6 +245,14 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   łańcucha po STC — o vblank albo o N cykli EE) psuje już start gry (dmac1=1; przy bezczynności EE czas
   nie przechodzi przez `accountCycles`) — wycofany. Zostaje: śledzenie zapisów do tagów 0x355120/0x3F5120
   (np. wrapper na funkcję budującą pakiety aut) albo porównanie z PCSX2 (log DMA/VIF).
+- **ROZWIĄZANE (2026-11-05): wyścig się renderuje** (niebo, góry, drzewa; tor/teren jeszcze ze
+  zielono-czerwonymi śmieciowymi teksturami; ~3 kl./s). Złe tagi pochodziły z 0x24F960: licznik
+  rejestrów GS = 0x25B3B0(obj, bufor) = (koniec − start) >> 4, a „koniec” wynosił **1** (zamiast wskaźnika
+  z 0x25B378) → licznik −(adres/16) → tag `0xFFFCA91C`, NLOOP `0xFFFCA91B`, UNPACK z bitem I.
+  Obejście: 0x25B3B0 wykonywane natywnie (ps2_runtime.cpp, `GT3_NO_NATIVE_GSREG=1` wyłącza).
+  **Prawdziwy błąd jest w runtime**: `v0` zwrócone przez wywołanie bywa nadpisane (wartością 1, jak zwracają
+  handlery przerwań gry) między powrotem z funkcji a użyciem — prawdopodobnie przy wznawianiu po punkcie
+  kontrolnym/przełączeniu (np. kontekst wątku głównego vs `m_cpuContext`). Może psuć też inne miejsca.
 - Pliki RoFS (GT3.VOL): spis jest zaszyfrowany na płycie, w RAM rozpakowany (nazwy ok. 0x4CB000).
   Bazy: wyszukiwanie binarne po 64-bitowym hashu (0x232658/0x232768), rekordy `paramdb_eu.db` itd.
 - Diagnoza: wrappery `replaceFunction(addr, lambda)` + `lookupFunction` (oryginał) świetnie logują argumenty;
