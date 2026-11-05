@@ -353,6 +353,9 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   Razem wyścig ~9,1 s/60 vsync (~6,5 kl./s). Zyski z mikrooptymalizacji interpretera VU maleją (2–5%);
   większy krok wymagałby rekompilatora mikrokodu VU1 albo VU1 na osobnym wątku (asynchronicznie z EE,
   jak na PS2) — oba duże.
+- Build dev bez LTCG: małe funkcje VU wywoływane między plikami (normalizeOperand ~1,8 s/20 s) nie są
+  wstawiane. Inline `normalizeOperand` w upper/lower (makro na lokalną funkcję) → ~8,4 s/60 vsync (~7 kl./s).
+  /GL tylko dla 3 plików VU dało ~3% (szum) — nie wprowadzone.
 - **Do sprawdzenia:** zielony/fioletowy odcień przy przejściu z demo do ekranu tytułowego. Raz w powtórce demo (znak wodny „GRAN TURISMO 3”) obraz miał zepsute kolory
   (biało-niebiesko-fioletowe). Nie powtórzyło się w tym samym momencie w kolejnym przebiegu; podejrzane
   obejście DOF (`g_gt3CompositeZPass`, ZBUF 0x1A1) w innym przebiegu powtórki.
