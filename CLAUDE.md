@@ -362,6 +362,15 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   z gita). Lokalna linia `# GT3DBG-PROFILE` (/Zi dla plików VU/GS/VIF) jest poza gt3.patch.
 - **Kamień 5, otwarte:** powtórka demo i przejście do ekranu tytułowego mają zepsute kolory (fiolet/biel
   na jednej z losowych tras demo, zielony odcień przy przejściu z logo GT3). Zwykły wyścig demo poprawny.
+- **Przejście/powtórka = korekcja kolorów „channel shuffle”** (log rysowań: `GT3_DRAWLOG=<vsync>` w GT3DBG,
+  usunięty): bufor ekranu 0xA0 (CT24) czytany jako PSMT8 (tbp 0x1400, tbw 2, CLUT 0x3E80), 3 przebiegi
+  sprite'ów 64×32 do FBP 0x1F3 (FBMSK ff000000): R (rgba 80,0,0, abe=0, uv 0,0–8,64), +B (uv 8,0–16,64),
+  +G (uv 4,2–12,66), blend 0x68 + FIX 0x80 (addytywnie); potem paski 8×32 (T8 tbp 0x3E84, CLUT 0x3E60..)
+  z powrotem do 0xA0. Zgodnie z columnTable8: T8 (0,0)=bajt R, (8,0)=B, (4,2)=G.
+  Poprawka: sprite'y próbkowane w całkowitych współrzędnych pikseli z ułamkowym XY/UV (wcześniej +0,5 i UV
+  obcięte → przy 2 tekslach/piksel inny wiersz PSMT8). `PS2X_GS_SPRITE_HALFPIXEL=1` = stare. Efekt: odcień
+  z zielonego na cyjanowy (B już działa), **R nadal brak** — następny krok: zrzut 0x1F3 po przebiegu R
+  i porównanie z bajtami R bufora 0xA0; sprawdzić, czy przebieg R (abe=0) nie jest nadpisywany.
 - **Do sprawdzenia:** zielony/fioletowy odcień przy przejściu z demo do ekranu tytułowego. Raz w powtórce demo (znak wodny „GRAN TURISMO 3”) obraz miał zepsute kolory
   (biało-niebiesko-fioletowe). Nie powtórzyło się w tym samym momencie w kolejnym przebiegu; podejrzane
   obejście DOF (`g_gt3CompositeZPass`, ZBUF 0x1A1) w innym przebiegu powtórki.
