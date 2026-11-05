@@ -289,6 +289,11 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   bufora ekranu zostawia ze starymi śmieciami (zielono-czerwone = Z jako kolor). Na PS2 musi przechodzić
   szerzej → podejrzane: semantyka Z24 (zapis/odczyt PSMZ24 jako tekstury lub FRAME, skala Z wierzchołków
   sceny, ZBUF psm vs wartości > 24 bit) — porównać z PCSX2 (GSdx: Z24 jako tekstura, konwersja `z` do 24 bit).
+- **Obejście (2026-11-05, kamień 5 prawie zrobiony):** w backendzie CPU test Z GEQUAL z ZBUF 0x1A1 i ZMSK=1
+  zawsze zaliczony (`g_gt3CompositeZPass`, ustawiane w ps2_runtime.cpp dla GT3; `GT3_NO_DOF_HACK=1` wyłącza).
+  Wyścig wygląda poprawnie (tor, banery, publiczność, niebo); menu bez zmian. Traci się tylko efekt DOF.
+  Prawdziwa przyczyna (dlaczego kopia Z24 ma wartości > 1) nadal nieznana. **Następne: kamień 6, wydajność
+  (wyścig ~3 kl./s, menu ~21 vblank/s).**
 - Pliki RoFS (GT3.VOL): spis jest zaszyfrowany na płycie, w RAM rozpakowany (nazwy ok. 0x4CB000).
   Bazy: wyszukiwanie binarne po 64-bitowym hashu (0x232658/0x232768), rekordy `paramdb_eu.db` itd.
 - Diagnoza: wrappery `replaceFunction(addr, lambda)` + `lookupFunction` (oryginał) świetnie logują argumenty;
