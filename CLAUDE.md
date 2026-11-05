@@ -381,6 +381,11 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   podejrzany błąd w kodzie EE liczącym tablicę (FPU/VU0 makro, jak wcześniej CVT.W.S). Następnie: znaleźć
   źródło w RDRAM (MADR łańcucha PATH3 dla tego BITBLT albo szukanie wzorca w zrzucie RDRAM) i funkcję,
   która tę tablicę wypełnia; porównać wynik z oczekiwaną krzywą (np. gamma/fade).
+  Sprawdzone: LoadClut (CSM1, 16×16 z cbp, bw 1) poprawny. Dane wgrania 0x3E80 leżą w RDRAM pod 0xCED0C0
+  i 0xDAA180 (4 KB, różne kopie), wyglądają na dane skompresowane/losowe (~210 wartości na kanał), nie
+  na LUT. Hipoteza: 0x3E80 współdzielą inne dane (np. tekstura) i prawdziwa tablica korekcji jest
+  nadpisywana albo wgrywana w innej kolejności (arbitraż PATH2/PATH3, zależność od FINISH/SIGNAL).
+  Odłożone — wpływa tylko na przejście demo→tytuł i powtórkę.
   Uwaga: `m_vtxQueue[0]` w logu frontendu to nie v0 bieżącego prymitywu (bufor cykliczny) — kolory
   wierzchołków logować z `batch.vertices` w backendzie.
 - **Do sprawdzenia:** zielony/fioletowy odcień przy przejściu z demo do ekranu tytułowego. Raz w powtórce demo (znak wodny „GRAN TURISMO 3”) obraz miał zepsute kolory
