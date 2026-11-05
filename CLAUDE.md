@@ -348,6 +348,11 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   wyników float (nie 0/denormal/inf/±MAX) wartość się nie zmienia, flagi = znak → szybka ścieżka
   (`PS2X_VU_EXACT_FLAGS=1` przywraca). VU ~8,3 → ~7 s na okno, wyścig ~9,7 s/60 vsync (~6 kl./s).
   Dalej w VU: kopiowanie VF przed/po instrukcji (opóźnione zapisy), calculatePairReadyCycle, krokowanie XGKICK.
+- VU drobne: XGKICK robił `m_xgkick = {}` (zerowanie+kopia 64 KB bufora pakietu przy każdym XGKICK) —
+  teraz zerowanie pól; kopiowanie qwordu memcpy. Maski zajętych slotów potoków w commitReadyPipelines.
+  Razem wyścig ~9,1 s/60 vsync (~6,5 kl./s). Zyski z mikrooptymalizacji interpretera VU maleją (2–5%);
+  większy krok wymagałby rekompilatora mikrokodu VU1 albo VU1 na osobnym wątku (asynchronicznie z EE,
+  jak na PS2) — oba duże.
 - **Do sprawdzenia:** zielony/fioletowy odcień przy przejściu z demo do ekranu tytułowego. Raz w powtórce demo (znak wodny „GRAN TURISMO 3”) obraz miał zepsute kolory
   (biało-niebiesko-fioletowe). Nie powtórzyło się w tym samym momencie w kolejnym przebiegu; podejrzane
   obejście DOF (`g_gt3CompositeZPass`, ZBUF 0x1A1) w innym przebiegu powtórki.
