@@ -253,6 +253,13 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   **Prawdziwy błąd jest w runtime**: `v0` zwrócone przez wywołanie bywa nadpisane (wartością 1, jak zwracają
   handlery przerwań gry) między powrotem z funkcji a użyciem — prawdopodobnie przy wznawianiu po punkcie
   kontrolnym/przełączeniu (np. kontekst wątku głównego vs `m_cpuContext`). Może psuć też inne miejsca.
+- **Przyczyna znaleziona i naprawiona ogólnie**: `PS2Runtime::dispatchGuestBranch` po wywołaniu funkcji robił
+  `if (ctx->pc == entryPc) ctx->pc = fallthroughPc;` (dla stubów, które nie ustawiają pc). Gdy wygenerowana
+  funkcja ma pętlę wracającą na swój pierwszy adres (0x25B378) i wychodzi na punkcie kontrolnym
+  (`eeCheckpointDue()` → `return` z pc = początek pętli = entry), runtime uznawał ją za zakończoną i wołający
+  jechał dalej ze śmieciowym v0. Teraz `eeCheckpointDue()` ustawia `thread_local g_ps2CheckpointExit`,
+  a dispatch przy `pc == entry` i tej fladze zwija stos (wznowienie od pc). Natywne obejście 0x25B3B0 usunięte.
+  Dotyczy całej gry (każda funkcja z pętlą na początku).
 - Pliki RoFS (GT3.VOL): spis jest zaszyfrowany na płycie, w RAM rozpakowany (nazwy ok. 0x4CB000).
   Bazy: wyszukiwanie binarne po 64-bitowym hashu (0x232658/0x232768), rekordy `paramdb_eu.db` itd.
 - Diagnoza: wrappery `replaceFunction(addr, lambda)` + `lookupFunction` (oryginał) świetnie logują argumenty;
