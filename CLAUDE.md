@@ -334,7 +334,13 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   `advanceTo` przeskakuje cykle bez zdarzeń (gdy nie trwa XGKICK). Wyścig ~12 s/60 vsync (~5 kl./s).
   Profil (wyścig): rasteryzacja trójkątów (lambda DrawTriangle, WritePixel, combineTexture, ReadTexture,
   LookupCLUT, lerpChannel) wciąż największa, potem VU (commitReadyPipelines ~3,5 s/20 s, run, normalizeOperand).
-- **Do sprawdzenia:** raz w powtórce demo (znak wodny „GRAN TURISMO 3”) obraz miał zepsute kolory
+- Pasy: granice pasa w `thread_local t_bandY0/1` (DrawSprite/DrawTriangle/WritePixel je respektują) zamiast
+  kopii prymitywu z przyciętym scissorem; zakres Y prymitywu liczony raz; pasy po ≥4 wiersze, do 8×wątki.
+  Prymitywy ze sprzężeniem (tekstura nakłada się na bufor ramki) rysowane szeregowo. Wyścig ~10 s/60 vsync
+  (~6 kl./s). Pułapka: lambda nie przechwytuje zmiennych `thread_local` — w wątkach puli to inne obiekty
+  (crash przy starcie); przekazywać przez zwykłą referencję.
+- Wątek EE (wyścig): ~38% czekanie na rysowanie pasów (opróżnianie głównie przez LoadClut), ~45% VU1.
+- **Do sprawdzenia:** zielony/fioletowy odcień przy przejściu z demo do ekranu tytułowego. Raz w powtórce demo (znak wodny „GRAN TURISMO 3”) obraz miał zepsute kolory
   (biało-niebiesko-fioletowe). Nie powtórzyło się w tym samym momencie w kolejnym przebiegu; podejrzane
   obejście DOF (`g_gt3CompositeZPass`, ZBUF 0x1A1) w innym przebiegu powtórki.
 - Kierunki: szybsze ścieżki pikselowe (trójkąty: krawędzie inkrementalnie zamiast pełnych barycentrycznych
