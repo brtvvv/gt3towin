@@ -181,3 +181,26 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   Dół przesuwa kursor; Krzyżyk uruchamia wątki EE 0x25FF90/0x260760, po czym emulacja staje:
   `[IOP] RPC handler on server thread did not finish`, wątek IOP 26 (entry 0x75ADC, pc 0x77928).
   **Następny problem do zbadania: IOP RPC po wyborze języka** (oraz wydajność: ~21 kl./s).
+
+### Po wyborze języka: film intro (2026-11-05, poprawki w gt3-data/recomp/gt3.patch)
+
+- Po Krzyżyku gra odtwarza film: moduły IOP z płyty LIBPDI (0x69E00), PDICDVD (0x6C600), PDISPU2 (0x6DB00),
+  PDISTR (0x71C00). Łańcuch: wątek IOP 69 czyta CD (MPEG-2 PS z GT3.VOL, LSN ~185178) → FIFO 0x74CC0 →
+  wątek 70 (demux) → wideo FIFO 0x74FD8 (EE czyta przez RPC `MPG1` fn 2, wątek EE 10) i audio FIFO 0x74F50
+  → wątek 71 (nagłówek `SShd`/`SSbd`, PCM 44,1 kHz) → FIFO 0x74E08 → wątek 72 → DMA SPU2 do 0x1D8000/0x1F8000
+  → głosy 22/23 rdzenia 1, odświeżanie przez IRQ SPU2 (IRQA w 4 częściach po 0x200 B).
+- Naprawione:
+  1. **Interpreter IOP: `lwl`/`lwr` ignorowały ładowanie w toku** (load delay). `memcpy` z LIBPDI robi
+     `lwr t4; lwl t4` pod rząd → przesunięte bajty (śmieciowy nagłówek audio). Teraz łączą się z pendingLoad.
+  2. **RPC blokujące wykonywało się synchronicznie i wstrzymywało całe EE**, gdy handler IOP czekał na dane
+     (np. `MPG1` fn 2 czeka na FIFO). Teraz: krótki budżet (~28 ms IOP), potem handler zostaje na wątku IOP,
+     a wątek EE czeka przez `waitExternal`; koniec → `ExternalWake`. Wyłączenie: `GT3_NO_ASYNCRPC=1`.
+  3. **Brak IRQ SPU2 (IRQ 9)**: emulator nie odtwarza głosów. Przybliżenie: co 512 próbek (48 kHz) dla rdzenia
+     z ATTR bit 6 i ustawionym IRQA ustaw NAX głosów = IRQA, `SPDIF_IRQINFO` (0x1F9007C2) = bit rdzenia,
+     wyślij IRQ 9. Callback PDISPU2 (0x6DE04) czyta NAX i przestawia IRQA. `GT3_NO_SPUIRQ=1` wyłącza.
+- Stan: po Krzyżyku film startuje, Start (pominięcie) wysyła `MPG2` fn 3 i audio płynie, ale ekran jest czarny,
+  a wątek EE 11 (0x260760) kręci się na IPU (komendy FDEC, 0x265400/0x265358): **IPU nie jest emulowane**
+  (rejestry 0x10002000.. to atrapy). Następny krok: emulacja IPU albo HLE libmpeg (stuby w Kernel/Stubs/MPEG.cpp)
+  albo pominięcie filmu.
+- Narzędzie: `capstone` (pip) do deasemblacji IRX; uwaga, w pliku nie nazywać skryptu `dis.py` (kolizja z modułem).
+  Indeksy importów: zaślepka `jr ra` pod adresem X ma numer funkcji w X+4.
