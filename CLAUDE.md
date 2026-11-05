@@ -308,6 +308,13 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   zrzut wątków EE (pc/ra + adresy kodu ze stosu) w bloku `[gt3stat]` — wzorzec: wait na 0x286dc8 = WaitSema.
   Nazwy filmów: a1 funkcji play 0x25FD38 to ścieżka (`stream/laguna_full.pss` itd.).
 - Na przyszłość: prawdziwe IPU (IDEC/BDEC + CSC) dałoby podglądy tras i filmy.
+- **Wyścig Arcade działa (kamień 4 dla prawdziwej gry):** pad `12,17,21,25,30,35,40,45,50:4000:0.3` (co ~5 s
+  Krzyżyk) → ok. 55 s start na Super Speedway: przelot kamery, HUD (6th, Lap 1/2, obrotomierz reaguje na gaz),
+  ~8,5 kl./s. Obrazy IPU to „ipum” 640×512 (tła menu). Ekran po wyborze auta jest biały (tło ipum = szare +
+  efekt), wybór koloru ma rozsypane tekstury modelu auta.
+- **Kamień 5, główny błąd: modele aut nie są rysowane** — ani gracza, ani rywali (widać tylko cienie), także w
+  demo. Następny krok: lista rysowań klatki wyścigu (GT3_DRAWLOG) — czy rysowania aut w ogóle trafiają do GS
+  (inna ścieżka VU1/VIF, np. MPG/MSCAL innego mikroprogramu, PATH3), czy są odrzucane (test Z/alfa, scissor).
 
 ### Wydajność (kamień 6, 2026-11-05)
 
