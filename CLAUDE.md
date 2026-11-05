@@ -150,3 +150,26 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   nie spowolnienie. Do sprawdzenia: czy Enter (= Start) przechodzi dalej; szary pas to pewnie
   nieprawidłowo rysowany napis „Press Start”.
 - Obsługa przerwania DMA w grze: 0x25B738 (wznawia łańcuch GIF przez CHCR.STR, odblokowuje VIF1 przez FBRST.STC).
+
+### Naprawa (2026-11-05): VIF1 0,5/s → 21/s (poprawki w gt3-data/recomp/gt3.patch)
+
+- Przyczyna „klatki co 2 s”: klatka liczyła się w ~20 ms, potem gra czekała dokładnie 120 vblanków (timeout).
+  Gra synchronizuje VIF1 (PATH2) i GIF (PATH3) semaforami w 0x4A8380 (+0x16/+0x17/+0x18):
+  VIFcode z bitem I (np. `0x91010000` FLUSH, flagi w polu NUM: bit16/17/18) → przerwanie INTC VIF1
+  (handler 0x25B5C0 czyta VIF1_STAT.INT i VIF1_CODE), tag GIF z IRQ i bitami 16/17 → handler DMA 0x25B738.
+  GS FINISH: handler INTC 0 = 0x25B6D8 (+0x15). Odczyt GS→EE przez VIF1 (DIR=0) w 0x25B950/0x25B9C8.
+- Co było źle w runtime (wszystko potrzebne razem):
+  1. Brak zatrzymania VIF1 na bicie I i brak INTC 5 (teraz: stall, reszta danych czeka na FBRST.STC,
+     koniec DMA VIF1 odroczony). Bez tego nadal 0,5/s (`GT3_NO_VIFSTALL=1` wyłącza).
+  2. Odczyt VIF1_STAT/CODE/MARK zwracał ostatni zapis CPU zamiast stanu interpretera.
+  3. **UNPACK przy STCYCL CL=0, WL>0** (gra używa `0x0400`): interpreter wymuszał CL=1 i czytał dane,
+     których nie ma → rozjazd strumienia VIF (śmieciowe VIFcode'y, np. float −1.0 jako komenda).
+     Teraz to czyste wypełnianie z ROW/COL bez danych. Możliwy wpływ też na błędy grafiki.
+  4. Łańcuch DMA, który nie przesłał danych (tag QWC=0 z IRQ), nie zgłaszał końca.
+  5. VIF1 DIR=0 (GS→EE) obsłużony przez `consumeLocalToHostBytes` (na ekranie tytułowym nieużywany).
+- Teraz klatka renderuje się co vblank, ale host nie nadąża: ~21 vblank/s czasu rzeczywistego (CPU-bound).
+- Szybkie iteracje: build `out\build\dev` z `-DPS2X_FAST_LINK=ON` (bez /GL i /LTCG; opcja dodana
+  w ReleaseMode.cmake). Pełna kompilacja raz ~45 min, potem przebudowa+link ~1 min.
+  Build `fast` z LTCG linkuje się >40 min. `measure.ps1 -BuildDir out\build\dev`.
+- Zmiany w nagłówkach runtime (ps2_memory.h, ps2_runtime.h) przebudowują wszystkie 11 tys. plików
+  gry — stan dodatkowy trzymać w zmiennych globalnych w .cpp.

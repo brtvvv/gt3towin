@@ -6,17 +6,18 @@ param(
     [Parameter(Mandatory = $true)][string]$Game,
     [string]$Recomp = "C:\PS2Recomp",
     [int]$Seconds = 60,
+    [string]$BuildDir = "out\build\fast",   # np. out\build\dev (PS2X_FAST_LINK=ON: bez /GL i /LTCG, szybki link)
     [switch]$NoBuild
 )
 $ErrorActionPreference = "Stop"
-$Build = Join-Path $Recomp "out\build\fast"
+$Build = Join-Path $Recomp $BuildDir
 $Exe = Join-Path $Build "ps2xRuntime\ps2EntryRunner.exe"
 $Diag = Join-Path $Recomp "diag"
 New-Item -ItemType Directory -Force -Path $Diag | Out-Null
 
 if (-not $NoBuild) {
     $vswhere = Join-Path ${env:ProgramFiles(x86)} "Microsoft Visual Studio\Installer\vswhere.exe"
-    $vs = & $vswhere -latest -products * -property installationPath
+    $vs = & "$vswhere" -latest -products * -property installationPath
     $vcvars = Join-Path $vs "VC\Auxiliary\Build\vcvars64.bat"
     Write-Host "== build ($Build)"
     $log = Join-Path $Diag "build.txt"
