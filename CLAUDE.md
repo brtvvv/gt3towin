@@ -318,6 +318,12 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   `PS2X_GS_RASTER_THREADS=N`, 1 = wyłącz). Menu/ekran języka: 21 → **60 vsync/s** (pełna prędkość),
   wyścig 2,7 → 3,3 kl./s. W wyścigu wątek EE: ~50% rasteryzacja (głównie małe trójkąty ~270 px na wątku EE),
   ~43% interpreter VU1. Następne: interpreter VU1 i koszt piksela małych trójkątów.
+- Interpreter VU (ps2_vu1_core.cpp) jest dokładny co do cyklu; `commitReadyPipelines` skanował wszystkie
+  potoki 2× na cykl. Teraz pamięta najbliższy cykl gotowości (tablica po `this`, bo zmiana `ps2_vu1.h` =
+  pełna przebudowa; `PS2X_VU_NOCOMMITCACHE=1` wyłącza): wyścig ~19 → ~16–18 s na 60 vsync (~3,5 kl./s).
+- **Do sprawdzenia:** raz w powtórce demo (znak wodny „GRAN TURISMO 3”) obraz miał zepsute kolory
+  (biało-niebiesko-fioletowe). Nie powtórzyło się w tym samym momencie w kolejnym przebiegu; podejrzane
+  obejście DOF (`g_gt3CompositeZPass`, ZBUF 0x1A1) w innym przebiegu powtórki.
 - Kierunki: szybsze ścieżki pikselowe (trójkąty: krawędzie inkrementalnie zamiast pełnych barycentrycznych
   w float/double na całym bbox; specjalizacja WritePixel/SampleTexture pod PSMCT32/PSMT4/Z24), równoległe
   pasy wierszy dla dużych sprite'ów, interpreter VU1 (normalizeFmac*/commitReadyPipelines są drogie).
