@@ -271,6 +271,14 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   potem TEX0 PSMT4 (tbw 2, CLUT CT32 CSM1) z tego obszaru. Sprawdzone i poprawne w kodzie: ZMSK, LoadClut
   (CLD/CSA/CSM1), TEX2. Pozostaje: przeliczenie CT32→T4 (swizzle) albo zawartość wgrań.
   **Następny krok: zrzut VRAM GS w wyścigu + dekodowanie PSMT4 z paletą w Pythonie (tablice GSdx).**
+- Zrobione: zrzut indeksów PSMT4 funkcjami emulatora (LoadClut → PGM) pokazuje **poprawne tekstury**
+  (logo GT, banery Suzuki/Citroën, skała, strzałka) → wgrania + swizzle CT32→T4 są OK. Wierzchołki: PRIM
+  TME=1, STQ sensowne, RGBA 0x80; rysowania toru to PSMT4 tbw 2, REPEAT. Rasteryzacja synchroniczna
+  (Submit → DrawPrimitive), więc CLUT nie „ucieka”; LookupCLUT/LoadClutUnlocked dla T4+CT32 poprawne.
+  Podejrzenie: zielono-czerwone kafle to inne przebiegi — TEX0 psm 0x01 (CT24) na tbp 0x3420 (wcześniej ZBP
+  417) i na buforach ramki (tbp 0/0x1400): efekty głębi/rozmycia czytające obszar, w którym w emulatorze
+  jest atlas indeksów zamiast Z. **Do zrobienia: lista rysowań jednej klatki (GS debug history / Runtime
+  Debugger) — który przebieg maluje kafle i jaki ma FRAME/ZBUF/TEX0.**
 - Pliki RoFS (GT3.VOL): spis jest zaszyfrowany na płycie, w RAM rozpakowany (nazwy ok. 0x4CB000).
   Bazy: wyszukiwanie binarne po 64-bitowym hashu (0x232658/0x232768), rekordy `paramdb_eu.db` itd.
 - Diagnoza: wrappery `replaceFunction(addr, lambda)` + `lookupFunction` (oryginał) świetnie logują argumenty;
