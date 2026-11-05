@@ -240,6 +240,11 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   niespójny z normalnym wzorcem łańcucha (cnt qwc≈7 + UNPACK, ref + MSCAL 0x343). Gra buduje łańcuchy w
   0x355120/0x3F5120 (podwójny bufor). Hipoteza: łańcuch powinien skończyć się wcześniej (pominięty tag END?)
   albo CPU nie zdążyło dopisać — trzeba prześledzić, kto zapisuje te tagi (kod budujący pakiety aut).
+- **Wykluczone (3 podejścia bez efektu dla stalla w wyścigu):** (1) carry komend VIF / kontynuacja DIRECT,
+  (2) bit SPR w adresach DMA, (3) leniwe czytanie łańcucha VIF1. Eksperyment 4 (opóźnione wznowienie
+  łańcucha po STC — o vblank albo o N cykli EE) psuje już start gry (dmac1=1; przy bezczynności EE czas
+  nie przechodzi przez `accountCycles`) — wycofany. Zostaje: śledzenie zapisów do tagów 0x355120/0x3F5120
+  (np. wrapper na funkcję budującą pakiety aut) albo porównanie z PCSX2 (log DMA/VIF).
 - Pliki RoFS (GT3.VOL): spis jest zaszyfrowany na płycie, w RAM rozpakowany (nazwy ok. 0x4CB000).
   Bazy: wyszukiwanie binarne po 64-bitowym hashu (0x232658/0x232768), rekordy `paramdb_eu.db` itd.
 - Diagnoza: wrappery `replaceFunction(addr, lambda)` + `lookupFunction` (oryginał) świetnie logują argumenty;
