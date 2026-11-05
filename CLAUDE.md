@@ -260,6 +260,12 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   jechał dalej ze śmieciowym v0. Teraz `eeCheckpointDue()` ustawia `thread_local g_ps2CheckpointExit`,
   a dispatch przy `pc == entry` i tej fladze zwija stos (wznowienie od pc). Natywne obejście 0x25B3B0 usunięte.
   Dotyczy całej gry (każda funkcja z pętlą na początku).
+- **Tekstury toru (zielono-czerwone gradienty)**: w wyścigu tekstury to głównie PSMT4 (psm 0x14, CLUT CT32)
+  pod TBP 0x3420–0x3900, czyli **w obszarze bufora Z** (ZBP 417 stron = blok 0x3420; jest też odczyt Z jako
+  CT24 pod 0x3420 — efekt głębi). Gra wgrywa tekstury do pamięci Z po jej użyciu i od razu z nich rysuje.
+  Gradienty = wartości Z czytane jako tekstura → **wgrania tekstur (PATH3/GIF) docierają do VRAM za późno
+  względem rysowania (PATH1/2 przez VIF1)**. Do sprawdzenia: łańcuch DMA GIF czytany z wyprzedzeniem (jak było
+  z VIF1), kolejność w arbitrze GIF, MSKPATH3/FLUSHA.
 - Pliki RoFS (GT3.VOL): spis jest zaszyfrowany na płycie, w RAM rozpakowany (nazwy ok. 0x4CB000).
   Bazy: wyszukiwanie binarne po 64-bitowym hashu (0x232658/0x232768), rekordy `paramdb_eu.db` itd.
 - Diagnoza: wrappery `replaceFunction(addr, lambda)` + `lookupFunction` (oryginał) świetnie logują argumenty;
