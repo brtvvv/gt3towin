@@ -230,6 +230,16 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   Po tym wciąż stoi: raz na prawidłowym FLUSH z bitem I (`0x91010000`, gra nie wysyła FBRST.STC),
   raz po UNPACK z bitem I (`0xEE39C0D9`) dane wznowione wyglądają na niebędące VIFcode'ami (TTE? rozmiar UNPACK?).
   **Do zbadania: obsługa przerwania VIF1 w wyścigu (handler 0x25B5C0, bity NUM 16/17/18) i TTE w łańcuchu.**
+- Handler VIF1 0x25B5C0: INT=0 → STC; NUM bit18 → `--sem18` (0x4A8398), STC gdy ≥0; bit16 → `--sem16`
+  (0x4A8396), STC gdy ≥0; bit17 → `++sem17`, gdy 0 → restart GIF (D2 QWC=0, STR). Brak STC = czeka na GIF
+  (handler DMA 0x25B738 podnosi semafory z tagów GIF z IRQ). D_CTRL=1 (bez stall control, bez MFIFO).
+- Dodane: **łańcuch DMA VIF1 czytany leniwie** (tag po tagu, dane od razu do VIF1, przerwa przy zatrzymaniu
+  na bicie I, wznowienie od TADR przy FBRST.STC; `GT3_EAGER_VIF1=1` = stare zachowanie) oraz ADDR/MADR/TADR
+  z bitem SPR → scratchpad. Menu działa jak wcześniej. **Wyścig dalej stoi**: VIF1 trafia na tag
+  `0xFFFCA91C` (ID 7, IRQ, qwc 0xA91C) z VIFcode `0xED1CC0D9` (UNPACK z bitem I, NUM=0x1C → sem18=−1),
+  niespójny z normalnym wzorcem łańcucha (cnt qwc≈7 + UNPACK, ref + MSCAL 0x343). Gra buduje łańcuchy w
+  0x355120/0x3F5120 (podwójny bufor). Hipoteza: łańcuch powinien skończyć się wcześniej (pominięty tag END?)
+  albo CPU nie zdążyło dopisać — trzeba prześledzić, kto zapisuje te tagi (kod budujący pakiety aut).
 - Pliki RoFS (GT3.VOL): spis jest zaszyfrowany na płycie, w RAM rozpakowany (nazwy ok. 0x4CB000).
   Bazy: wyszukiwanie binarne po 64-bitowym hashu (0x232658/0x232768), rekordy `paramdb_eu.db` itd.
 - Diagnoza: wrappery `replaceFunction(addr, lambda)` + `lookupFunction` (oryginał) świetnie logują argumenty;
