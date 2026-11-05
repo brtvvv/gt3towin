@@ -202,5 +202,18 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   a wątek EE 11 (0x260760) kręci się na IPU (komendy FDEC, 0x265400/0x265358): **IPU nie jest emulowane**
   (rejestry 0x10002000.. to atrapy). Następny krok: emulacja IPU albo HLE libmpeg (stuby w Kernel/Stubs/MPEG.cpp)
   albo pominięcie filmu.
+- **Pomijanie filmów** (ps2_runtime.cpp, tylko GT3 PAL, `GT3_PLAY_MOVIES=1` wyłącza): obiekt odtwarzacza
+  (libmpeg Sony wlinkowany statycznie, tworzenie 0x2604F8): `play` 0x25FD38 → 0, komendy 0x25FAD8
+  (a1 = op; op 3 → 0, op 4 → 4 „zamknięty”), „czy gra” 0x25FDF0 (flaga gp−0x48BC) → 0.
+  Pętle gry: 0x1CE310 (start), 0x1CE438 (stop: op 3, potem op 4 aż 1/4, potem aż 4).
+  Ekran tytułowy (pętla 0x1CCC38) ma film w tle → po pominięciu czarny, czeka na Start.
+  Po Krzyżyku (język) i Starcie gra idzie dalej: czarny ekran z białym kwadracikiem, wątek główny
+  liczy (przeszukiwanie tablic 0x23EC30), ~6 vblank/s. **Następny krok: co rysuje/ładuje ten etap
+  i dlaczego tak wolno (menu główne?).**
+- Diagnoza wątków EE: tymczasowy zrzut w bloku `[gt3stat]` (EeScheduler.cpp): status/pc/ra wątków
+  i adresy kodu ze stosu — działa dobrze do znalezienia pętli oczekiwania (wątek główny = id 1,
+  wątek renderujący = id 9, entry 0x1013C0, wywołuje vtable sceny z gp−0x6EE0).
+- Uwaga: `sed -i` z Git Bash i `Set-Content` w PowerShell psują CRLF/BOM w plikach PS2Recomp —
+  wtedy `git apply -R gt3_diag.patch` nie przechodzi. Edytować narzędziem Edit.
 - Narzędzie: `capstone` (pip) do deasemblacji IRX; uwaga, w pliku nie nazywać skryptu `dis.py` (kolizja z modułem).
   Indeksy importów: zaślepka `jr ra` pod adresem X ma numer funkcji w X+4.
