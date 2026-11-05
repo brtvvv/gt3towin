@@ -315,6 +315,14 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
 - **Kamień 5, główny błąd: modele aut nie są rysowane** — ani gracza, ani rywali (widać tylko cienie), także w
   demo. Następny krok: lista rysowań klatki wyścigu (GT3_DRAWLOG) — czy rysowania aut w ogóle trafiają do GS
   (inna ścieżka VU1/VIF, np. MPG/MSCAL innego mikroprogramu, PATH3), czy są odrzucane (test Z/alfa, scissor).
+  Zbadane (2026-11-06): w strumieniu GS klatki wyścigu (GT3_DRAWLOG, histogram fbp/psm) są tylko tekstury T4
+  trasy (fbp 0xF1 fbw 10), małe przebiegi do bufora fbw 2 (odbicia/kamery), 6×400 trójkątów CT16 do 0x191
+  (próbkują scenę 0x1E20), kompozycja DOF i HUD — **nic przypominającego karoserię**. Wykluczone:
+  (1) moje zmiany wydajności (wszystkie przełączniki na stare zachowanie — auta nadal brak), (2) VU1 —
+  każdy z ~20 mikroprogramów robi XGKICK, brak zarezerwowanych instrukcji, (3) urywanie mikroprogramów VU0
+  (VCALLMS 0x0/0x120/0x1D0/0x2D0, limit 4096 cykli nie jest osiągany). Brak błędów odczytu plików w logu.
+  Następne kierunki: makro-instrukcje COP2 w kodzie EE (macierze aut), widoczność/LOD aut liczone na EE,
+  porównanie łańcucha VIF1 (MSCAL/UNPACK) z PCSX2.
 
 ### Wydajność (kamień 6, 2026-11-05)
 
