@@ -279,6 +279,16 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   417) i na buforach ramki (tbp 0/0x1400): efekty głębi/rozmycia czytające obszar, w którym w emulatorze
   jest atlas indeksów zamiast Z. **Do zrobienia: lista rysowań jednej klatki (GS debug history / Runtime
   Debugger) — który przebieg maluje kafle i jaki ma FRAME/ZBUF/TEX0.**
+- **Lista rysowań klatki + zrzuty VRAM (2026-11-05):** scena 3D rysuje się do FBP 0xF1 (blok 0x1E20, CT32)
+  i **jest w VRAM idealna** (tor, banery Citroën/Magneti Marelli/Red Line, drzewa). Psuje się kompozycja (DOF):
+  1) kopia Z sceny (blok 0xA00, PSMZ24 jako tekstura) → FRAME 0x1A1 (blok 0x3420) w PSMZ24, sprite'y 32 px,
+     RGBA 0x80 (MODULATE = tożsamość), ZTST ALWAYS, kompresja 2:1 w pionie;
+  2) przebiegi rozmycia do FBP 0x50 / 0x191;
+  3) końcowo sprite'y sceny (tex 0x1E20) → bufor ekranu 0xA0 z **ZBUF 0x1A1, ZTST GEQUAL, z = 1**.
+  U nas kopia głębi ma wartości 0x21128–0x49B89, więc test przechodzi tylko na niebie (Z ≤ 1), a resztę
+  bufora ekranu zostawia ze starymi śmieciami (zielono-czerwone = Z jako kolor). Na PS2 musi przechodzić
+  szerzej → podejrzane: semantyka Z24 (zapis/odczyt PSMZ24 jako tekstury lub FRAME, skala Z wierzchołków
+  sceny, ZBUF psm vs wartości > 24 bit) — porównać z PCSX2 (GSdx: Z24 jako tekstura, konwersja `z` do 24 bit).
 - Pliki RoFS (GT3.VOL): spis jest zaszyfrowany na płycie, w RAM rozpakowany (nazwy ok. 0x4CB000).
   Bazy: wyszukiwanie binarne po 64-bitowym hashu (0x232658/0x232768), rekordy `paramdb_eu.db` itd.
 - Diagnoza: wrappery `replaceFunction(addr, lambda)` + `lookupFunction` (oryginał) świetnie logują argumenty;
