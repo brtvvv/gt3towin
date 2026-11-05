@@ -371,6 +371,13 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   obcięte → przy 2 tekslach/piksel inny wiersz PSMT8). `PS2X_GS_SPRITE_HALFPIXEL=1` = stare. Efekt: odcień
   z zielonego na cyjanowy (B już działa), **R nadal brak** — następny krok: zrzut 0x1F3 po przebiegu R
   i porównanie z bajtami R bufora 0xA0; sprawdzić, czy przebieg R (abe=0) nie jest nadpisywany.
+- Ustalone (log w DrawSprite): sprite'y 8×16 px, u 1:1, v krok 4 (wiersze 0,4,8… = bajty R wg columnTable8;
+  stare +0,5 dawało wiersze 2,6,10 = G → zielony odcień). Kolory wierzchołków poprawne (R: 80,0,0; B; G),
+  teksele trafiają w bajty. Cyjan bierze się z **palety 0x3E80**: wpisy mają R≈0x17, G≈B≈0x80 (np. 0x00828217),
+  więc kanał R wychodzi ~5× za ciemny. Do sprawdzenia: skąd paleta 0x3E80 (upload z EE czy rysowana
+  wcześniej w klatce; przebiegi do FBP 0x191 CT16/0x1F4) i czy na PS2 przejście też jest zabarwione.
+  Uwaga: `m_vtxQueue[0]` w logu frontendu to nie v0 bieżącego prymitywu (bufor cykliczny) — kolory
+  wierzchołków logować z `batch.vertices` w backendzie.
 - **Do sprawdzenia:** zielony/fioletowy odcień przy przejściu z demo do ekranu tytułowego. Raz w powtórce demo (znak wodny „GRAN TURISMO 3”) obraz miał zepsute kolory
   (biało-niebiesko-fioletowe). Nie powtórzyło się w tym samym momencie w kolejnym przebiegu; podejrzane
   obejście DOF (`g_gt3CompositeZPass`, ZBUF 0x1A1) w innym przebiegu powtórki.
