@@ -326,6 +326,14 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   scissorem do swojego pasa → kolejność pikseli zachowana). Opróżnianie przy każdej innej metodzie backendu
   (CLUT, transfery, odczyty, snapshot do prezentacji). Synchronicznie, więc bez problemu wątku GS.
   `PS2X_GS_NODEFER=1` wyłącza. Wyścig ~13 s/60 vsync (~4,6 kl./s), obraz i menu bez zmian.
+- Profil z prawdziwymi symbolami: na końcu `ps2xRuntime/CMakeLists.txt` lokalnie dopisane
+  `set_source_files_properties(<pliki VU/GS> PROPERTIES COMPILE_OPTIONS "/Zi")` (linia `# GT3DBG-PROFILE`,
+  wykluczona z gt3.patch przez `":!ps2xRuntime/CMakeLists.txt"`). Bez tego anonimowe funkcje są przypisywane
+  do sąsiednich symboli publicznych (fałszywe „vector::assign” itp.).
+- VU: producenci obniżają `next` (najbliższy cykl gotowości), skan i minimum w jednym przejściu,
+  `advanceTo` przeskakuje cykle bez zdarzeń (gdy nie trwa XGKICK). Wyścig ~12 s/60 vsync (~5 kl./s).
+  Profil (wyścig): rasteryzacja trójkątów (lambda DrawTriangle, WritePixel, combineTexture, ReadTexture,
+  LookupCLUT, lerpChannel) wciąż największa, potem VU (commitReadyPipelines ~3,5 s/20 s, run, normalizeOperand).
 - **Do sprawdzenia:** raz w powtórce demo (znak wodny „GRAN TURISMO 3”) obraz miał zepsute kolory
   (biało-niebiesko-fioletowe). Nie powtórzyło się w tym samym momencie w kolejnym przebiegu; podejrzane
   obejście DOF (`g_gt3CompositeZPass`, ZBUF 0x1A1) w innym przebiegu powtórki.
