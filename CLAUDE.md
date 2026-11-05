@@ -173,3 +173,11 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   Build `fast` z LTCG linkuje się >40 min. `measure.ps1 -BuildDir out\build\dev`.
 - Zmiany w nagłówkach runtime (ps2_memory.h, ps2_runtime.h) przebudowują wszystkie 11 tys. plików
   gry — stan dodatkowy trzymać w zmiennych globalnych w .cpp.
+- Ekran po starcie to **SELECT LANGUAGE** (animowany). Pad działa: funkcje libpad gry są już stubami
+  runtime (0x272DC8 Init, 0x273028 PortOpen, 0x273378 Read, 0x2733F8 GetState, 0x2737D8 InfoMode,
+  0x273910 SetMainMode, 0x273510 GetReqState…); sterownik pada gry: wątek 0x2303A8.
+  Syntetyczne klawisze (keybd_event) nie docierają do raylib, więc do testów jest
+  `GT3_AUTOPAD="sek:maska:czas,..."` (np. `15:0040:0.4,20:4000:0.4` = Dół, potem Krzyżyk).
+  Dół przesuwa kursor; Krzyżyk uruchamia wątki EE 0x25FF90/0x260760, po czym emulacja staje:
+  `[IOP] RPC handler on server thread did not finish`, wątek IOP 26 (entry 0x75ADC, pc 0x77928).
+  **Następny problem do zbadania: IOP RPC po wyborze języka** (oraz wydajność: ~21 kl./s).
