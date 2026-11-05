@@ -221,6 +221,15 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   mapa trybu GT (My Home, Go Race, Car Dealer…, „1 day 18,000 Cr”) ok. 30 s. Grafika menu poprawna.
   Bez wciśnięcia gra po chwili odpala demo wyścigu (grafika zepsuta: zielono-czerwone pasy) i wraca do menu.
   **Następne: grafika wyścigu (kamień 5) i wydajność (menu ~?, wyścig wolny).**
+- **Wyścig (demo) — grafika stoi** (kamień 5): po wejściu w wyścig licznik końców DMA VIF1 przestaje rosnąć,
+  na ekranie zostaje stary bufor (zielono-czerwone kafle). Wyświetlanie: tylko CRT2, DISPFB2 FBP 0/0xA0 PSMCT24,
+  rysowanie FRAME fbp0 PSMCT24, ZBUF 417 PSMZ24 — konfiguracja sensowna. Przyczyna: VIF1 staje na bicie I.
+  Znalezione i poprawione błędy interpretera VIF1: (a) komenda, której dane nie mieszczą się w porcji DMA,
+  była porzucana → teraz `g_vif1Carry`; (b) DIRECT z pakietem GIF IMAGE dłuższym niż komenda „zjadał”
+  następne VIFcode'y → teraz kontynuacja obrazu dopiero w danych kolejnego DIRECT (`submitDirectPayload`).
+  Po tym wciąż stoi: raz na prawidłowym FLUSH z bitem I (`0x91010000`, gra nie wysyła FBRST.STC),
+  raz po UNPACK z bitem I (`0xEE39C0D9`) dane wznowione wyglądają na niebędące VIFcode'ami (TTE? rozmiar UNPACK?).
+  **Do zbadania: obsługa przerwania VIF1 w wyścigu (handler 0x25B5C0, bity NUM 16/17/18) i TTE w łańcuchu.**
 - Pliki RoFS (GT3.VOL): spis jest zaszyfrowany na płycie, w RAM rozpakowany (nazwy ok. 0x4CB000).
   Bazy: wyszukiwanie binarne po 64-bitowym hashu (0x232658/0x232768), rekordy `paramdb_eu.db` itd.
 - Diagnoza: wrappery `replaceFunction(addr, lambda)` + `lookupFunction` (oryginał) świetnie logują argumenty;
