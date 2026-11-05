@@ -313,6 +313,11 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   brak zmiany czasu; (3) **wątek rasteryzacji** (kolejka poleceń, odczyty czekają na opróżnienie;
   `PS2X_GS_THREAD=1`, domyślnie wyłączony): ekran języka 21 → 28 vblank/s, ale po wyborze języka gra
   utyka na animacji przejścia (przyczyna nieznana; logika gry ucieka przed rysowaniem) — do zbadania.
+- **Działa: równoległe pasy wierszy** w DrawSprite/DrawTriangle dla prymitywów ≥ 8192 px (pula wątków
+  `RowPool` w gs_cpu_backend.cpp, synchronicznie — wywołujący czeka, więc gra nie widzi różnicy;
+  `PS2X_GS_RASTER_THREADS=N`, 1 = wyłącz). Menu/ekran języka: 21 → **60 vsync/s** (pełna prędkość),
+  wyścig 2,7 → 3,3 kl./s. W wyścigu wątek EE: ~50% rasteryzacja (głównie małe trójkąty ~270 px na wątku EE),
+  ~43% interpreter VU1. Następne: interpreter VU1 i koszt piksela małych trójkątów.
 - Kierunki: szybsze ścieżki pikselowe (trójkąty: krawędzie inkrementalnie zamiast pełnych barycentrycznych
   w float/double na całym bbox; specjalizacja WritePixel/SampleTexture pod PSMCT32/PSMT4/Z24), równoległe
   pasy wierszy dla dużych sprite'ów, interpreter VU1 (normalizeFmac*/commitReadyPipelines są drogie).
