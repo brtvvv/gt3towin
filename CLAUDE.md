@@ -356,6 +356,12 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
 - Build dev bez LTCG: małe funkcje VU wywoływane między plikami (normalizeOperand ~1,8 s/20 s) nie są
   wstawiane. Inline `normalizeOperand` w upper/lower (makro na lokalną funkcję) → ~8,4 s/60 vsync (~7 kl./s).
   /GL tylko dla 3 plików VU dało ~3% (szum) — nie wprowadzone.
+- Rasteryzer: `std::floor/ceil/lround` (wywołania ucrtbase, MSVC bez SSE4.1) zamienione na rzutowania;
+  mały zysk (rysowanie jest na wątkach puli). Wyścig ~8 s/60 vsync (~7,5 kl./s).
+- Pułapka: `ps2xRuntime/CMakeLists.txt` ma końce LF — skrypt dzielący po CRLF wyczyścił plik (przywrócony
+  z gita). Lokalna linia `# GT3DBG-PROFILE` (/Zi dla plików VU/GS/VIF) jest poza gt3.patch.
+- **Kamień 5, otwarte:** powtórka demo i przejście do ekranu tytułowego mają zepsute kolory (fiolet/biel
+  na jednej z losowych tras demo, zielony odcień przy przejściu z logo GT3). Zwykły wyścig demo poprawny.
 - **Do sprawdzenia:** zielony/fioletowy odcień przy przejściu z demo do ekranu tytułowego. Raz w powtórce demo (znak wodny „GRAN TURISMO 3”) obraz miał zepsute kolory
   (biało-niebiesko-fioletowe). Nie powtórzyło się w tym samym momencie w kolejnym przebiegu; podejrzane
   obejście DOF (`g_gt3CompositeZPass`, ZBUF 0x1A1) w innym przebiegu powtórki.
