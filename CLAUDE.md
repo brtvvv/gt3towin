@@ -210,6 +210,17 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   Po Krzyżyku (język) i Starcie gra idzie dalej: czarny ekran z białym kwadracikiem, wątek główny
   liczy (przeszukiwanie tablic 0x23EC30), ~6 vblank/s. **Następny krok: co rysuje/ładuje ten etap
   i dlaczego tak wolno (menu główne?).**
+- **Błąd rekompilatora: `FPU_CVT_W_S` używało `nearbyintf`** (zaokrąglenie), a R5900 `cvt.w.s` zawsze obcina
+  w stronę zera (+ nasycenie). Skutek w GT3: losowanie aut demo `(int)(rand*N)` dawało indeks N → lista aut
+  wypełniona 0x16AD → brak rekordu w bazie (tabela 31) → silnik 0 → `sound/engine/00000` nie istnieje →
+  wieczne ponawianie ładowania (0x242CF8/0x241BF8 zwraca −1). Poprawka w `ps2_runtime_macros.h` (pełna
+  przebudowa ~45 min). **Teraz: ekran tytułowy → demo wyścigu (grafika: tekstury-śmieci) → menu główne
+  „Arcade Mode” (logo GT3, Polyphony).** Następne: nawigacja po menu (pad), grafika wyścigu, wydajność.
+- Pliki RoFS (GT3.VOL): spis jest zaszyfrowany na płycie, w RAM rozpakowany (nazwy ok. 0x4CB000).
+  Bazy: wyszukiwanie binarne po 64-bitowym hashu (0x232658/0x232768), rekordy `paramdb_eu.db` itd.
+- Diagnoza: wrappery `replaceFunction(addr, lambda)` + `lookupFunction` (oryginał) świetnie logują argumenty;
+  uwaga: funkcje nie-liście mogą „wrócić” w połowie (pc wewnątrz) — wyniki czytać tylko z funkcji-liści.
+  Zrzut RDRAM do pliku z bloku `[gt3stat]` + wyszukiwanie wzorców w Pythonie.
 - Diagnoza wątków EE: tymczasowy zrzut w bloku `[gt3stat]` (EeScheduler.cpp): status/pc/ra wątków
   i adresy kodu ze stosu — działa dobrze do znalezienia pętli oczekiwania (wątek główny = id 1,
   wątek renderujący = id 9, entry 0x1013C0, wywołuje vtable sceny z gp−0x6EE0).
