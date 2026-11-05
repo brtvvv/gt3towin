@@ -216,6 +216,11 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   wieczne ponawianie ładowania (0x242CF8/0x241BF8 zwraca −1). Poprawka w `ps2_runtime_macros.h` (pełna
   przebudowa ~45 min). **Teraz: ekran tytułowy → demo wyścigu (grafika: tekstury-śmieci) → menu główne
   „Arcade Mode” (logo GT3, Polyphony).** Następne: nawigacja po menu (pad), grafika wyścigu, wydajność.
+- **Nawigacja po menu działa** (2026-11-05): `GT3_AUTOPAD="15:4000:0.4,23:0040:0.3,27:4000:0.3"` =
+  język (Krzyżyk) → menu trybu ok. 22 s (Arcade/Gran Turismo Mode/Replay Theatre) → Dół → Krzyżyk →
+  mapa trybu GT (My Home, Go Race, Car Dealer…, „1 day 18,000 Cr”) ok. 30 s. Grafika menu poprawna.
+  Bez wciśnięcia gra po chwili odpala demo wyścigu (grafika zepsuta: zielono-czerwone pasy) i wraca do menu.
+  **Następne: grafika wyścigu (kamień 5) i wydajność (menu ~?, wyścig wolny).**
 - Pliki RoFS (GT3.VOL): spis jest zaszyfrowany na płycie, w RAM rozpakowany (nazwy ok. 0x4CB000).
   Bazy: wyszukiwanie binarne po 64-bitowym hashu (0x232658/0x232768), rekordy `paramdb_eu.db` itd.
 - Diagnoza: wrappery `replaceFunction(addr, lambda)` + `lookupFunction` (oryginał) świetnie logują argumenty;
