@@ -340,6 +340,14 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   (~6 kl./s). Pułapka: lambda nie przechwytuje zmiennych `thread_local` — w wątkach puli to inne obiekty
   (crash przy starcie); przekazywać przez zwykłą referencję.
 - Wątek EE (wyścig): ~38% czekanie na rysowanie pasów (opróżnianie głównie przez LoadClut), ~45% VU1.
+- Pomiar licznikami (chrono w VU1Interpreter::run i FlushDeferredUnlocked): na ~10 s wyścigu VU1 run ~8 s
+  (z GIF/GS przez XGKICK), opróżnianie ~2,5 s → **interpreter VU1 jest głównym wąskim gardłem**.
+- Wykluczone: (1) migawki CLUT zamiast opróżniania przy LoadClut — brak zysku, wycofane; (2) przebudowy
+  cache dekodera VU (MPG) — rzadkie (<500 na przebieg).
+- VU: `normalizeFmacResult` liczył każdy wynik FMAC drugi raz w `long double` tylko dla flag; dla normalnych
+  wyników float (nie 0/denormal/inf/±MAX) wartość się nie zmienia, flagi = znak → szybka ścieżka
+  (`PS2X_VU_EXACT_FLAGS=1` przywraca). VU ~8,3 → ~7 s na okno, wyścig ~9,7 s/60 vsync (~6 kl./s).
+  Dalej w VU: kopiowanie VF przed/po instrukcji (opóźnione zapisy), calculatePairReadyCycle, krokowanie XGKICK.
 - **Do sprawdzenia:** zielony/fioletowy odcień przy przejściu z demo do ekranu tytułowego. Raz w powtórce demo (znak wodny „GRAN TURISMO 3”) obraz miał zepsute kolory
   (biało-niebiesko-fioletowe). Nie powtórzyło się w tym samym momencie w kolejnym przebiegu; podejrzane
   obejście DOF (`g_gt3CompositeZPass`, ZBUF 0x1A1) w innym przebiegu powtórki.
