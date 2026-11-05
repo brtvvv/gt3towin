@@ -321,6 +321,11 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
 - Interpreter VU (ps2_vu1_core.cpp) jest dokładny co do cyklu; `commitReadyPipelines` skanował wszystkie
   potoki 2× na cykl. Teraz pamięta najbliższy cykl gotowości (tablica po `this`, bo zmiana `ps2_vu1.h` =
   pełna przebudowa; `PS2X_VU_NOCOMMITCACHE=1` wyłącza): wyścig ~19 → ~16–18 s na 60 vsync (~3,5 kl./s).
+- **Odkładanie prymitywów (działa):** `Submit` odkłada do 1024 prymitywów, `FlushDeferredUnlocked` rysuje je
+  równolegle pasami wierszy ekranu (każdy wątek przechodzi wszystkie prymitywy w kolejności, przycięte
+  scissorem do swojego pasa → kolejność pikseli zachowana). Opróżnianie przy każdej innej metodzie backendu
+  (CLUT, transfery, odczyty, snapshot do prezentacji). Synchronicznie, więc bez problemu wątku GS.
+  `PS2X_GS_NODEFER=1` wyłącza. Wyścig ~13 s/60 vsync (~4,6 kl./s), obraz i menu bez zmian.
 - **Do sprawdzenia:** raz w powtórce demo (znak wodny „GRAN TURISMO 3”) obraz miał zepsute kolory
   (biało-niebiesko-fioletowe). Nie powtórzyło się w tym samym momencie w kolejnym przebiegu; podejrzane
   obejście DOF (`g_gt3CompositeZPass`, ZBUF 0x1A1) w innym przebiegu powtórki.
