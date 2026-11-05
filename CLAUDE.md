@@ -295,6 +295,20 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   Prawdziwa przyczyna (dlaczego kopia Z24 ma wartości > 1) nadal nieznana. **Następne: kamień 6, wydajność
   (wyścig ~3 kl./s, menu ~21 vblank/s).**
 
+### Tryb Arcade (2026-11-06)
+
+- Menu Arcade (Single Race → Level Selection) działa; wszystkie menu mają filmy w tle (`stream/*_full.pss`,
+  odtwarzacz pomijany — bez wpływu). Po wyborze poziomu ekran był czarny: wątek główny wisiał w **0x266090 —
+  dekodowanie obrazu przez IPU** (a0 = bufor RGBA32, a1 = nagłówek, szer./wys. 16-bit pod +8/+10; czeka na
+  semafor DMA IPU, flaga gp−0x4690). IPU nie jest emulowane. Zaślepka w ps2_runtime.cpp wypełnia bufor
+  ciemnoszarym kolorem (`GT3_NO_IPU_STUB=1` wyłącza). Teraz: wybór trasy (Super Speedway), klasy, auta
+  (model auta częściowo zniekształcony) → start wyścigu daje **biały ekran ze śmieciami** — następny problem.
+  Sekwencja pada: `12:4000:0.3,19:4000:0.3,24:4000:0.3,30:4000:0.3,38:4000:0.3,46:4000:0.3,54:4000:0.3`.
+- Narzędzia diagnozy: `scratchpad/eedis.py <od> <do>` (capstone, deasemblacja CORE.elf z gt3-data);
+  zrzut wątków EE (pc/ra + adresy kodu ze stosu) w bloku `[gt3stat]` — wzorzec: wait na 0x286dc8 = WaitSema.
+  Nazwy filmów: a1 funkcji play 0x25FD38 to ścieżka (`stream/laguna_full.pss` itd.).
+- Na przyszłość: prawdziwe IPU (IDEC/BDEC + CSC) dałoby podglądy tras i filmy.
+
 ### Wydajność (kamień 6, 2026-11-05)
 
 - Profilowanie: `xperf` (Windows Performance Toolkit, jest w `Program Files (x86)\Windows Kits\10`, konto ma
