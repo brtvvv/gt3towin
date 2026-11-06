@@ -383,6 +383,12 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   podmieniony lokalnie — przy regeneracji runnera poprawka wejdzie z generatora). Obraz bez zmian (auta i bliski
   tor nadal brak) — kolejne podejrzane makra COP2 (VMADD/VOPMSUB/VDIV…) albo dane w VU0 (vf24–27, vf20).
   Interpreter VU (CLIP/FC*) sprawdzony — poprawny. Runner jest budowany unity (`Unity/unity_N_cxx.cxx`).
+- Rejestry VU0 (COP2) były osobne w kontekście każdego wątku EE (nowy wątek = zera); na PS2 VU0 jest wspólny.
+  Teraz wspólny stan (EeScheduler: `gt3Vu0Load/Save` wokół wykonania kodu; `PS2X_VU0_PER_THREAD=1` = stare).
+  Obraz bez zmian. Wykluczone dla brakującego toru/aut (łącznie): zmiany wydajności, VU1 XGKICK, limit VU0,
+  test Z, DMA SPR, kolejność bitów VCLIP, osobne VU0 na wątek. Generator makr COP2 częściowo sprawdzony
+  (VMOVE/VABS/VMR32 maski i obrót poprawne). Następne: porównanie z PCSX2 albo śledzenie wyniku testu
+  widoczności w 0x226158 (które obiekty odrzuca i dlaczego — zrzut vf1/vf2/flag dla kilku obiektów).
 
 ### Wydajność (kamień 6, 2026-11-05)
 
