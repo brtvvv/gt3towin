@@ -659,6 +659,18 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
     wynik wczesnego testu Z przekazywany do zapisu (bez drugiego odczytu Z).
   - **Wynik (bez regulacji tempa): jazda 1,00 s/60 vsync (pełne 60 kl./s), przelot kamery/odliczanie ~1,2.**
     Menu i ekrany przejść bez zmian (porównane zrzuty).
+  - Dalej: szybka ścieżka UNPACK VIF1 (bez maski, MODE 0, CL ≥ WL; `GT3_VIF_SLOWUNPACK=1`), szybkie opróżnianie
+    potoków VU1 na końcu programu (przeskok do ostatniego cyklu gotowości; `PS2X_VU_SLOWFLUSH=1`), wpisy flag
+    zatwierdzane w kolejności wydania (ważne przy rzadszych commitach). Tempo w granicach szumu.
+  - **Pułapka pomiarowa:** pojedyncze przebiegi potrafią się różnić o ~20% (raz 1,44 zamiast 1,2 przy tym samym
+    kodzie) — porównania A/B robić po 3 przebiegi. Usunięcie commitu przed żywym FMAC wyglądało na zysk tylko dlatego,
+    że pełny potok flag przerywał programy VU1 (`[VU1 reserved upper] ... 0xffffffff` w logu); z poprawnym commitem przy
+    braku slotu jest wolniej (1,44/1,13) — wycofane. Sprawdzać log pod kątem `reserved`.
+  - Demo rajdowe (bez regulacji tempa) 0,6–1,0 s/60 — z zapasem. Kafli na niebie w demie nie widać (3 przebiegi,
+    zawsze ta sama trasa rajdowa) — nie odtworzone. 6 przebiegów `hanghunt` bez zawieszeń i awarii.
+  - Następny duży krok (jeśli przelot kamery ma mieć 60 kl./s): VU1/VIF1/GIF na osobnym wątku (jak na PS2, VU1 działa
+    równolegle z EE). Wątek EE: VU1 ~44%, VIF ~8%, GS ~13%, kod gry ~8%. Ryzyko: synchronizacja stanu VIF1/DMA,
+    przerwań i kolejności ścieżek GIF (PATH1/2 z wątku VU, PATH3 z EE).
 
 ### Wydajność (kamień 6, 2026-11-05)
 
