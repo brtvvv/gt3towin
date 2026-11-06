@@ -524,10 +524,19 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   Wynik: setki tysięcy programów, 0 różnic. `GT3_NO_VU1AOT=1` = sam interpreter.
   Tempo: wyścig ~3,7–5,2 s/60 vsync (było 5,3–6,6), wczytywanie/menu dużo szybsze (odliczanie od ~70 s zamiast ~85 s).
   Teraz dominuje GS (rasteryzacja na puli) → następny krok wydajności to GS.
-- **Nowy błąd (widoczny dopiero teraz): przy starcie wyścigu („GO”, ~78 s z AOT) VIF1 staje** (dmac1 rośnie co ~240
-  vsync = timeouty, ekran: zielono-czerwone kafle). To nie AOT: z weryfikacją od 68 s (wyniki interpretera) to samo.
-- **Do przetestowania ręcznie:** Arcade → Single Race → wyścig; porównać płynność z `GT3_NO_VU1AOT=1`. Zgłosić,
-  jeśli obraz w menu/wyścigu różni się między trybami.
+- **ROZWIĄZANE (2026-11-06): zawieszenie przy starcie wyścigu („GO”)** — dmac1 co ~240 vsync, kafle-śmieci.
+  Przyczyna: **brak przerwania GS FINISH (INTC 0)** w runtime. Od startu wyścigu gra po każdej klatce robi odczyt
+  GS→EE: handler DMAC VIF1 (0x25B738) przy łańcuchu zatrzymanym tagiem z IRQ zwiększa licznik +0x15 (0x4A8380),
+  handler FINISH (0x25B6D8) też; przy 2 → 0x25B950 (VIF1 DIR=0, BUSDIR=1), po nim 0x25B9C8 startuje kontynuację
+  łańcucha; dopiero jej koniec kasuje flagę zajętości kanału (+0x1D), na którą czeka wątek renderujący (0x2520C0,
+  limit 120 vblanków). Teraz gs_frontend przy FINISH 0→1 i IMR.FINISHMSK=0 zgłasza INTC 0 (`GT3_NO_FINISH_IRQ=1`
+  wyłącza). Wykluczone po drodze: (1) limit 8192 iteracji pętli łańcucha VIF1 (podniesiony i tak, z ostrzeżeniem
+  `[vif1] lancuch DMA przekroczyl limit`), (2) wyścig flagi i startu łańcucha (flaga ustawiana przed CHCR),
+  (3) maski DMAC. **Wyścig Arcade jedzie**: licznik czasu okrążenia biegnie, gaz (Krzyżyk) rozpędza auto (67 km/h,
+  2. bieg przy ~88 s), ok. 4 s/60 vsync w ruchu.
+- **Do przetestowania ręcznie:** Arcade → Single Race → wyścig; po „GO” jechać (X = gaz, strzałki = skręt), sprawdzić,
+  czy wyścig trwa bez zawieszenia i czy obraz jest poprawny; porównać płynność z `GT3_NO_VU1AOT=1`. Zgłosić,
+  jeśli obraz w menu/wyścigu różni się między trybami albo gra staje (wtedy też z `GT3_NO_FINISH_IRQ=1`).
 
 ### Wydajność (kamień 6, 2026-11-05)
 
