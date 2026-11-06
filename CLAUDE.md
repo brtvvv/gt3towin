@@ -417,6 +417,17 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   Wgranie CT24 jest poprawne (dodane i tak: przenoszenie niepełnego piksela CT24 między porcjami).
   Do sprawdzenia: czy to zamierzony filtr powtórki, czy błąd w kodzie EE liczącym krzywą (pow/exp, makra FPU)
   — porównać z PCSX2 albo znaleźć funkcję budującą tablicę (źródło BITBLT w RDRAM) i jej parametry na kanał.
+  Odłożone (brak nazw funkcji, może być zamierzone).
+
+### Wydajność c.d. (2026-11-06, po naprawie aut)
+- Wyścig z autami: ~7 s/60 vsync. Profil (20 s, wszystkie wątki): proces ~2,4 rdzenia; GS ~31 s CPU (pula),
+  VU1 ~9,7 s (wątek EE), kod gry ~0,2 s. Czułość na wątki rasteryzacji: 1 → ~15 s, 3 → ~8,5 s, 7 → ~7 s/60 vsync
+  (oba: VU1 na wątku EE i rasteryzacja przy synchronicznych opróżnieniach, np. LoadClut).
+- Zrobione: `calculatePairReadyCycle` w trybie szybkim VU pomija tablice gotowości (bez efektu mierzalnego);
+  pamięć podręczna zdekodowanej palety na prymityw (znacznik `t_clutSerial`, nowy w DrawPrimitive i w każdej
+  porcji `parallelRows`; `PS2X_GS_NOCLUTCACHE=1` wyłącza) → ~6,4–6,9 s/60 vsync.
+- Następne kandydaty: WritePixel (7,7 s; wskaźniki funkcji ReadVram/WriteVram na piksel, dwa przeliczenia adresu
+  dla RMW), SampleTexture/ReadTexture, VU1 na osobnym wątku (największy krok).
 
 ### Wydajność (kamień 6, 2026-11-05)
 
