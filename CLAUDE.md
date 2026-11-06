@@ -552,6 +552,10 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   Wykluczone: paleta z „nakładki” bajtów kolejkowanych wgrań (bez czekania, gdy źródło palety zapisują tylko
   wgrania) — obraz poprawny, ale tempo bez zmian (~3,6–3,8 s/60) → wycofane. Wniosek: dalsze przesuwanie punktów
   synchronizacji EE↔GS daje mało; ogranicza sama praca rasteryzacji (CPU) — krok strukturalny: GS na GPU.
+  Wykluczone też: pamięć podręczna zdekodowanych tekstur (cała tekstura → tablica liniowa, unieważnianie
+  generacjami stron 8 KB podbijanymi przez zbiory/transfery): globalna blokada na prymityw × pasy i ponowne
+  dekodowania po podbiciach (zakresy zapisu z zapasem) → wolniej (5–8 s/60), a pełne dekodowanie tekstur 1024²
+  zawieszało ekran wczytywania. Wycofane. Dalszy zysk wydajności tylko przez GS na GPU (duży projekt).
 - Pułapka: `CloseUpload()` przed blokadą `m_mutex` → wyścig z wątkiem okna → uszkodzenie sterty (0xC0000374).
   Diagnoza awarii bez debuggera: WER LocalDumps (HKLM\...\Windows Error Reporting\LocalDumps\ps2EntryRunner.exe)
   + `minidump` (pip) + symbolizacja przez dbghelp z ctypes (`scratchpad/sym.py`, PDB z `/DEBUG`).
