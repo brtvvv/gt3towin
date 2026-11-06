@@ -617,6 +617,35 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
 - **Do przetestowania ręcznie:** wyścig Arcade — czy efekt oślepienia słońcem / flary zachowuje się normalnie
   (odczyt GS→EE z opóźnieniem); jeśli coś miga albo jest dziwnie jasne: `PS2X_GS_SYNCREADBACK=1`. Ogólna płynność
   i brak zawieszeń przy wczytywaniu.
+- Dalej (seria 2 c.d.):
+  - **Sprzężenie „samo-odwzorowane”** (`isSelfMapped`: sprite czyta własną ramkę 1:1, u = x + c, próbkowanie punktowe —
+    GT3 nakłada filtr kolorów sceny paskami 32×512) rysowane równolegle w zwykłych zbiorach (nie szeregowo);
+    `PS2X_GS_NOSELFMAP=1` wyłącza. Odczyt własnej ramki nie trafia do obszarów odczytu (te same wiersze).
+  - Wczesny test Z przed próbkowaniem tekstury (`PS2X_GS_NOEARLYZ=1`), paleta T4 dekodowana raz na prymityw,
+    zawijanie współrzędnych raz na oś, filtrowanie dwuliniowe całkowitoliczbowo SSE2 (różnica ≤ 1 na kanał;
+    `PS2X_GS_FLOATLERP=1` = float), odczyt T4/T8/CT32 bez wywołań, licznik migawek palety lokalny dla wątku.
+  - Wgranie kolidujące tylko ze zbiorami w kolejce idzie do kolejki przed bieżącym zbiorem (bez zamykania go;
+    `PS2X_GS_UPLOADBREAK=1` = stare). W praktyce ~1000 zamknięć/s i tak zostaje (gra wgrywa w miejsce, z którego
+    czyta bieżący zbiór).
+  - **Wgrania jako surowe bajty**: EE dopisuje bajty i przesuwa stan transferu arytmetycznie, rozpakowanie robi
+    `m_flusher` (`ReplayUpload`); wcześniej nagrywanie po pikselu brało ~23% wątku EE (`PS2X_GS_UPLOADREC=1` = stare).
+  - Wątek EE był wąskim gardłem (pomiar czasu CPU wątków: `scratchpad/thr.ps1`; profil jednego wątku: zrzut
+    `xperf -i t.etl -o dump.csv -symbols` + `scratchpad/eeprof.py`). VU1 ~50% wątku EE, z tego ~25% obsługa flag.
+  - **VU1 AOT**: XGKICK naraz (długość z GIFtagów, jedno kopiowanie; `GT3_AOT_SLOWKICK=1`), flagi iloczynu zerowego
+    bez long double, **szybka ścieżka żywych flag FMAC** w generatorze (wynik/iloczyn normalny niezerowy → flagi =
+    znaki, wpis przez `aotFlagsPlain`; `GT3_AOT_SLOWFLAGS=1` = pełna ścieżka), `AOT_COMMIT` (commit tylko gdy coś
+    dojrzało). Weryfikacja AOT: 0 różnic. **Pułapka:** zwiększenie głębokości analizy żywotności flag w generatorze
+    (64 → 512 par) dawało różnice w weryfikacji (~250/140 tys.) — analiza jest gdzieś niepoprawna przy długich
+    ścieżkach; zostaje 64 (`GT3_AOT_DEPTH`). Wejście `3c68` czyta flagi poprzedniego programu, więc koniec programu
+    musi zostać żywy; JR liczony zachowawczo po wszystkich początkach bloków (powroty z BAL nie są w logu).
+  - Nowe wejścia VU1 (1978, 17b8, 1b28) dopisane do `gt3-data/recomp/vu1/entries.txt` i przegenerowane.
+  - **Tempo vsync**: terminy vsync liczone od poprzedniego terminu — po wolnym fragmencie emulacja „nadrabiała”
+    (gra szybsza niż 60 Hz). Teraz zaległość > 100 ms jest porzucana (`GT3_VSYNC_CATCHUP=1` = stare).
+  - Skrypt pomiaru `scratchpad/race.ps1` wypisuje też średnią z pierwszych 8 odcinków wyścigu (przelot kamery +
+    odliczanie + start — najcięższy, porównywalny fragment).
+  - **Wynik:** wyścig Arcade (Super Speedway) w większości **pełne 60 kl./s** (1,00 s/60 vsync, ograniczone tempem),
+    z wieloma autami w kadrze ~50–55 kl./s (1,1–1,2), przelot kamery/odliczanie ~1,3–1,4. Na początku sesji 3,6.
+  - **Do przetestowania ręcznie:** płynność wyścigu i czy gra nie przyspiesza po wczytywaniu; dźwięk (IOP wsadowo).
 
 ### Wydajność (kamień 6, 2026-11-05)
 
