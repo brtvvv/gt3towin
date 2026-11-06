@@ -534,6 +534,10 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   `[vif1] lancuch DMA przekroczyl limit`), (2) wyścig flagi i startu łańcucha (flaga ustawiana przed CHCR),
   (3) maski DMAC. **Wyścig Arcade jedzie**: licznik czasu okrążenia biegnie, gaz (Krzyżyk) rozpędza auto (67 km/h,
   2. bieg przy ~88 s), ok. 4 s/60 vsync w ruchu.
+- Profil wyścigu w ruchu (z AOT, 20 s): VU1 już ~2–3 s, dominuje GS na puli (WritePixel 13,8, SampleTexture 13,6,
+  combineTexture 7,6, DrawTriangle 6,4, ReadTexture 5,2 s CPU), planista IOP na wątku EE ~2,3 s.
+  Wykluczone: pomijanie skanów wątków IOP w `runCycles` (licznik zmian stanu): bez zysku mierzalnego (~4,1 s/60),
+  a w wersji między wywołaniami psuło budzenie (zdarzenia z EE) — wycofane.
 - **Do przetestowania ręcznie:** Arcade → Single Race → wyścig; po „GO” jechać (X = gaz, strzałki = skręt), sprawdzić,
   czy wyścig trwa bez zawieszenia i czy obraz jest poprawny; porównać płynność z `GT3_NO_VU1AOT=1`. Zgłosić,
   jeśli obraz w menu/wyścigu różni się między trybami albo gra staje (wtedy też z `GT3_NO_FINISH_IRQ=1`).
