@@ -680,6 +680,9 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
     `GT3DBG_WAITSTAT=1` → `[gifdrain]`), natywne skróty PATH3 wyłączone w tym trybie. Obraz poprawny, przelot kamery
     46–50 kl./s (+10%), ale przed wyścigiem ~4 s przestoju (licznik DMA VIF1 stoi — gra czeka na zdarzenie GS, pewnie
     limit 120 vblanków) → start wyścigu ~3,4 s później. Do zbadania, jeśli ta droga ma być domyślna.
+    Wykluczone (2 próby): zgubione przerwanie FINISH (FINISH przychodzący przed skasowaniem poprzedniego jest teraz
+    zgłaszany po skasowaniu — `g_gsFinishPending`, tylko w trybie wątku GIF) — przestój bez zmian (fin=2, licznik DMA
+    VIF1 stoi ~4 s przy ~40 s, po wyborze auta). Następny krok: zrzut wątków EE w czasie przestoju (na co czeka).
 
 ### Wydajność (kamień 6, 2026-11-05)
 
