@@ -328,6 +328,13 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   **Trop:** cień auta jest rysowany (trójkąty abe=1 zmsk=1, T4, np. tbp 0x3665, ok. 179 sztuk) w miejscu auta;
   znaleźć funkcję EE budującą pakiet cienia (wywołanie VIF/MSCAL), karoseria powinna być rysowana obok —
   sprawdzić, dlaczego jej gałąź jest pomijana.
+- Ustalenia (wrappery `replaceFunction` + `lookupFunction` na oryginał, `scratchpad/xref.py` szuka lui/addiu
+  do adresu, RTTI gcc2: napis `12RaceCarModel` → funkcja `__tf` 0x1AC638 → vtable 0x332498):
+  ścieżka modelu `cars/{day,eve,night}/<id>` składana w 0x21FA18(id, bufor, pora), wczytywanie plików
+  0x2428C8(nazwa, cel, rozmiar…). **Modele aut i opon się wczytują** (demo: `cars/day/sb0039`,
+  `cars/day/mi0063`, `tire/n23`, `tire/n31`) → problem jest w rysowaniu. Metody wirtualne RaceCarModel
+  (0x1AAD18, 0x191068, 0x190E30, 0x190DB8) prawie nie są wołane (vt3 2×) — rysowanie idzie inną ścieżką
+  (`Q28CarModel8Callback`, `ModelSet`). Makra FPU div/sqrt/rsqrt w ps2_runtime_macros.h wyglądają poprawnie.
 
 ### Wydajność (kamień 6, 2026-11-05)
 
