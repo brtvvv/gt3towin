@@ -584,6 +584,40 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   Dodatkowo: przejechać całe okrążenie z zderzeniami z innymi autami (fizyka po poprawce SQRT.S); przy
   śmieciach w teksturach sprawdzić z `PS2X_GS_NODEFERUPLOAD=1`.
 
+### Wydajność c.d. (2026-11-06, seria 2: 3,6 → ~1,5 s/60 vsync)
+
+- Pomiar granicy: `GT3DBG_NODRAW=<s>` (od podanej sekundy nic nie rysuje) — wyścig bez rysowania był ~2,3 s/60,
+  czyli strona EE też była za wolna. Profil bez rysowania: planista IOP (`beginNextReady`/`nextWakeCycle`) ~22%.
+- **IOP wsadowo** (`runEeCycles`): EE rozlicza cykle co kilka-kilkadziesiąt, a każde wywołanie skanowało wszystkie
+  wątki IOP. Teraz co `GT3_IOP_BATCH` cykli EE (domyślnie 2048 ≈ 7 µs; 0 = co 8). Wyścig 3,6 → ~3,1, bez rysowania 2,3 → 1,35.
+- **Szybka ścieżka trójkątów i sprite'ów** (`PS2X_GS_SLOWTRI=1` = stara): przedział X wiersza liczony analitycznie
+  (zapas wg szacunku błędu float), stan potoku pikseli w strukturach lokalnych (`FastPix`, `FastTex` — zapisy przez
+  `uint8_t*` nie zmuszają do ponownego czytania stanu), adres VRAM przyrostowo (wiersz tablicy stron raz na wiersz),
+  `__forceinline` na małych funkcjach piksela. Weryfikacja `PS2X_GS_VERIFYTRI=K` (z `PS2X_GS_SYNCFLUSH=1
+  PS2X_GS_RASTER_THREADS=1`): ~0,2% trójkątów różni się 1–3 bajtami (pojedyncze piksele) — to `/fp:fast` (inne
+  zaokrąglenia w każdej ścieżce), także bez zawężania przedziału; obraz identyczny. → ~2,0 s/60.
+- Statystyka (`GT3DBG_TRISTAT=1`): ~47 tys. trójkątów/klatkę, średnio ~28 px — koszt na prymityw ma znaczenie.
+- **Czekanie EE na GS** (`GT3DBG_WAITSTAT=1`: czas synchronicznych opróżnień wg adresu wywołującego, symbolizacja
+  `scratchpad/sym.py`): (1) `LoadClut` ~35% — teraz **ładowanie palety jako operacja w kolejce** (wersje palety
+  `ClutVersion` liczone przez wątek `m_flusher` na początku zbioru; zbiór zamykany, gdy jego prymityw zapisuje źródło
+  palety; źródło dopisywane do obszarów odczytu, żeby wgrania w to miejsce czekały w kolejce; `PS2X_GS_NOCLUTDEFER=1`
+  wyłącza); (2) `Present` (wątek okna) robił pełne opróżnienie pod `m_mutex` co klatkę — teraz **kopia VRAM jako
+  znacznik w kolejce**, czeka tylko wątek okna (`PS2X_GS_SYNCPRESENT=1` = stare); (3) **odczyt GS→EE co klatkę**
+  (GT3 czyta blok 64×8 CT32 z rotujących adresów 0x3960–0x3FA0, na początku 64×32 z 0x1E20 — pierścień zapytań, np.
+  widoczność słońca/oślepienie): teraz znacznik w kolejce liczy odczyt we właściwym miejscu strumienia, a EE dostaje
+  wynik poprzedniego zapytania o tym samym rozmiarze/formacie (opóźnienie 1–2 klatek, `GT3_GS2EE_LAG`, domyślnie 2;
+  przy większym opóźnieniu EE czeka tylko na najstarszy znacznik). `PS2X_GS_SYNCREADBACK=1` = synchronicznie,
+  `GT3_GS2EE_KEYADDR=1` = klucz z adresem (wtedy praktycznie zawsze synchronicznie). → ~1,5 s/60 (~40 vsync/s).
+- **Naprawiony wyścig w `RowPool`** (pula pasów): pasy brane atomowym licznikiem bez generacji — spóźniony wątek
+  poprzedniego zadania mógł wziąć pas nowego ze starym `m_fn` (awaria w `DrawDeferredSet`, zrzut WER) albo zdjąć
+  licznik w toku poniżej zera (wywołujący kręci się w nieskończoność). **Prawdopodobna przyczyna rzadkich zawieszeń
+  przy wczytywaniu.** Teraz przydział pod blokadą z numerem generacji, koniec przez zmienną warunkową.
+- Diagnoza awarii: WER LocalDumps włączone dla ps2EntryRunner.exe (folder `scratchpad/dumps`), analiza
+  `scratchpad/crash.py <dmp>` (rejestry z kontekstu wyjątku + capstone + sym.py).
+- **Do przetestowania ręcznie:** wyścig Arcade — czy efekt oślepienia słońcem / flary zachowuje się normalnie
+  (odczyt GS→EE z opóźnieniem); jeśli coś miga albo jest dziwnie jasne: `PS2X_GS_SYNCREADBACK=1`. Ogólna płynność
+  i brak zawieszeń przy wczytywaniu.
+
 ### Wydajność (kamień 6, 2026-11-05)
 
 - Profilowanie: `xperf` (Windows Performance Toolkit, jest w `Program Files (x86)\Windows Kits\10`, konto ma
