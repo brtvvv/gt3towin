@@ -346,6 +346,17 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   `1 − f[+0x30]` w 0x21FEF8). **Problem aut odłożony** po 5 wykluczonych kierunkach. Do zrobienia później:
   porównanie z PCSX2 (zrzut łańcucha VIF1/GIF jednej klatki wyścigu) albo śledzenie bufora pakietów aut.
 
+### Wydajność c.d. (2026-11-06)
+
+- Profil wyścigu: wątek EE ~44% interpreter VU1, ~30% czeka na rysowanie pasami (RowPool::run).
+- Opróżnienia odłożonych prymitywów: średnio 9–18 prymitywów na opróżnienie; przyczyny ~55% LoadClut,
+  ~28% BeginTransfer (wgrania), ~10% TextureFlush, ~6% prezentacja. Próba: migawki CLUT + brak opróżnienia
+  przy TextureFlush + test nakładania obszaru wgrania (tekstura/ramka/Z odłożonych prymitywów) — opróżnień
+  przez LoadClut 16,8 tys. → 1,3–2 tys., przez wgrania o połowę mniej, ale **tempo bez zmian** (~8,4 s/60 vsync)
+  → wycofane. Wąskie gardło to sama praca rysowania wykonywana, gdy EE czeka. Następny krok: asynchroniczne
+  opróżnianie (pula rysuje, EE liczy dalej; czekanie tylko przy konflikcie obszarów/odczytach VRAM) — wtedy
+  migawki CLUT i testy nakładania z tej próby będą potrzebne.
+
 ### Wydajność (kamień 6, 2026-11-05)
 
 - Profilowanie: `xperf` (Windows Performance Toolkit, jest w `Program Files (x86)\Windows Kits\10`, konto ma
