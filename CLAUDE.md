@@ -401,6 +401,12 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   **Następne:** kto zapisuje VU0mem[8..11] (0x11004080) tuż przed ModelSet toru przy odliczaniu
   (wołający 0x24F778: 0x2497AC/0x2497E8, 0x24F428, 0x24F5EC, 0x25103C) — możliwe złe źródło macierzy kamery
   (np. kamera auta gracza, którego model też nie jest rysowany).
+- **ROZWIĄZANE (2026-11-06): auta są rysowane** (gracz i rywale, demo i Arcade). VU0mem[8..11] (macierz kamery,
+  zapis 0x255FB8 przez vi10=8) nadpisywał push stosu macierzy 0x256088 (`vsqi` przez vi11; init 0x2514E8:
+  vi11=0x10, vi12=0x50, vi13=0x60; pop 0x256108 `vlqd --vi`). vi11 wracał do 0 tuż po inicjalizacji, bo kontekst
+  wątku bywa zerowany/odtwarzany w całości, a wspólny stan VU0 wczytywano tylko przy zmianie kontekstu.
+  Teraz `gt3Vu0Load` kopiuje wspólny stan VU0 przed każdym wykonaniem. Morał: rejestry VI VU0 to trwały stan gry
+  (wskaźniki stosów w pamięci VU0) — każde cofnięcie kontekstu EE psuje grafikę.
 
 ### Wydajność (kamień 6, 2026-11-05)
 
