@@ -368,6 +368,13 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   brak litery w „SUPER SPEEDWAY”, czarna scena; teraz zakresy wyrównane do stron 8 KB + zapas 128 wierszy.
   (2) Pomijanie opróżnienia przy LoadClut (migawki CLUT) gubiło panel ASM/TCS — LoadClut znów zawsze opróżnia
   (bez straty tempa). Wynik: HUD i scena poprawne, ~6,7 s/60 vsync (~9 kl./s).
+- Profil EE: kod gry tylko ~14% wątku EE (reszta VIF1/VU1/GS). **Tryb szybki VU (domyślny)**: zapisy VF/VI/ACC
+  od razu do rejestrów (na VU i tak są blokady przy hazardach), bez kopii stary/nowy, kolejek i markPairWrites;
+  flagi, Q/P (DIV/EFU, WAITQ/WAITP) i zapisy do pamięci nadal przez potoki. `PS2X_VU_EXACT=1` = dokładny model.
+  Wyścig ~6,7 → ~5,9 s/60 vsync (~10 kl./s), obraz bez zmian.
+- **Nowy błąd (kamień 5):** przy odliczaniu w Arcade (widok z auta) dolna część sceny jest czarna — bliski tor
+  nie jest rysowany (widać tylko niebo). Możliwe wspólne źródło z brakiem aut: geometria blisko kamery (ścieżka
+  obcinania/clip w mikrokodzie VU1, CLIP/FCAND/FCOR). Teraz da się to obejrzeć w 90 s (odliczanie ~85 s).
 
 ### Wydajność (kamień 6, 2026-11-05)
 
