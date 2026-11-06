@@ -508,7 +508,26 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   (`PS2_VU1_IMPL`), pętla `run()` = lambda `step` wspólna dla interpretera i AOT; `gt3_vu1_aot.inc` (lokalny,
   z `scratchpad/vu1gen.py`, NIE do repo) = `switch(pc)` par ze stałymi słowami. `GT3_NO_VU1AOT=1` wyłącza.
   Pułapka: jedna funkcja z 1136 wstawionymi parami → kompilacja >10 min i brak pamięci (przerwana).
-  Następny krok: podział na osobne funkcje per punkt wejścia/blok.
+- Etap A (zrobiony): żywotność flag MAC w interpreterze (`g_vuFlagDead`, analiza w przód po ścieżkach): w GT3 flagi
+  czyta tylko 10 FMAND, ~77% FMAC pomija flagi. Zysk mały (flagi nie były głównym kosztem). `PS2X_VU_LIVEFLAGS=1`
+  wyłącza. Pułapka: warianty z akumulatorem (MULA/MADDA/OPMULA, upper 0x3C..) też zapisują flagi.
+- **Etap B (zrobiony): AOT mikrokodu VU1** — `tools/vu1aot.py <obraz.bin> "<log1;log2>" gt3_vu1_aot.inc` generuje bloki
+  podstawowe jako lambdy bez przechwytywania, dołączane wewnątrz `VU1Interpreter::run` (dostęp do prywatnych pól bez
+  zmiany nagłówka). Stan = `m_state` + kolejki Q/P/flag interpretera (commit tylko przed czytnikami), FMAC przez SSE
+  z szybką ścieżką bez flag, SQ od razu, XGKICK od razu (czas zakończenia jak interpreter: 2 cykle/qword).
+  Obraz kodu VU1 w GT3 jest jeden (hash a4460ba4); dane i wygenerowany plik: gt3-data/recomp/vu1/
+  (`gt3_vu1_aot.inc` skopiować do ps2xRuntime/src/lib/vu/ — bez niego build działa jak dawniej, tylko interpreter).
+  Wejścia: log `[gt3vu] entries` (MSCAL) + `[gt3aot] brak bloku XXXX` (cele JR) — po nowych wpisach w logu
+  przegenerować. Nieobsłużona instrukcja → blok pomijany (interpreter).
+  **Weryfikacja:** `GT3_VU1AOT_VERIFY=K` (co K-ty program: AOT i interpreter z tej samej migawki, porównanie pamięci VU,
+  VF/VI/ACC/Q/I/MAC/clip/pc i hashy pakietów GIF; zostaje wynik interpretera), `GT3_VU1AOT_VERIFY_FROM=s` (od sekundy).
+  Wynik: setki tysięcy programów, 0 różnic. `GT3_NO_VU1AOT=1` = sam interpreter.
+  Tempo: wyścig ~3,7–5,2 s/60 vsync (było 5,3–6,6), wczytywanie/menu dużo szybsze (odliczanie od ~70 s zamiast ~85 s).
+  Teraz dominuje GS (rasteryzacja na puli) → następny krok wydajności to GS.
+- **Nowy błąd (widoczny dopiero teraz): przy starcie wyścigu („GO”, ~78 s z AOT) VIF1 staje** (dmac1 rośnie co ~240
+  vsync = timeouty, ekran: zielono-czerwone kafle). To nie AOT: z weryfikacją od 68 s (wyniki interpretera) to samo.
+- **Do przetestowania ręcznie:** Arcade → Single Race → wyścig; porównać płynność z `GT3_NO_VU1AOT=1`. Zgłosić,
+  jeśli obraz w menu/wyścigu różni się między trybami.
 
 ### Wydajność (kamień 6, 2026-11-05)
 
