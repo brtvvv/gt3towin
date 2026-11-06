@@ -375,6 +375,14 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
 - **Nowy błąd (kamień 5):** przy odliczaniu w Arcade (widok z auta) dolna część sceny jest czarna — bliski tor
   nie jest rysowany (widać tylko niebo). Możliwe wspólne źródło z brakiem aut: geometria blisko kamery (ścieżka
   obcinania/clip w mikrokodzie VU1, CLIP/FCAND/FCOR). Teraz da się to obejrzeć w 90 s (odliczanie ~85 s).
+- Lista rysowań klatki odliczania: scena główna (fbp 0xF1 fbw 10) ma tylko kilka trójkątów — **tor jest
+  odrzucany po stronie EE** (jak auta), nie przez GS. Test widoczności obiektów: 0x226158 (ModelSet) liczy
+  makro VCLIP dla dwóch punktów i czyta flagi przez CFC2 vi18; przy w<0 zamienia bity „+” (0x15) i „−” (0x2A).
+- **Błąd rekompilatora VCLIP (makro COP2) poprawiony**: miał zamienione bity +/− (bit 0 musi być +x) i porównywał
+  z w zamiast |w| (`ps2xRecomp/src/lib/vu_translator.cpp`; w 7 wygenerowanych plikach runnera ten sam kod
+  podmieniony lokalnie — przy regeneracji runnera poprawka wejdzie z generatora). Obraz bez zmian (auta i bliski
+  tor nadal brak) — kolejne podejrzane makra COP2 (VMADD/VOPMSUB/VDIV…) albo dane w VU0 (vf24–27, vf20).
+  Interpreter VU (CLIP/FC*) sprawdzony — poprawny. Runner jest budowany unity (`Unity/unity_N_cxx.cxx`).
 
 ### Wydajność (kamień 6, 2026-11-05)
 
