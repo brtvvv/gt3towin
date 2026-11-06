@@ -335,6 +335,12 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   `cars/day/mi0063`, `tire/n23`, `tire/n31`) → problem jest w rysowaniu. Metody wirtualne RaceCarModel
   (0x1AAD18, 0x191068, 0x190E30, 0x190DB8) prawie nie są wołane (vt3 2×) — rysowanie idzie inną ścieżką
   (`Q28CarModel8Callback`, `ModelSet`). Makra FPU div/sqrt/rsqrt w ps2_runtime_macros.h wyglądają poprawnie.
+- Liczniki wywołań (szablon `gt3ProfWrap<I>` na 240 funkcjach 0x21F000–0x228000 z functions.csv, różnica
+  dwóch zrzutów ~120 vsync w wyścigu demo): **kod aut działa co klatkę** — 0x21FE00/0x21FE78/0x21FEE8…
+  po 240 (2 auta), 0x21FEC8 960, 0x2232D8/0x223338/0x2235D0 po 480 (koła?), 0x225E08/0x225F08/0x227F68 ~14 tys.,
+  0x226158 ~43 tys., 0x226588 ~48 tys. (ModelSet — także trasa). Rysowanie aut jest więc zlecane, ale nie
+  trafia do GS → szukać między tym kodem a VIF1: czy pakiety aut trafiają do łańcucha DMA VIF1 (np. inny
+  kanał/ścieżka: VIF0/VU0, SPR, osobny łańcuch), czy są budowane z błędnymi danymi (np. liczba wierzchołków 0).
 
 ### Wydajność (kamień 6, 2026-11-05)
 
