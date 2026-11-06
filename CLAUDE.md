@@ -341,6 +341,10 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   0x226158 ~43 tys., 0x226588 ~48 tys. (ModelSet — także trasa). Rysowanie aut jest więc zlecane, ale nie
   trafia do GS → szukać między tym kodem a VIF1: czy pakiety aut trafiają do łańcucha DMA VIF1 (np. inny
   kanał/ścieżka: VIF0/VU0, SPR, osobny łańcuch), czy są budowane z błędnymi danymi (np. liczba wierzchołków 0).
+- Dalej wykluczone: (5) DMA scratchpada — kanały 8/9 (fromSPR/toSPR) w ogóle nie startują (runtime i tak
+  obsługuje tylko tryb normalny). Kod aut zapisuje stałe do SPR (0x250688 → 0x70003AF0.., np. przezroczystość
+  `1 − f[+0x30]` w 0x21FEF8). **Problem aut odłożony** po 5 wykluczonych kierunkach. Do zrobienia później:
+  porównanie z PCSX2 (zrzut łańcucha VIF1/GIF jednej klatki wyścigu) albo śledzenie bufora pakietów aut.
 
 ### Wydajność (kamień 6, 2026-11-05)
 
