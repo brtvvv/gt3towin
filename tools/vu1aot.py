@@ -1,3 +1,4 @@
+import os
 # vu1aot.py <obraz.bin> <e.txt z [gt3vu] entries> <wyjscie.inc>
 # Generator AOT mikrokodu VU1 GT3: bloki podstawowe -> lambdy C++ (dolaczane wewnatrz VU1Interpreter::run).
 # Semantyka = tryb szybki interpretera (ps2_vu1_upper/lower/core.cpp). Wynik jest kodem wygenerowanym z gry:
@@ -12,13 +13,17 @@ for c in img:
     h = ((h ^ c) * 16777619) & 0xFFFFFFFF
 
 entries = set()
+mscal = set()   # wejscia programow (MSCAL); reszta 'entries' to cele JR
+jrt = set()
 for line in (l for f in sys.argv[2].split(';') for l in open(f, encoding='utf-8', errors='replace')):
     m = re.search(r'\[gt3aot\] brak bloku ([0-9a-f]+)', line)
     if m:
         entries.add(int(m.group(1), 16))
+        jrt.add(int(m.group(1), 16))
     if '[gt3vu] entries' in line:
         for m in re.finditer(r' ([0-9a-f]+):\d+', line):
             entries.add(int(m.group(1), 16))
+            mscal.add(int(m.group(1), 16))
 
 def words(pc):
     lo, up = struct.unpack_from('<II', img, pc & 0x3FF8)
@@ -77,8 +82,14 @@ def wr_flags(u):
 def rd_flags(u, l):
     return not (u >> 31) and (l >> 25) in (0x14, 0x16, 0x17, 0x18, 0x1A, 0x1B)
 
+# Koniec programu (bit E) i JR/JALR: flagi moga zobaczyc tylko czytniki na poczatku kolejnego programu / celu JR
+# (wszystkie znane wejscia sa w 'entries'). END_LIVE = czy z ktoregos wejscia czytnik widzi flagi sprzed niego.
+END_LIVE = True   # bit E
+JR_LIVE = True    # JR/JALR
+
+DEPTH = int(os.environ.get('GT3_AOT_DEPTH', '64'))
 def visible(pc, sw, depth, budget):
-    while depth < 64:
+    while depth < DEPTH:
         budget[0] -= 1
         if budget[0] < 0:
             return True
@@ -89,10 +100,10 @@ def visible(pc, sw, depth, budget):
         if sw >= 0: sw += 1
         if wr_flags(u) and sw < 0: sw = 1
         if sw >= 5: return False
-        if (u >> 30) & 1: return True
+        if (u >> 30) & 1: return END_LIVE
         if not u >> 31:
             op = l >> 25
-            if op in (0x24, 0x25): return True
+            if op in (0x24, 0x25): return JR_LIVE
             unc = op in (0x20, 0x21); cond = 0x28 <= op <= 0x2F
             if unc or cond:
                 t = br_target(pc, l)
@@ -113,7 +124,25 @@ def flags_live(pc):
     u, _ = words(pc)
     if not wr_flags(u):
         return False
-    return visible(pc + 8, -1, 0, [4096])
+    return visible(pc + 8, -1, 0, [16384])
+
+# Czy ktorekolwiek wejscie widzi flagi poprzedniego programu (zalozenie END_LIVE=False w trakcie liczenia; jesli
+# ktores widzi - wszystko zachowawczo zywe). GT3_AOT_ENDLIVE=1 = zawsze zywe (stare zachowanie).
+import os
+if os.environ.get('GT3_AOT_ENDLIVE'):
+    END_LIVE = True
+else:
+    END_LIVE = False
+    JR_LIVE = False
+    # cel JR (bez znanego wejscia MSCAL) widzi flagi sprzed skoku - wtedy JR zywy
+    vis = {e: visible(e, -1, 0, [16384]) for e in sorted(entries)}
+    # cel JR to tez powrot z podprogramu (po BAL/JALR) - nie ma go w logu; zachowawczo wszystkie poczatki blokow
+    JR_LIVE = any(v for e, v in vis.items() if e in jrt and e not in mscal) or any(visible(t, -1, 0, [16384]) for t in sorted(leaders))
+    END_LIVE = any(v for e, v in vis.items() if e in mscal)
+    if END_LIVE or JR_LIVE:  # przeliczenie z ustalonymi wartosciami (zachowawczo)
+        vis = {e: visible(e, -1, 0, [16384]) for e in sorted(entries)}
+        END_LIVE = END_LIVE or any(v for e, v in vis.items() if e in mscal)
+    print('flagi: koniec programu zywe=%s JR zywe=%s, wejscia widzace stare flagi: %s' % (END_LIVE, JR_LIVE, ' '.join('%04x' % e for e, v in vis.items() if v)), file=sys.stderr)
 
 # ---------------- emisja
 LANES = 'xyzw'
@@ -221,7 +250,27 @@ def emit_upper(pc, u, live):
         u, slow_dst, '' if isacc or fd else ' AOT_VF0;')
     fast_dst = 'aSt<%d>(S.acc, r_);' % dest if isacc else ('aSt<%d>(vf[%d], r_);' % (dest, fd) if fd else '')
     if live:
-        out.append('{ %s const __m128 r_ = %s; %s }' % (pre, e, slow))
+        # Flagi zywe: szybko, gdy wynik (i iloczyn w MADD/MSUB itd.) w lane'ach dest jest normalny i niezerowy -
+        # flagi = znaki (jak normalizeFmacResult/calculateFmacProductSticky na szybkiej sciezce), wpis do potoku flag
+        # przez aotFlagsPlain. Inaczej (0, denormal, inf, MAX) - pelna sciezka interpretera.
+        prod = None
+        prodsum = (o <= 0x0F and o >= 0x08) or o in (0x21, 0x23, 0x25, 0x27, 0x29, 0x2D) or (o == 0x2E and not isacc)
+        if prodsum:
+            if 0x08 <= o <= 0x0F: prod = '_mm_mul_ps(vs_, %s)' % bc(o & 3)
+            elif o in (0x21, 0x25): prod = '_mm_mul_ps(vs_, %s)' % q
+            elif o in (0x23, 0x27): prod = '_mm_mul_ps(vs_, %s)' % ii
+            elif o in (0x29, 0x2D): prod = '_mm_mul_ps(vs_, vt_)'
+            else: prod = '_mm_mul_ps(_mm_shuffle_ps(vs_, vs_, _MM_SHUFFLE(3, 0, 2, 1)), _mm_shuffle_ps(vt_, vt_, _MM_SHUFFLE(3, 1, 0, 2)))'
+        bl = blend_mask(dest)
+        if prod:
+            cond = 'aPlNZ<%d>(r_) && aPlNZ<%d>(p_)' % (dest, dest)
+            flg = 'aotFlagsPlain(v, _mm_movemask_ps(r_) & %d, _mm_movemask_ps(p_) & %d);' % (bl, bl)
+            pdecl = ' const __m128 p_ = %s;' % prod
+        else:
+            cond = 'aPlNZ<%d>(r_)' % dest
+            flg = 'aotFlagsPlain(v, _mm_movemask_ps(r_) & %d, 0);' % bl
+            pdecl = ''
+        out.append('{ %s const __m128 r_ = %s;%s if (!g_aotSlowFlags && %s) { %s %s } else %s }' % (pre, e, pdecl, cond, fast_dst, flg, slow))
     else:
         out.append('{ %s const __m128 r_ = %s; if (aPl<%d>(r_)) { %s } else %s }' % (pre, e, dest, fast_dst, slow))
     return out
@@ -436,9 +485,9 @@ def emit_pair(pc, first_in_block, prev_recorded):
         code.append('for (const auto &e_ : v->m_efu) if (e_.valid && e_.readyCycle > v->m_cycle) v->m_cycle = e_.readyCycle;')
     need_commit = 'commit' in pre or 'fdiv' in pre or 'efu' in pre or 'waitp' in pre or kind == 'clip' or (live and kind in ('fmac', 'fmaca') and (u >> 21) & 0xF)
     if need_commit:
-        code.append('v->commitReadyPipelines();')
+        code.append('AOT_COMMIT;')
     elif q_reader(u):
-        code.append('if (v->m_fdiv.valid && v->m_fdiv.readyCycle <= v->m_cycle) v->commitReadyPipelines();')
+        code.append('if (v->m_fdiv.valid && v->m_fdiv.readyCycle <= v->m_cycle) AOT_COMMIT;')
     rec = 0 if ibit else lower_vi_delay_write(l)
     code.append('{')
     if rec:
