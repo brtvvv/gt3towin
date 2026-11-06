@@ -363,6 +363,11 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   tekstura — szacunek z nadmiarem). TextureFlush nie opróżnia. `PS2X_GS_SYNCFLUSH=1` = stare zachowanie.
   Wyścig ~8,4 → ~6–7 s/60 vsync (~8–10 kl./s). Na drugiej (losowej) trasie demo raz widać kafle-śmieci na
   niebie — nie wiadomo, czy to wyścig danych, czy wcześniejszy błąd tej trasy (sprawdzić z PS2X_GS_SYNCFLUSH=1).
+- Poprawki (Arcade, Super Speedway jako test deterministyczny): (1) szacunki obszarów VRAM liniowo w bajtach
+  były złe dla formatów z przeplotem (PSMT4: strona 128×128, mały prostokąt dotyka bloków w całej stronie) →
+  brak litery w „SUPER SPEEDWAY”, czarna scena; teraz zakresy wyrównane do stron 8 KB + zapas 128 wierszy.
+  (2) Pomijanie opróżnienia przy LoadClut (migawki CLUT) gubiło panel ASM/TCS — LoadClut znów zawsze opróżnia
+  (bez straty tempa). Wynik: HUD i scena poprawne, ~6,7 s/60 vsync (~9 kl./s).
 
 ### Wydajność (kamień 6, 2026-11-05)
 
