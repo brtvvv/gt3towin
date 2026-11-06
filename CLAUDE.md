@@ -538,6 +538,11 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   combineTexture 7,6, DrawTriangle 6,4, ReadTexture 5,2 s CPU), planista IOP na wątku EE ~2,3 s.
   Wykluczone: pomijanie skanów wątków IOP w `runCycles` (licznik zmian stanu): bez zysku mierzalnego (~4,1 s/60),
   a w wersji między wywołaniami psuło budzenie (zdarzenia z EE) — wycofane.
+- Czułość na liczbę wątków rasteryzacji (wyścig w ruchu): 2 → ~6,2, 4 → ~5,0, 8 → ~4,1 s/60 vsync — wyścig jest
+  ograniczony przez GS. Pula zużywa jednak średnio tylko ~2,75 z 7 rdzeni → ogranicza opóźnienie (synchroniczne
+  opróżnienia, małe zbiory, jeden wątek m_flusher), nie przepustowość.
+- Zrobione: adres bajtowy CT32/CT24/Z32/Z24 w `WritePixel` liczony raz na bufor (RMW ramki i Z bez 4× przeliczania
+  przeplotu; `PS2X_GS_NOFASTADDR=1` wyłącza). Obraz bez zmian, tempo w granicach szumu (~4,0–4,3 s/60).
 - **Do przetestowania ręcznie:** Arcade → Single Race → wyścig; po „GO” jechać (X = gaz, strzałki = skręt), sprawdzić,
   czy wyścig trwa bez zawieszenia i czy obraz jest poprawny; porównać płynność z `GT3_NO_VU1AOT=1`. Zgłosić,
   jeśli obraz w menu/wyścigu różni się między trybami albo gra staje (wtedy też z `GT3_NO_FINISH_IRQ=1`).
