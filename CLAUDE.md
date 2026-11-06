@@ -671,6 +671,15 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   - Następny duży krok (jeśli przelot kamery ma mieć 60 kl./s): VU1/VIF1/GIF na osobnym wątku (jak na PS2, VU1 działa
     równolegle z EE). Wątek EE: VU1 ~44%, VIF ~8%, GS ~13%, kod gry ~8%. Ryzyko: synchronizacja stanu VIF1/DMA,
     przerwań i kolejności ścieżek GIF (PATH1/2 z wątku VU, PATH3 z EE).
+  - **Miara klatek:** `[gt3stat] ... fin= flip=` — `flip` = liczba vsynców, przy których zmienił się DISPFB1/2 (zamiana
+    buforów = wyrenderowana klatka), `fin` = zdarzenia GS FINISH. `race.ps1` wypisuje „kl/s (zamiany buforów)”.
+    Przy asynchronicznym GS samo s/60 vsync myli (vsync idzie równo, a gra gubi klatki). Wynik bez wątku GIF:
+    przelot kamery 40–46 kl./s, jazda 60 kl./s.
+  - **Próba: wątek GIF** (`GT3_GIF_THREAD=1`, domyślnie wyłączony): pakiety GIF po arbitrażu do kolejki FIFO
+    przetwarzanej przez osobny wątek; metody GS wołane z EE poza kolejką czekają na jej opróżnienie (`g_gsGifDrain`,
+    `GT3DBG_WAITSTAT=1` → `[gifdrain]`), natywne skróty PATH3 wyłączone w tym trybie. Obraz poprawny, przelot kamery
+    46–50 kl./s (+10%), ale przed wyścigiem ~4 s przestoju (licznik DMA VIF1 stoi — gra czeka na zdarzenie GS, pewnie
+    limit 120 vblanków) → start wyścigu ~3,4 s później. Do zbadania, jeśli ta droga ma być domyślna.
 
 ### Wydajność (kamień 6, 2026-11-05)
 
