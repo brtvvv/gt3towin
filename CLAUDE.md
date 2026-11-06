@@ -556,6 +556,15 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   generacjami stron 8 KB podbijanymi przez zbiory/transfery): globalna blokada na prymityw × pasy i ponowne
   dekodowania po podbiciach (zakresy zapisu z zapasem) → wolniej (5–8 s/60), a pełne dekodowanie tekstur 1024²
   zawieszało ekran wczytywania. Wycofane. Dalszy zysk wydajności tylko przez GS na GPU (duży projekt).
+  Wykluczone też: pomijanie kopii Z dla DOF (FRAME 0x1A1) — obraz bez zmian, tempo bez zmian (mały koszt).
+- **Stan (2026-11-06, koniec serii):** wyścig Arcade jedzie (gaz, wyprzedzanie, ~3,6–3,8 s/60 vsync ≈ 16 vsync/s,
+  wczytanie do odliczania ~60–70 s). Kamienie 1–5 osiągnięte (klawiatura do potwierdzenia przez użytkownika).
+  Do 60 kl./s brakuje ~4× — po AOT VU1 ogranicza rasteryzacja GS na CPU; następny krok to backend GS na GPU
+  (VRAM z przeplotem PS2 w shaderach/compute, CLUT, render-to-texture, odczyty GS→EE co klatkę) — duży projekt,
+  decyzja użytkownika.
+- **Rzadkie zawieszenie przy wczytywaniu (~30–40 s, 2× na ~25 przebiegów)**: log [gt3stat] staje, okno nie odpowiada.
+  Nie odtworzone w 9 kolejnych przebiegach. Narzędzie: `tools/hanghunt.ps1` (uruchamia grę N razy, przy zastoju logu
+  robi pełny zrzut procesu przez comsvcs MiniDump → analiza `minidump` + `scratchpad/sym.py`).
 - Pułapka: `CloseUpload()` przed blokadą `m_mutex` → wyścig z wątkiem okna → uszkodzenie sterty (0xC0000374).
   Diagnoza awarii bez debuggera: WER LocalDumps (HKLM\...\Windows Error Reporting\LocalDumps\ps2EntryRunner.exe)
   + `minidump` (pip) + symbolizacja przez dbghelp z ctypes (`scratchpad/sym.py`, PDB z `/DEBUG`).
