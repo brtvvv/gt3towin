@@ -457,6 +457,8 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   „w locie”; rysowanie ze sprzężeniem idzie do kolejki jako zbiór szeregowy (`DeferredSet::serial`), EE nie czeka.
   Obraz poprawny, tempo w granicach szumu (~5,6–7 s/60). Pozostałe czekanie EE: wgrania nakładające się na
   tekstury odłożonych rysowań (do zrobienia: wgrania jako polecenia w kolejce zamiast opróżniania).
+- VU: `calculateFmacProductSticky` (każdy MADD/MSUB) liczył iloczyny drugi raz w long double — teraz tylko dla
+  zera/denormali/inf (`PS2X_VU_EXACT_FLAGS=1` = dokładnie). Wyścig ~5,6–6,3 s/60 vsync, odliczanie „2” ok. 86 s.
 
 ### Wydajność (kamień 6, 2026-11-05)
 
