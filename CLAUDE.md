@@ -389,6 +389,18 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   test Z, DMA SPR, kolejność bitów VCLIP, osobne VU0 na wątek. Generator makr COP2 częściowo sprawdzony
   (VMOVE/VABS/VMR32 maski i obrót poprawne). Następne: porównanie z PCSX2 albo śledzenie wyniku testu
   widoczności w 0x226158 (które obiekty odrzuca i dlaczego — zrzut vf1/vf2/flag dla kilku obiektów).
+- **Śledzenie testu widoczności (log w lokalnym pliku runnera):** 0x226158 → 0x2497C0 → 0x24F778 robi
+  `vcallms 0x120`; mikroprogram VU0 0x120 (zrzut pamięci kodu VU0): `LQ vf24..27 ← VU0mem[8..11]`,
+  potem vf24..27 = (vf28..31 = macierz obiektu) × VU0mem[8..11] (kamera·projekcja). Wynik vf24..27 to
+  macierz testu VCLIP. ~60% obiektów odrzucanych w wyścigu (normalne). **Przy odliczaniu tor (obiekt 0x9BECC0)
+  dostaje macierz afiniczną** (kolumna w = 0, w = 1, skala ~0,01) zamiast projekcyjnej (skala 2,4/3,3, kol. z≈w)
+  → wszystkie punkty poza |x|,|y|,|z| ≤ 1 → odrzucony. Czyli VU0mem[8..11] trzyma w tym momencie złą macierz
+  (inną kamerę/2D, np. ortho 0.00313/−0.00446 z HUD), wszystko na jednym wątku EE (nie przeplot wątków).
+  Ścieżka: s1≠0 (obiekt przecina granicę) → 0x252500 (wariant z obcinaniem), s1=0 → 0x252790;
+  wymuszenie s1=0 pokazuje bliską geometrię odwróconą (w<0), więc ścieżka obcinania sama działa.
+  **Następne:** kto zapisuje VU0mem[8..11] (0x11004080) tuż przed ModelSet toru przy odliczaniu
+  (wołający 0x24F778: 0x2497AC/0x2497E8, 0x24F428, 0x24F5EC, 0x25103C) — możliwe złe źródło macierzy kamery
+  (np. kamera auta gracza, którego model też nie jest rysowany).
 
 ### Wydajność (kamień 6, 2026-11-05)
 
