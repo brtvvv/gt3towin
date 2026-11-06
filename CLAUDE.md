@@ -440,6 +440,16 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   auta przy odliczaniu (częste opróżnienia maskują błąd szacunku nakładania wgrań/rysowań) → wycofane.
   Wniosek: EE czeka na pracę rasteryzacji, więc trzeba jej mniej (koszt piksela) albo rysowania naprawdę
   równoległego z EE (migawki CLUT + poprawne wykrywanie konfliktów VRAM).
+- **ROZWIĄZANE: prawdziwa przyczyna znikania HUD (ASM/TCS) i śmieci na kole** — wyścig między pasami wierszy
+  w jednym odłożonym zbiorze: prymityw rysujący do tekstury (render-to-texture) i późniejszy prymityw czytający ją
+  w innych wierszach ekranu rysowały się w różnych wątkach bez kolejności (`isFeedbackDraw` łapie tylko odczyt
+  własnej ramki). Częste opróżnienia przy każdym TEX0 maskowały błąd. Kontrola (`LoadClut` z i bez czekania,
+  porównanie palet) wykluczyła palety i wgrania. Teraz Submit śledzi obszary zapisu (ramka/Z) i odczytu (tekstura)
+  zbioru (`m_defWrites/m_defReads`) i przy konflikcie RAW/WAR zamyka zbiór (`FlushDeferredAsync`;
+  `PS2X_GS_NOHAZARD=1` wyłącza). Zakresy liczone dokładnie w stronach 8 KB wg formatu (CT32 64×32, CT16 64×64,
+  T8 128×64, T4 128×128) — zgrubne (4 B/piksel, +128 wierszy) dawały fałszywe konflikty i ~9 s/60.
+  LoadClut domyślnie bez czekania (migawki; czeka tylko, gdy odłożone rysowania mogą zapisać źródło palety;
+  `PS2X_GS_CLUTWAIT=1` = stare). Wyścig ~6,1–6,6 s/60 vsync, HUD i obraz poprawne, odliczanie „2” przed 90 s.
 
 ### Wydajność (kamień 6, 2026-11-05)
 
