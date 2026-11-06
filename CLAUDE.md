@@ -410,6 +410,13 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   Ta sama poprawka usunęła czarny bliski tor przy odliczaniu. Demo rajdowe (auta, trasa, banery) wygląda poprawnie.
   Szybsza sekwencja Arcade (odliczanie „3” ok. 90 s): `12,16,19,22,25,28,31,34,37,40,43:4000:0.3,46:4000:44`.
   Zostaje w kamieniu 5: kolory przejścia demo→tytuł/powtórki (paleta 0x3E80), szare obrazy IPU (zaślepka).
+- **Paleta 0x3E80 (powtórka niebieskozielona, ok. 85 s demo):** log zdarzeń GS (XFER/TEX0/DRAW) pokazał, że
+  0x3E80 to wgranie **PSMCT24 16×16** (768 B, 3 B/piksel) tuż przed przebiegami 0x1F3 (TEX0 CLD=5, CSM1);
+  wcześniejsze „losowe” wartości to obszar tekstur trasy wgrywany w innych momentach klatki. Dane z EE to gładka
+  krzywa tonalna: G=B ≈ rosnące do 0xFF, **R ≈ 255·(G/255)^4** (np. G 0x92 → R 0x1E) → cyjan jest w danych gry.
+  Wgranie CT24 jest poprawne (dodane i tak: przenoszenie niepełnego piksela CT24 między porcjami).
+  Do sprawdzenia: czy to zamierzony filtr powtórki, czy błąd w kodzie EE liczącym krzywą (pow/exp, makra FPU)
+  — porównać z PCSX2 albo znaleźć funkcję budującą tablicę (źródło BITBLT w RDRAM) i jej parametry na kanał.
 
 ### Wydajność (kamień 6, 2026-11-05)
 
