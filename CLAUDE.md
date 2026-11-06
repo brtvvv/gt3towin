@@ -407,6 +407,9 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   wątku bywa zerowany/odtwarzany w całości, a wspólny stan VU0 wczytywano tylko przy zmianie kontekstu.
   Teraz `gt3Vu0Load` kopiuje wspólny stan VU0 przed każdym wykonaniem. Morał: rejestry VI VU0 to trwały stan gry
   (wskaźniki stosów w pamięci VU0) — każde cofnięcie kontekstu EE psuje grafikę.
+  Ta sama poprawka usunęła czarny bliski tor przy odliczaniu. Demo rajdowe (auta, trasa, banery) wygląda poprawnie.
+  Szybsza sekwencja Arcade (odliczanie „3” ok. 90 s): `12,16,19,22,25,28,31,34,37,40,43:4000:0.3,46:4000:44`.
+  Zostaje w kamieniu 5: kolory przejścia demo→tytuł/powtórki (paleta 0x3E80), szare obrazy IPU (zaślepka).
 
 ### Wydajność (kamień 6, 2026-11-05)
 
