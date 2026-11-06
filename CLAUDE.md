@@ -356,6 +356,13 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   → wycofane. Wąskie gardło to sama praca rysowania wykonywana, gdy EE czeka. Następny krok: asynchroniczne
   opróżnianie (pula rysuje, EE liczy dalej; czekanie tylko przy konflikcie obszarów/odczytach VRAM) — wtedy
   migawki CLUT i testy nakładania z tej próby będą potrzebne.
+- **Zrobione: asynchroniczne opróżnianie** (gs_cpu_backend): przy 1024 odłożonych prymitywach zbiór (z migawkami
+  CLUT) przechodzi do wątku `m_flusher`, który rysuje go pulą pasów, a EE liczy dalej. Czekanie (`WaitInflight`)
+  tylko przy synchronicznym opróżnieniu (odczyty VRAM, prezentacja, feedback, transfery GS→EE/lokalne) albo gdy
+  LoadClut/wgranie nakłada się na obszary odłożonych lub rysowanych prymitywów (`PendingTouches`: ramka, Z,
+  tekstura — szacunek z nadmiarem). TextureFlush nie opróżnia. `PS2X_GS_SYNCFLUSH=1` = stare zachowanie.
+  Wyścig ~8,4 → ~6–7 s/60 vsync (~8–10 kl./s). Na drugiej (losowej) trasie demo raz widać kafle-śmieci na
+  niebie — nie wiadomo, czy to wyścig danych, czy wcześniejszy błąd tej trasy (sprawdzić z PS2X_GS_SYNCFLUSH=1).
 
 ### Wydajność (kamień 6, 2026-11-05)
 
