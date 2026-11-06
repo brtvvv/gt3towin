@@ -483,6 +483,33 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   VU/GS dają już po kilka %. Do 60 kl./s (~1 s/60 vsync) potrzebny krok strukturalny: rekompilator mikrokodu VU1
   (JIT/AOT mikroprogramów, ~20 programów w wyścigu) albo backend GS na GPU; VU1 na osobnym wątku da maks. ~2×.
 
+### Klawiatura (2026-11-06)
+
+- Błąd: `PSPadBackend::readState` (ps2_pad.cpp) czytał klawiaturę **tylko gdy nie było gamepada 0**. Dowolne
+  urządzenie widziane przez raylib jako gamepad (joystick, przepustnica, kierownica, wirtualny kontroler) wyłączało
+  klawiaturę → `Pressed=none`. Teraz klawiatura działa zawsze, gamepad dochodzi do niej, osie mają strefę martwą
+  0,25 (przepustnica nie „trzyma” drążka). `PS2X_PAD_NO_GAMEPAD=1` ignoruje gamepady.
+  Odczyt raylib jest poprawny: `PollInputEvents` w `EndDrawing` w wątku okna, rlImGui nie czyści `IsKeyDown`.
+- Klawisze (okno gry musi mieć fokus): strzałki/WASD = krzyżak, **X/Spacja = Krzyżyk**, C/Esc = Kółko,
+  Z = Kwadrat, V = Trójkąt, Q/E = L1/R1, LShift/RShift = L2/R2, **Enter = Start**, Tab = Select.
+- **Do przetestowania ręcznie:** uruchomić bez `GT3_AUTOPAD`, kliknąć w okno gry, na ekranie języka
+  strzałka w dół (kursor), X (wybór), Enter (Start). Panel PAD w debuggerze: kolumna Pressed. Jeśli nadal
+  `none`: spróbować z `PS2X_PAD_NO_GAMEPAD=1` i podać, czy podłączony jest jakiś kontroler/joystick.
+
+### Kamień 6 — wybór drogi (2026-11-06)
+
+- (a) **AOT mikrokodu VU1**: w wyścigu jest jeden obraz kodu VU1 (hash a4460ba4, wgrany raz), 36 punktów wejścia,
+  1136 osiągalnych par. VU1 to ~46% wątku EE (ścieżka krytyczna). Ryzyko małe: semantyka zostaje z interpretera
+  (generowany kod woła te same execUpper/execLower ze stałą instrukcją), kontrola hashu → powrót do interpretera.
+  Zysk: do ~2× całości (potem wąskim gardłem jest GS).
+- (b) **GS na GPU**: GS pracuje na puli wątków (~31 s CPU / 20 s), EE czeka na niego tylko ~15% — mniejszy
+  zysk na ścieżce krytycznej; ryzyko duże (dokładność: CLUT, render-to-texture, PSMT4/8 swizzle, Z24, DOF).
+- **Wybór: (a)**, potem ewentualnie (b). Etap 1 (zrobiony w źródłach): upper/lower kompilowane w ps2_vu1_core.cpp
+  (`PS2_VU1_IMPL`), pętla `run()` = lambda `step` wspólna dla interpretera i AOT; `gt3_vu1_aot.inc` (lokalny,
+  z `scratchpad/vu1gen.py`, NIE do repo) = `switch(pc)` par ze stałymi słowami. `GT3_NO_VU1AOT=1` wyłącza.
+  Pułapka: jedna funkcja z 1136 wstawionymi parami → kompilacja >10 min i brak pamięci (przerwana).
+  Następny krok: podział na osobne funkcje per punkt wejścia/blok.
+
 ### Wydajność (kamień 6, 2026-11-05)
 
 - Profilowanie: `xperf` (Windows Performance Toolkit, jest w `Program Files (x86)\Windows Kits\10`, konto ma
