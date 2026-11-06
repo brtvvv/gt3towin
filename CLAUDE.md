@@ -464,6 +464,9 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   (PendingTouches przeglądał prymitywy — teraz listy obszarów zbioru `DeferredSet::writes/reads`),
   planista IOP na wątku EE (`beginNextReady` 1,2 + `nextWakeCycle` 0,6; teraz jedno przejście `std::map`).
   Wyścig ~5,3–6,6 s/60 vsync (~10 vsync/s).
+- VU: normalizacja operandów `execUpper` przez SSE (`vuNormalize4`) — w granicach szumu. Mikrooptymalizacje
+  VU/GS dają już po kilka %. Do 60 kl./s (~1 s/60 vsync) potrzebny krok strukturalny: rekompilator mikrokodu VU1
+  (JIT/AOT mikroprogramów, ~20 programów w wyścigu) albo backend GS na GPU; VU1 na osobnym wątku da maks. ~2×.
 
 ### Wydajność (kamień 6, 2026-11-05)
 
