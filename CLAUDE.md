@@ -453,6 +453,10 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
 - Dokładne zakresy stron także w `SetTouches` (PendingTouches) i `TransferNeedsFlush` (wgranie: `pageSpanBytes(dpsm,
   dbw, dsay+rrh)`): czekanie EE ~2,5 → ~1,5 s na 10 s (LoadClut ~0; zostaje: pełny zbiór 1024 → WaitInflight ~0,4 s,
   rysowania ze sprzężeniem ~0,4 s, wgrania ~0,7 s). Wyścig ~5,8–6,4 s/60 vsync, odliczanie od ~80 s.
+- Kolejka zbiorów (`m_setQueue`, FIFO, max 4, jeden wątek `m_flusher` → kolejność zachowana) zamiast jednego
+  „w locie”; rysowanie ze sprzężeniem idzie do kolejki jako zbiór szeregowy (`DeferredSet::serial`), EE nie czeka.
+  Obraz poprawny, tempo w granicach szumu (~5,6–7 s/60). Pozostałe czekanie EE: wgrania nakładające się na
+  tekstury odłożonych rysowań (do zrobienia: wgrania jako polecenia w kolejce zamiast opróżniania).
 
 ### Wydajność (kamień 6, 2026-11-05)
 
