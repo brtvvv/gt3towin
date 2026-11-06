@@ -316,6 +316,9 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   Wywołania biblioteki IPU (0x2644B8–0x266038, xref rejestrów 0x10002000/10) spoza niej: tylko 0x1CD5C0 → 0x266090
   oraz odtwarzacz libmpeg (0x25F668–0x25FFB0 → 0x2600xx–0x261Cxx), który jest pomijany. Zdjęcie auta to więc
   prawdopodobnie strumień filmu (pomijany) albo niezainicjowany bufor — do zrobienia przy emulacji filmów.
+- Grywalność (Arcade, Krzyżyk trzymany od 46 s): przy „1” (~87 s) kamera zderzakowa z lusterkiem, obrotomierz
+  przy czerwonym polu → gaz z pada działa w wyścigu. Start („GO”) wypada po 90 s — jazdy nie da się sprawdzić
+  w limicie pomiaru bez przyspieszenia wczytywania menu/wyścigu.
 - **Wyścig Arcade działa (kamień 4 dla prawdziwej gry):** pad `12,17,21,25,30,35,40,45,50:4000:0.3` (co ~5 s
   Krzyżyk) → ok. 55 s start na Super Speedway: przelot kamery, HUD (6th, Lap 1/2, obrotomierz reaguje na gaz),
   ~8,5 kl./s. Obrazy IPU to „ipum” 640×512 (tła menu). Ekran po wyborze auta jest biały (tło ipum = szare +
