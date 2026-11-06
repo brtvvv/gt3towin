@@ -541,11 +541,32 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
 - Czułość na liczbę wątków rasteryzacji (wyścig w ruchu): 2 → ~6,2, 4 → ~5,0, 8 → ~4,1 s/60 vsync — wyścig jest
   ograniczony przez GS. Pula zużywa jednak średnio tylko ~2,75 z 7 rdzeni → ogranicza opóźnienie (synchroniczne
   opróżnienia, małe zbiory, jeden wątek m_flusher), nie przepustowość.
+- **Pomiar czekania EE na GS** (wyścig w ruchu, na 5 s): ~1,9 s czekania; flusher bezczynny ~2,9 s → obie strony
+  czekają na siebie. Główne miejsce: `BeginTransfer` (wgranie nakłada się na odłożone rysowania → synchroniczne
+  opróżnienie, ~140/s). **Zrobione: wgrania host→GS jako zbiory w kolejce** — `UploadImage` działa na EE jak dawniej,
+  ale zapisy pikseli (`WriteVramUnlocked`) są nagrywane (`thread_local`, tylko EE w trakcie UploadImage) i trafiają do
+  kolejki FIFO jako zbiór-wgranie z obszarem zapisu (dla `PendingTouches`/LoadClut); każde inne wywołanie backendu
+  najpierw `CloseUpload()` (pod `m_mutex`!). `PS2X_GS_NODEFERUPLOAD=1` wyłącza. Kolejka zbiorów 4 → 32
+  (`PS2X_GS_MAXSETS`). Wyścig ~4,1 → ~3,6–3,8 s/60 vsync. Teraz EE czeka głównie w LoadClut (paleta z kolejkowanego
+  wgrania) — do zrobienia: LoadClut jako polecenie w kolejce.
+- Pułapka: `CloseUpload()` przed blokadą `m_mutex` → wyścig z wątkiem okna → uszkodzenie sterty (0xC0000374).
+  Diagnoza awarii bez debuggera: WER LocalDumps (HKLM\...\Windows Error Reporting\LocalDumps\ps2EntryRunner.exe)
+  + `minidump` (pip) + symbolizacja przez dbghelp z ctypes (`scratchpad/sym.py`, PDB z `/DEBUG`).
+- **ROZWIĄZANE: zawieszenie wyścigu ~4,6 s po starcie** (wątek renderujący w nieskończonej pętli 0x1EBFC8 — redukcja
+  kąta koła `while (a >= 2π) a -= 2π` przy a = 5e34). Łańcuch (wrappery `replaceFunction` na tysiącach funkcji ze
+  strażnikiem wartości): prędkość koła ← prędkość auta ← ciało fizyczne ← impuls zderzenia 0x1FDA68 ← rekord
+  kontaktu z NaN ← obrys auta liczony w 0x1FBD80 (normalne krawędzi `(dy,-dx)/sqrt(dx²+dy²)`).
+  **Błąd rekompilatora: `SQRT.S` na R5900 bierze źródło z pola ft** (pole fs = 0), a generator używał fs →
+  sqrt(f0) zamiast sqrt(f2). Poprawione w `ps2xRecomp/src/lib/fpu_translator.cpp`; w lokalnym runnerze 30 z 69
+  wystąpień poprawionych skryptem (przy regeneracji runnera poprawka wejdzie z generatora). Wyścig trwa dalej,
+  gracz wyprzedza (5. miejsce przy ~88 s).
 - Zrobione: adres bajtowy CT32/CT24/Z32/Z24 w `WritePixel` liczony raz na bufor (RMW ramki i Z bez 4× przeliczania
   przeplotu; `PS2X_GS_NOFASTADDR=1` wyłącza). Obraz bez zmian, tempo w granicach szumu (~4,0–4,3 s/60).
 - **Do przetestowania ręcznie:** Arcade → Single Race → wyścig; po „GO” jechać (X = gaz, strzałki = skręt), sprawdzić,
   czy wyścig trwa bez zawieszenia i czy obraz jest poprawny; porównać płynność z `GT3_NO_VU1AOT=1`. Zgłosić,
   jeśli obraz w menu/wyścigu różni się między trybami albo gra staje (wtedy też z `GT3_NO_FINISH_IRQ=1`).
+  Dodatkowo: przejechać całe okrążenie z zderzeniami z innymi autami (fizyka po poprawce SQRT.S); przy
+  śmieciach w teksturach sprawdzić z `PS2X_GS_NODEFERUPLOAD=1`.
 
 ### Wydajność (kamień 6, 2026-11-05)
 
