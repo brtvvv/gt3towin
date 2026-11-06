@@ -319,6 +319,10 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
 - Grywalność (Arcade, Krzyżyk trzymany od 46 s): przy „1” (~87 s) kamera zderzakowa z lusterkiem, obrotomierz
   przy czerwonym polu → gaz z pada działa w wyścigu. Start („GO”) wypada po 90 s — jazdy nie da się sprawdzić
   w limicie pomiaru bez przyspieszenia wczytywania menu/wyścigu.
+  Ponowne naciskanie Krzyżyka nie pomija przelotu kamery/odliczania.
+- Wykluczone (VU): natychmiastowe flagi MAC/status w trybie szybkim (bez potoku flag) — szybciej (~4,6–6,8 s/60,
+  „START” przed 90 s), ale **psuje scenę** (czarne kliny w wyścigu): mikrokod VU1 czyta flagi z opóźnieniem 4 cykli
+  (np. obcinanie). Wycofane — flagi muszą zostać w potoku.
 - **Wyścig Arcade działa (kamień 4 dla prawdziwej gry):** pad `12,17,21,25,30,35,40,45,50:4000:0.3` (co ~5 s
   Krzyżyk) → ok. 55 s start na Super Speedway: przelot kamery, HUD (6th, Lap 1/2, obrotomierz reaguje na gaz),
   ~8,5 kl./s. Obrazy IPU to „ipum” 640×512 (tła menu). Ekran po wyborze auta jest biały (tło ipum = szare +
