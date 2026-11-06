@@ -428,6 +428,15 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   porcji `parallelRows`; `PS2X_GS_NOCLUTCACHE=1` wyłącza) → ~6,4–6,9 s/60 vsync.
 - Następne kandydaty: WritePixel (7,7 s; wskaźniki funkcji ReadVram/WriteVram na piksel, dwa przeliczenia adresu
   dla RMW), SampleTexture/ReadTexture, VU1 na osobnym wątku (największy krok).
+- `ps2_gs_memory.cpp` kompilowany wewnątrz gs_cpu_backend.cpp (`PS2_GSMEM_IMPL`), Read/WriteVramUnlocked bez
+  wskaźnika funkcji dla CT32/CT24/Z24/Z32 — mniej CPU rasteryzacji, tempo wyścigu w granicach szumu (~6,5–7 s).
+- **Pomiar czekania EE (chrono wokół FlushDeferredUnlocked/WaitInflight):** w wyścigu ~2,7 s na 10 s (~27%)
+  to synchroniczne opróżnienie w `LoadClut` (~12 tys./s, każdy zapis TEX0, także bez ładowania palety);
+  transfery ~0,2 s, reszta pomijalna. Próba: opróżniać tylko przy faktycznym ładowaniu (indeksowany PSM + CLD)
+  → połowa wywołań, ale **czas czekania bez zmian** (czeka się na tę samą pracę) i pojawiły się śmieci na kole
+  auta przy odliczaniu (częste opróżnienia maskują błąd szacunku nakładania wgrań/rysowań) → wycofane.
+  Wniosek: EE czeka na pracę rasteryzacji, więc trzeba jej mniej (koszt piksela) albo rysowania naprawdę
+  równoległego z EE (migawki CLUT + poprawne wykrywanie konfliktów VRAM).
 
 ### Wydajność (kamień 6, 2026-11-05)
 
