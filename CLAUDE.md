@@ -459,6 +459,11 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   tekstury odłożonych rysowań (do zrobienia: wgrania jako polecenia w kolejce zamiast opróżniania).
 - VU: `calculateFmacProductSticky` (każdy MADD/MSUB) liczył iloczyny drugi raz w long double — teraz tylko dla
   zera/denormali/inf (`PS2X_VU_EXACT_FLAGS=1` = dokładnie). Wyścig ~5,6–6,3 s/60 vsync, odliczanie „2” ok. 86 s.
+- Profil (po tych zmianach): GS na puli (WritePixel 8,5, SampleTexture 5+4,8, combineTexture 4,9, trójkąty 4,8,
+  ReadTexture 3,4), VU1 (execUpper 3,7, run 1,6, commit 1,1, execLower 1,0, flagi 0,85), `pageSpanBytes` 0,9
+  (PendingTouches przeglądał prymitywy — teraz listy obszarów zbioru `DeferredSet::writes/reads`),
+  planista IOP na wątku EE (`beginNextReady` 1,2 + `nextWakeCycle` 0,6; teraz jedno przejście `std::map`).
+  Wyścig ~5,3–6,6 s/60 vsync (~10 vsync/s).
 
 ### Wydajność (kamień 6, 2026-11-05)
 
