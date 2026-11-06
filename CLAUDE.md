@@ -646,6 +646,19 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   - **Wynik:** wyścig Arcade (Super Speedway) w większości **pełne 60 kl./s** (1,00 s/60 vsync, ograniczone tempem),
     z wieloma autami w kadrze ~50–55 kl./s (1,1–1,2), przelot kamery/odliczanie ~1,3–1,4. Na początku sesji 3,6.
   - **Do przetestowania ręcznie:** płynność wyścigu i czy gra nie przyspiesza po wczytywaniu; dźwięk (IOP wsadowo).
+  - Pomiar bez regulacji tempa: `GT3_NOPACE=<sekunda>` (od tej chwili bez czekania na czas rzeczywisty — wcześniej
+    menu przelatuje i sekwencja pada się rozjeżdża). `race.ps1` podaje teraz średnie odcinków 2–9 (przelot kamery,
+    odliczanie, start) i 10–17 (jazda); pierwszy odcinek (przejście) pomijany, bo próg go raz łapie, raz nie.
+  - W jeździe ogranicza wątek GS (`m_flusher` zajęty ~100%; sprawność pasów ~0,85 — `[bandstat]` przy
+    `GT3DBG_WAITSTAT=1`), w przelocie kamery wątek EE. Bez zysku (wykluczone): mniej wątków puli (wolniej), niższy
+    priorytet puli (`PS2X_GS_POOLPRIO`), aktywne czekanie w puli (`PS2X_GS_SPIN`, domyślnie 0), usunięcie commitu przed
+    żywym FMAC w AOT (wolniej — częstsze pełne commity).
+  - Wgrania: ~7000/s, ~100 MB/s (GT3 co klatkę przesyła tekstury). Rozpakowanie bez wywołań (`UpWriter`, P4/P8/CT32;
+    `PS2X_GS_SLOWUPLOADWRITE=1`) i równolegle grupami po 32 wiersze dla dużych (`PS2X_GS_SERIALUPLOAD=1`).
+  - Trójkąty: atrybuty (z, kolor, s/t/q, u/v, mgła) jako funkcja liniowa px w wierszu (`PS2X_GS_SLOWATTR=1` = stare),
+    wynik wczesnego testu Z przekazywany do zapisu (bez drugiego odczytu Z).
+  - **Wynik (bez regulacji tempa): jazda 1,00 s/60 vsync (pełne 60 kl./s), przelot kamery/odliczanie ~1,2.**
+    Menu i ekrany przejść bez zmian (porównane zrzuty).
 
 ### Wydajność (kamień 6, 2026-11-05)
 
