@@ -418,6 +418,9 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   Do sprawdzenia: czy to zamierzony filtr powtórki, czy błąd w kodzie EE liczącym krzywą (pow/exp, makra FPU)
   — porównać z PCSX2 albo znaleźć funkcję budującą tablicę (źródło BITBLT w RDRAM) i jej parametry na kanał.
   Odłożone (brak nazw funkcji, może być zamierzone).
+  **Zamknięte (2026-11-06): to zamierzony efekt** — kilka sekund później powtórka demo jest czarno-biała
+  (monochromatyczny filtr), czyli gra przełącza stylizowane filtry kolorów w powtórce dema.
+  Sekwencja pada z Krzyżykiem co 2,5 s od 11 s nie trafia w menu (gra wchodzi w demo) — używać sekwencji co 3 s od 12 s.
 
 ### Wydajność c.d. (2026-11-06, po naprawie aut)
 - Wyścig z autami: ~7 s/60 vsync. Profil (20 s, wszystkie wątki): proces ~2,4 rdzenia; GS ~31 s CPU (pula),
