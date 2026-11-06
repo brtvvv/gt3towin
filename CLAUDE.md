@@ -450,6 +450,9 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
   T8 128×64, T4 128×128) — zgrubne (4 B/piksel, +128 wierszy) dawały fałszywe konflikty i ~9 s/60.
   LoadClut domyślnie bez czekania (migawki; czeka tylko, gdy odłożone rysowania mogą zapisać źródło palety;
   `PS2X_GS_CLUTWAIT=1` = stare). Wyścig ~6,1–6,6 s/60 vsync, HUD i obraz poprawne, odliczanie „2” przed 90 s.
+- Dokładne zakresy stron także w `SetTouches` (PendingTouches) i `TransferNeedsFlush` (wgranie: `pageSpanBytes(dpsm,
+  dbw, dsay+rrh)`): czekanie EE ~2,5 → ~1,5 s na 10 s (LoadClut ~0; zostaje: pełny zbiór 1024 → WaitInflight ~0,4 s,
+  rysowania ze sprzężeniem ~0,4 s, wgrania ~0,7 s). Wyścig ~5,8–6,4 s/60 vsync, odliczanie od ~80 s.
 
 ### Wydajność (kamień 6, 2026-11-05)
 
