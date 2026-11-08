@@ -122,6 +122,39 @@ Listy robocze są w `work/`:
 Około 7740 z ~11 700 funkcji (66%), około 28% instrukcji.
 Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
 
+## GT3 PC: AKTUALNY STAN I NASTĘPNE ZADANIA (czytaj najpierw)
+
+Stan (2026-11-09): menu, Arcade (wyścig do mety?), GT Mode (mapa, My Home), **zapis/odczyt karty pamięci działa**,
+wyścig ~60 kl./s w jeździe (przelot kamery ~40–46). Szczegóły i historia: sekcje niżej.
+
+Narzędzia sesyjne są w prywatnym **`C:\gt3-data\recomp\tools`** (nie w scratchpadzie): `build.ps1` (przebudowa
+out\build\dev), `run.ps1 -Name X -Pad "..." -At "s1,s2" [-Env "K=V;K2=V2"]` (autopad + zrzuty okna do
+`C:\gt3-data\runs\X`, `e.txt` = stderr), `race.ps1`, `save.ps1 -Msg` (gt3.patch + gt3_diag.patch, commit+push gt3-data),
+`eedis.py od do` (deasemblacja; Python: `C:\Users\brtvvv\AppData\Local\Programs\Python\Python313\python.exe`),
+`calls.py adr` (kto robi `jal adr`), `xref.py adr` (lui/addiu do adresu), `hanghunt.ps1`, `crash.py`, `sym.py`.
+Diagnostyka w runtime: `GT3_TRACEFN=adr,adr` (log a0–a3/ra i v0 funkcji, maks. 8, 40 wywołań),
+`GT3_RPCLOG=<sid hex | 0 = wszystkie>` (bind + wywołania SIF RPC), `GT3_MCLOG=1` (HLE MCSERV na IOP).
+
+Następne zadania (kolejność wg wpływu na grywalność):
+1. GT Mode dalej: licencja, wyścig, zakup auta, zapis po postępie → wczytanie (czy stan się zgadza).
+2. Arcade: tło menu wyboru trasy przy starcie z zapisem (Mid-Field) ma śmieciowe bloki — sprawdzić obrazy IPU.
+3. Wątek GIF (przelot kamery 60 kl./s) — przestój ~4 s przed wyścigiem, do zbadania (zrzut wątków EE).
+4. Dźwięk (SPU2), filmy (IPU/FFmpeg), XInput, pełny ekran, 16:9.
+
+**Do przetestowania ręcznie (zbiorczo):** (a) zapis: GT Mode → My Home → Save Game → slot 1 → OK (strzałka w lewo,
+X); po restarcie gry sprawdzić, czy kredyty/auta się zgadzają. (b) Klawiatura bez `GT3_AUTOPAD` (X/Spacja = Krzyżyk,
+Enter = Start, strzałki). (c) Wyścig Arcade do mety, płynność, brak zawieszeń. Starsze punkty — sekcje niżej.
+
+Karta pamięci (2026-11-09): libmc gry (0x274040.. sceMcInit/Open/Read/Write/GetInfo/Sync…) jest podmieniony
+przez rekompilator na stuby HLE `ps2_stubs::sceMc*` (Kernel/Stubs/MemoryCard.cpp, pliki w `<folder gry>/mc0`, `mc1`).
+Moduły MCMAN/MCSERV z płyty ładują się na IOP, ale gra ich nie używa. Błąd: HLE GetInfo zawsze zwracało 0
+(„ta sama karta”); gra (0x23F5B8) pyta o format/wolne miejsce tylko po −1 („nowa karta”), więc karta wyglądała na
+niesformatowaną („Format Memory Card and save”). Teraz pierwsze GetInfo na port zwraca −1 (`PS2X_MC_NOCHANGED=1` = stare).
+Zapis: `mc0/BESCES-50294GAMEDATA/` (dane 70 464 B, icon.sys, icon0.ico, thumbnail). Z zapisem gra przy starcie
+sama go wczytuje i **pomija wybór języka** (menu trybu po ~8 s) — sekwencje pada dla „czystej karty” wtedy nie pasują
+(czystą kartę daje usunięcie/zmiana nazwy `mc0`). GT Mode z zapisem: `9:0040:0.3,11:4000:0.3` → mapa ok. 16 s.
+Wątek pod 0x266800 kręci się w nieskończoność na bindzie RPC `PJOY` (0x594F4A50, pewnie kierownica USB) — nieszkodliwe.
+
 ## Rekompilacja statyczna (PS2Recomp)
 
 - Narzędzie: github.com/ran-j/PS2Recomp. Build samego rekompilatora:
