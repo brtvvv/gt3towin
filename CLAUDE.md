@@ -143,8 +143,8 @@ GT Mode (z zapisem): mapa ~16 s; z My Home Góra → Car Dealer; X → JPN → D
 
 Następne zadania (kolejność wg wpływu na grywalność):
 1. GT Mode dalej: licencja, wyścig, zakup auta, zapis po postępie → wczytanie (czy stan się zgadza).
-2. Sprawdzić, czy poprawka ZTE (niżej) naprawiła też: wybór koloru w Arcade, tło Mid-Field w menu trasy (start
-   z zapisem), inne „kolorowe śmieci” w menu.
+2. (zrobione) Poprawka ZTE naprawiła też wybór koloru w Arcade (model 3D auta) i tło Mid-Field w menu trasy.
+   Arcade z zapisem: `9:4000,13:4000,17:4000` → wybór trasy ~20 s (Prawo = następna trasa), dalej X → klasa → auto/kolor.
 
 **ROZWIĄZANE (2026-11-09): śmieci na ekranie auta w salonie / po zakupie.** Przyczyna: backend GS ignorował
 TEST.ZTE — przy ZTE=0 stosował ZTST (=0 NEVER) i odrzucał wszystkie piksele. GT3 kopiuje scenę salonu (fbp 0x165)
