@@ -133,11 +133,24 @@ out\build\dev), `run.ps1 -Name X -Pad "..." -At "s1,s2" [-Env "K=V;K2=V2"]` (aut
 `eedis.py od do` (deasemblacja; Python: `C:\Users\brtvvv\AppData\Local\Programs\Python\Python313\python.exe`),
 `calls.py adr` (kto robi `jal adr`), `xref.py adr` (lui/addiu do adresu), `hanghunt.ps1`, `crash.py`, `sym.py`.
 Diagnostyka w runtime: `GT3_TRACEFN=adr,adr` (log a0–a3/ra i v0 funkcji, maks. 8, 40 wywołań),
-`GT3_RPCLOG=<sid hex | 0 = wszystkie>` (bind + wywołania SIF RPC), `GT3_MCLOG=1` (HLE MCSERV na IOP).
+`GT3_RPCLOG=<sid hex | 0 = wszystkie>` (bind + wywołania SIF RPC), `GT3_MCLOG=1` (HLE MCSERV na IOP),
+`GT3_TRACEN=N` (limit wywołań), `GT3_TRACEDUMP=1` (32 B spod a1 po powrocie; napis spod a0 wypisywany zawsze),
+`GT3_MEMDUMP=adr:dl:sek[:plik]` (zrzut RDRAM w sekundzie zegara gry, ~4 s mniej niż czas skryptu),
+`GT3_EVLOG=<vsync>` (zdarzenia GS jednej klatki: DRAW z FRAME/TEX0/ALPHA, XFER), `GT3_GIFSRCLOG=1` (duże pakiety GIF).
+Uwaga: `GT3_TRACEFN` łapie wywołania przez tablicę funkcji; funkcje nie-liście mogą „wrócić” w połowie (pc≠ra).
+Kody pada (`GT3_AUTOPAD` maska): Góra 0010, Prawo 0020, Dół 0040, Lewo 0080, Krzyżyk 4000, Start 0008.
+GT Mode (z zapisem): mapa ~16 s; z My Home Góra → Car Dealer; X → JPN → Daihatsu → Cuore (11 140 Cr).
 
 Następne zadania (kolejność wg wpływu na grywalność):
 1. GT Mode dalej: licencja, wyścig, zakup auta, zapis po postępie → wczytanie (czy stan się zgadza).
-2. Arcade: tło menu wyboru trasy przy starcie z zapisem (Mid-Field) ma śmieciowe bloki — sprawdzić obrazy IPU.
+2. **Ekran auta w salonie (Car Dealer → auto → kolor/BUY) i ekran po zakupie = kolorowe śmieci** (to samo w Arcade
+   przy wyborze koloru i tło Mid-Field w menu trasy). Ustalone: to NIE IPU (żadna funkcja 0x2644B8–0x266090 nie jest
+   wołana) ani filmy; `menu/cars/da1032` to kontener modelu 3D (GTCI/GTM1/GTTR/GTTW, wskaźniki relokowane po
+   wczytaniu pod 0xAB25C0). Klatka (`GT3_EVLOG`): co klatkę XFER T8 640×448 do 0x1E20 (dbw 10, CLUT 0x2280 CT32 16×16)
+   + 2 trójkąty na fbp 0, potem model (T4, fbp 0x165), XFER T8 512×512 do 0x1E20/0x36A0 (dbw 8). Wykluczone:
+   wolne ścieżki wgrań (`PS2X_GS_SLOWUPLOADWRITE/SERIALUPLOAD/UPLOADREC/NODEFERUPLOAD`), start z zapisem vs bez.
+   Dalej: zrzut VRAM 0x1E20 jako T8 + palety 0x2280 (czy dane z EE już są śmieciami — wtedy dekompresja na EE,
+   np. instrukcje MMI w rekompilatorze), źródło danych wgrania (staging w łańcuchu GIF, `GT3_GIFSRCLOG=1`).
 3. Wątek GIF (przelot kamery 60 kl./s) — przestój ~4 s przed wyścigiem, do zbadania (zrzut wątków EE).
 4. Dźwięk (SPU2), filmy (IPU/FFmpeg), XInput, pełny ekran, 16:9.
 
