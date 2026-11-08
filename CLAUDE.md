@@ -143,14 +143,17 @@ GT Mode (z zapisem): mapa ~16 s; z My Home Góra → Car Dealer; X → JPN → D
 
 Następne zadania (kolejność wg wpływu na grywalność):
 1. GT Mode dalej: licencja, wyścig, zakup auta, zapis po postępie → wczytanie (czy stan się zgadza).
-2. **Ekran auta w salonie (Car Dealer → auto → kolor/BUY) i ekran po zakupie = kolorowe śmieci** (to samo w Arcade
-   przy wyborze koloru i tło Mid-Field w menu trasy). Ustalone: to NIE IPU (żadna funkcja 0x2644B8–0x266090 nie jest
-   wołana) ani filmy; `menu/cars/da1032` to kontener modelu 3D (GTCI/GTM1/GTTR/GTTW, wskaźniki relokowane po
-   wczytaniu pod 0xAB25C0). Klatka (`GT3_EVLOG`): co klatkę XFER T8 640×448 do 0x1E20 (dbw 10, CLUT 0x2280 CT32 16×16)
-   + 2 trójkąty na fbp 0, potem model (T4, fbp 0x165), XFER T8 512×512 do 0x1E20/0x36A0 (dbw 8). Wykluczone:
-   wolne ścieżki wgrań (`PS2X_GS_SLOWUPLOADWRITE/SERIALUPLOAD/UPLOADREC/NODEFERUPLOAD`), start z zapisem vs bez.
-   Dalej: zrzut VRAM 0x1E20 jako T8 + palety 0x2280 (czy dane z EE już są śmieciami — wtedy dekompresja na EE,
-   np. instrukcje MMI w rekompilatorze), źródło danych wgrania (staging w łańcuchu GIF, `GT3_GIFSRCLOG=1`).
+2. Sprawdzić, czy poprawka ZTE (niżej) naprawiła też: wybór koloru w Arcade, tło Mid-Field w menu trasy (start
+   z zapisem), inne „kolorowe śmieci” w menu.
+
+**ROZWIĄZANE (2026-11-09): śmieci na ekranie auta w salonie / po zakupie.** Przyczyna: backend GS ignorował
+TEST.ZTE — przy ZTE=0 stosował ZTST (=0 NEVER) i odrzucał wszystkie piksele. GT3 kopiuje scenę salonu (fbp 0x165)
+sprite'ami z TEST=0 do bufora poświaty 0x115 i dalej na ekran; kopia nic nie zapisywała, zostawała stara zawartość
+VRAM (tekstury T4 czytane jako CT32). Teraz ZTE=0 = test Z wyłączony (`gsEffectiveZtst`, gs_cpu_backend.cpp;
+`PS2X_GS_ZTE_IGNORE=1` = stare). Model auta w salonie i ekran „purchase complete” poprawne, wyścig bez zmian.
+Metoda, która zadziałała: `GT3_EVLOG` (lista rysowań klatki z TEST) + `GT3_TEXDUMP=tbp:tbp` (zrzut bufora/tekstury
+w chwili pierwszego rysowania, które go czyta, do `C:/gt3-data/runs/tex_<tbp>_N.ppm`) — porównanie źródła i wyniku
+kopii wskazało przebieg, który nic nie zapisuje. `GT3_EVVTX=1` dodaje wierzchołki sprite'ów.
 3. Wątek GIF (przelot kamery 60 kl./s) — przestój ~4 s przed wyścigiem, do zbadania (zrzut wątków EE).
 4. Dźwięk (SPU2), filmy (IPU/FFmpeg), XInput, pełny ekran, 16:9.
 
