@@ -357,6 +357,12 @@ zawieszenia: `tools/mkdump.py` + `tools/hang.py`.
   EE 48% — nikt nie nasycony: koszt to ping-pong ~3 400 kroków/s (budzenie wątków). Spin (`GT3_V1_SPIN=n`) pogarsza
   (8 rdzeni, pule GS). Obraz wyścigu poprawny. Dalsze pomysły: przetwarzać kilka kroków bez EE (HLE obsługi bitu I
   GT3: STC + wznowienie PATH3), mniejsza pula GS przy wątku VIF1.
+  Obsługa bitu I w GT3 (jedyny handler INTC 5 = 0x25B5C0): czyta VIF1_STAT/VIF1_CODE; NUM&1 (0x10000) → dec bajt
+  0x4A8396 (+0x16), STC tylko gdy ≥0; NUM&4 (0x40000) → dec +0x18, j.w.; NUM&2 (0x20000) → STC + inc +0x17, przy 0
+  wznowienie GIF (CHCR|=0x100). Druga strona semaforów: obsługa DMAC 2 (0x25B738, tagi z flagami, inc +0x15/+0x16/
+  +0x18, STC 0x25B8AC). Rozkład bitów I w wyścigu: NUM&7 = 1: 83%, 2: 16%, 4: <1%, 0: nigdy → `GT3_V1_HLEI=1` (pomija
+  tylko NUM&7=0) nic nie daje. HLE semaforów na wątku VIF1 wymaga wyłączności z handlerem DMAC na EE (inaczej utrata
+  aktualizacji bajtu) — odłożone. `GT3_V1STAT=1` wypisuje też histogram `[ibit]`.
   **Projekt (a) „wątek VIF1” (do realizacji):** samo asynchroniczne VU1 przy MSCAL (`m_vu1MscalCallback`,
   ps2_vif1_interpreter.cpp:512) da mało, bo łańcuch VIF1 przetwarza się synchronicznie przy zapisie CHCR (runVif1Chain).
   Zysk daje dopiero: zapis CHCR VIF1 → zadanie dla wątku roboczego (łańcuch + UNPACK + VU1 + XGKICK/DIRECT do GS),
