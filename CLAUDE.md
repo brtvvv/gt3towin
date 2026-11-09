@@ -305,7 +305,10 @@ reakcji przez 8 s, choć gra czyta pada 122×/s i dostaje te przyciski; operacje
 przebiegu Open/Write zaraz po X). Wykluczone: wynik Sync per wątek (`PS2X_MC_THREADSYNC=1`, 0/3), głodzenie przez wątek
 odpytujący kartę (GetInfo ~15/s), czas wciśnięć, nacisk analogowy (0xFF). Hipoteza: 2 odczyty pada na klatkę (2 wątki)
 i wspólne wykrywanie zbocza — kolejność wątków w planiście decyduje, kto „zje” wciśnięcie. Diagnostyka: `PS2X_PAD_READLOG=1`,
-`PS2X_MC_LOG=1`. Następny krok: znaleźć w kodzie gry odczyt pada w oknie (kto woła scePadRead i jak liczy zbocze).
+`PS2X_MC_LOG=1`. Potwierdzone: pada czytają 2 wątki — wątek 9 (ra 0x2309F0, bufory 0x4A238C/0x4A2500) i wątek 7
+(ra 0x230418, bufory 0x4A23AC/0x4A2520), oba porty. Następny krok: deasemblacja 0x2303xx–0x230Axx (jak liczone jest
+zbocze/„nowe wciśnięcie” i który wynik czyta okno zapisu), potem ewentualnie zsynchronizować odczyty (ten sam stan
+pada dla obu wątków w danej klatce).
 Wolne miejsce w GetInfo = 8 MB minus zawartość katalogu karty (2026-11-09; `PS2X_MC_FIXEDFREE=1` = stałe 8 MB).
 Zapis: `mc0/BESCES-50294GAMEDATA/` (dane 70 464 B, icon.sys, icon0.ico, thumbnail). Z zapisem gra przy starcie
 sama go wczytuje i **pomija wybór języka** (menu trybu po ~8 s) — sekwencje pada dla „czystej karty” wtedy nie pasują
