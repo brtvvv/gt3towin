@@ -276,7 +276,7 @@ Pogłos (2026-11-09): algorytm psx-spx co drugą próbkę (24 kHz), bufor ESA..E
 0xFFFFF; `PS2X_SPU2_NOREVERB=1` wyłącza; `PS2X_SPU2_LOG=1` wypisuje parametry pogłosu. Miksowanie wg PCSX2: MMIX (0x800/0x400 głosy, 0x80/0x40 wejście PCM×BVOL, 0x8/0x4 wyjście rdzenia 0×AVOL do rdzenia 1),
 MVOL. **Interpolacja gaussowska** 4-punktowa jak w SPU (tabela 512 wsp. z psx-spx, sumy ~0x7F80; domyślnie od
 2026-11-09; `PS2X_SPU2_INTERP=linear` = liniowa, `PS2X_SPU2_OLDINTERP=1` = najstarsza) — w menu −5 dB powyżej 16 kHz
-(mniej aliasingu), RMS bez zmian; wyścig też (bez przesterowań, `C:\gt3-datauns\gt3_race_gauss.wav`).
+(mniej aliasingu), RMS bez zmian; wyścig też (bez przesterowań, `C:\gt3-data\runs\gt3_race_gauss.wav`).
 GT3 nie używa PMON ani sweepu głośności (diagnostyka `[spu2] PMON`/`sweep` w e.txt — w menu i wyścigu pusto),
 więc ich brak nie ma znaczenia. Wyjście: raylib AudioStream 48 kHz (callback, `ps2xSpu2Pull`), bufor maks. 4096 ramek
 (`PS2X_SPU2_LATENCY`). Diagnostyka: `PS2X_SPU2_LOG=1` (co sekundę KON/aktywne głosy/DMA/IRQ/RMS),
