@@ -183,7 +183,7 @@ kopii wskazało przebieg, który nic nie zapisuje. `GT3_EVVTX=1` dodaje wierzcho
 
 **Do przetestowania ręcznie (zbiorczo):** (0) **DŹWIĘK** (nowe, 2026-11-09): uruchomić grę i posłuchać menu (muzyka
 GT Mode), dźwięków kursora i wyścigu (muzyka + silnik). Albo odsłuchać nagrania `C:\gt3-data\runs\gt3_menu_spu2.wav`
-(muzyka od ~13 s) i `gt3_race_spu2.wav` (wyścig od ~38 s). Zgłosić: szum zamiast muzyki? zła wysokość/tempo?
+(muzyka od ~13 s), `gt3_race_spu2.wav` (wyścig od ~38 s) i `gt3_opening_spu2.wav` (film otwierający, 35 s). Zgłosić: szum zamiast muzyki? zła wysokość/tempo?
 trzaski? Wyłączenie dźwięku: `PS2X_SPU2_MUTE=1`, cała emulacja SPU2 off: `PS2X_SPU2_OFF=1`.
 (a) GT Mode od zera: kupić auto w Car Dealer, zapisać (My Home → Save Game → slot 1 → OK), wyjść z gry, uruchomić
 ponownie — kredyty i auto muszą się zgadzać (u mnie działa: 6 860 Cr + Cuore). Uwaga: stary zapis w `mc0` jest
