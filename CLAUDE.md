@@ -283,11 +283,20 @@ trzeba rozpracować API/bufory). Wybór: (a) emulacja IPU. **Plan (projekt w tok
   FIFO 0x10007010 (gra tak wysyła macierze IQ/VQ!), odczyt 0x10007000, DMA toIPU leniwe (IPU dociąga po 8 qw z
   łańcucha — pierścień, CHCR STR=0 zatrzymuje), komendy BCLR/SETIQ/SETVQ/SETTH/FDEC; dane wejściowe to poprawny
   MPEG-2 (00 00 01 B3…). `GT3_NO_IPU=1` = stare atrapy; `GT3_IPULOG=1`, `GT3_IPUDUMP=1` (pierwsze qwordy wejścia).
-  Problem: libmpeg znajduje nagłówki (0x1B3, 0x1B5, 0x1B8, 0x100) i wycinki (0x101…), ale wszystkie wycinki pomija
-  (0 komend IDEC/BDEC/VDEC). Pętla wycinków 0x2620F8(a0 = mb_width·mb_height, 0x262098) porównuje adres wycinka z a0;
-  zmienne libmpeg (gp = 0x359370; gp−0x4888/−0x4884 rozmiar, −0x4898/−0x4894 wymiary w MB) w zrzucie są zerowe —
-  sprawdzić, czy 0x2627E0 (parser nagłówka sekwencji, getbits 0x2652A8 = FDEC + `ld` IPU_CMD + `srlv`) zapisuje
-  wartości (może `ld` z rejestru IO zwraca złe 64 bity; GT3_TRACEFN nie łapie tych wywołań — wewnętrzne skoki).
+  **Etap 1+2 działa (2026-11-09): obraz filmu poprawny** (porównany z FFmpeg). Poprawki: `ld` z rejestrów IPU
+  (64 bity przez emulację), FIFO wejścia dopełniane do 8 qw przy odczycie CTRL/BP (jak DMA na PS2), odczyt CHCR
+  ch3/ch4 nie gasi STR (runtime udawał koniec DMA przy odczycie), fromIPU do scratchpadu (MADR bit 31; libmpeg:
+  0x80000780), `decoder.picture_structure = FRAME_PICTURE` (bez tego VDEC typu MB w P/B czytał bity pola → śmieci).
+  libmpeg: BDEC na makroblok → RAW16 w SPR 0x70000780 → programowa MC (0x262F40, MMI) → RAW8 w buforach klatek
+  (kolumnami MB, 0x180 B/MB) → CSC po 0x300 MB (0x264C28) → RGB32. Kontekst IPU zapisywany/odtwarzany wokół CSC
+  (0x264FC8/0x264EB0: MADR −= (IFC+FP)·16) — zweryfikowane (`GT3_IPUVERIFY=1`: 0 błędów).
+  **Problem otwarty: film się zapętla** — strumień ES podawany do IPU powtarza ten sam fragment (~22 klatki,
+  rozjaśnienie od czerni) w kółko, gra nie przechodzi dalej (40 s ta sama scena). Dekodowanie idzie w czasie
+  rzeczywistym (~30 kl./s). Odczyty CD postępują (ciągły zakres LSN 0x2D35B…), SIF DMA IOP→EE działa
+  (`GT3_SIFLOG=1`: wpisy + hash danych). Dalej: znaleźć źródło strumienia PSS (demux libmpeg / bufor pierścieniowy
+  wideo 0xAC6E00/0xAC7300 = tagi i dane DMA toIPU) i sprawdzić, czemu demux wraca na początek (może brak końca
+  odczytu/stanu strumienia z IOP, PDICDVD.IRX). Narzędzia: `GT3_IPUESDUMP=plik.m2v` (ES do FFmpeg),
+  `GT3_IPUOUTDUMP` (wyjście BDEC z nagłówkami; `tools/ipuimg2.py`), `GT3_IPUCSCDUMP`, `GT3_IPULOG` ([ipu-st] co 1 s).
   Filmy domyślnie nadal pomijane (`GT3_PLAY_MOVIES=1` włącza).
   Obsługa DMA w ps2_memory.cpp: zapis CHCR z bitem STR (gałęzie wg `channelBase`), zakończenie `completeDmacChannel`.
 
