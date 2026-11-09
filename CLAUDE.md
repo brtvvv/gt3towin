@@ -161,7 +161,7 @@ Następne zadania (kolejność wg wpływu na grywalność):
    zapis piksela (gs_cpu_backend.cpp ~2818–2824). Poprawa = SIMD rasteryzatora (duża praca) — odłożone. Profil licencji: wątek EE 100% (VU1 + processVIF1Data 8,6%,
    budzenie wątków NtAlertThreadByThreadId 6%). Dalej: tańsze VU1/VIF1, mniej budzeń kolejki GIF, HLE semaforów bitu I.
 2. GT Mode szerzej: wyścig do mety (nagroda, wyniki, powtórka — autopad nie dojeżdża; potrzebny autopilot czytający
-   pozycję auta z pamięci albo test ręczny), Tune Shop, kolejne licencje, inne trasy GT, filmy końcowe (ending_*.pss).
+   pozycję auta z pamięci albo test ręczny), Tune Shop, kolejne licencje, inne trasy GT (filmy końcowe — sprawdzone).
    Sprawdzone: licencja B-1 (jazda → FAIL → menu → DEMO), wyścig Arcade 170 s bez wycieków. Arcade: Super Speedway,
    Mid-Field, Smokey/Swiss Alps (rajd), Trial Mountain bez zawieszeń (też z wątkiem GIF; Mid-Field II zablokowana na
    tym zapisie). Z zapisem: wybór trasy ~21 s, Prawo co 2 s = następna trasa, potem X co 3 s. Sunday Cup z wątkiem GIF OK.
@@ -362,6 +362,9 @@ libmpeg (bez symboli): play 0x25FD38(obj, nazwa), komendy 0x25FAD8 (op 4 = stan)
 kontekst IPU wokół CSC (0x264FC8 zapis / 0x264EB0 odtworzenie: MADR −= (IFC+FP)·16); pierścień wideo 64×16 KB
 0xAC7300 z tagami `ref` od 0xAC6E00, koniec danych = `refe`, obsługa braku danych 0x260D88 (callback libmpeg).
 Strumień PSS z IOP: PDISTR.IRX (pierścień CD 0x93890…, wyjście 0xD40D0 8×4 KB → EE 0xABED80).
+Filmy końcowe sprawdzone (2026-11-09): `GT3_MOVIE_SUBST=ending_long_full` / `ending_short_full` (+`GT3_WITH_OPENING=1`)
+gra wskazany `stream/<nazwa>.pss` zamiast openingu — oba grają poprawnie, krótki kończy się powrotem do tytułu.
+Inne filmy: title_full, arcade_menu_full, level_menu_full, laguna_full, menu_bg/menu_bg2, arcade_top, arcade_level.
 Przełączniki: `GT3_SKIP_OPENING=1` (pomija tylko stream/opening.pss; run.ps1/race.ps1 ustawiają go domyślnie, żeby
 sekwencje pada pasowały; `-Env "GT3_WITH_OPENING=1"` = z openingiem), `GT3_NO_MOVIES=1` / `GT3_NO_IPU=1` = dawne
 pomijanie wszystkich filmów, `GT3_IPU_OLDRESUME=1` = stare wznawianie DMA. Obejście DOF i dekodowanie „ipum” przez
