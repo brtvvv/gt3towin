@@ -344,8 +344,10 @@ zawieszenia: `tools/mkdump.py` + `tools/hang.py`.
   (+`GT3_SAMPLE_LINES=funkcja`), `tools/fly.ps1 -N 3`, `GT3_V1STAT=1`, `GT3_OVERLAPSTAT=1`, `GT3_INTCLOG`, `GT3_VIF1STAT`.
   Przelot (profil 2026-11-09): żaden wątek nie jest nasycony (GIF 72% — głównie spin, VIF1 65%, GS 53%, EE 30%) →
   ogranicza opóźnienie wymiany EE↔VIF1 na bitach I (~3 400/s). Wykluczone: spin wątku VIF1 (`GT3_V1_SPIN` 4000/20000:
-  48–49 vs 51 kl./s) i spin planisty EE przed uśpieniem (`GT3_EE_SPIN`: ~40 kl./s). Realna droga: HLE semaforów bitu I
-  na wątku VIF1 z wyłącznością względem handlera DMAC2 na EE.
+  48–49 vs 51 kl./s) i spin planisty EE przed uśpieniem (`GT3_EE_SPIN`: ~40 kl./s). HLE semaforów bitu I na wątku VIF1
+  (`GT3_V1_HLESEM=1`, domyślnie off; muteks `g_gt3SemMx` + owinięte 0x25B5C0/0x25B6D8/0x25B738/0x252330, interpreter nie
+  zgłasza INTC5 na wątku VIF1): działa bez zawieszeń, ~55% bitów I bez EE, ~45% i tak czeka na DMAC2 (koniec PATH3), ale
+  przelot 42 vs 51,7 kl./s — gorzej (przyczyna nieznana; 1. próba). Statystyki `[hlesem]` przy `GT3_V1STAT=1`.
   Szczegółowa historia (wątek GIF 5 prób, artefakty DISPFB, migotanie salonu ZTE, etap 1 VIF1): docs/HISTORIA_RECOMP.md.
 **Pamięć (2026-11-09):** kolejka zbiorów GS (`EnqueueSet`) nie miała limitu — przy intensywnych wgraniach (intro,
 demo, wczytywanie) proces rósł do 3–4,6 GB. Teraz limit 256 MB danych w kolejce (`PS2X_GS_MAXQMB`) i 1024 zbiorów
