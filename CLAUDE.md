@@ -202,7 +202,9 @@ przed `save.ps1` musi być `git add -N` w PS2Recomp, inaczej nie wejdą do gt3.p
 0x1F900000–0x1F9007FF do Spu2 (16-bit, efekty KON/KOFF/zapis portu danych), DMA kanałów 4/7 kopiuje dane RAM IOP ↔
 pamięć SPU (TSA rdzenia), AutoDMA (ADMAS) → kolejka PCM. Pętla IOP (`serviceSpu2`, iop_emulator.cpp) taktuje próbkę
 co 768 cykli i zgłasza IRQ 9 z SPDIF_IRQINFO przy trafieniu IRQA (zastępuje dawne przybliżenie `serviceSpu2Irq`).
-Miksowanie wg PCSX2: MMIX (0x800/0x400 głosy, 0x80/0x40 wejście PCM×BVOL, 0x8/0x4 wyjście rdzenia 0×AVOL do rdzenia 1),
+Pogłos (2026-11-09): algorytm psx-spx co drugą próbkę (24 kHz), bufor ESA..EEA, wysyłki VMIXEL/VMIXER + MMIX
+(0x200/0x100, 0x20/0x10, 0x2/0x1), wyjście × EVOL; GT3: EVOL 0x0FFF (subtelny), bufory 0xEC810–0xEFFFF i 0xFC810–
+0xFFFFF; `PS2X_SPU2_NOREVERB=1` wyłącza; `PS2X_SPU2_LOG=1` wypisuje parametry pogłosu. Miksowanie wg PCSX2: MMIX (0x800/0x400 głosy, 0x80/0x40 wejście PCM×BVOL, 0x8/0x4 wyjście rdzenia 0×AVOL do rdzenia 1),
 MVOL. Brak: pogłosu (efekty), PMON, interpolacji gaussowskiej (liniowa), dokładnych przejść głośności (sweep = od razu
 wartość docelowa). Wyjście: raylib AudioStream 48 kHz (callback, `ps2xSpu2Pull`), bufor maks. 4096 ramek
 (`PS2X_SPU2_LATENCY`). Diagnostyka: `PS2X_SPU2_LOG=1` (co sekundę KON/aktywne głosy/DMA/IRQ/RMS),
