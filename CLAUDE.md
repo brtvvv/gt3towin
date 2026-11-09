@@ -310,6 +310,10 @@ zawieszenia: `tools/mkdump.py` + `tools/hang.py`.
   z logo GT3) okresowo zielono-czerwone śmieci zamiast obrazu i czarne klatki (tryb domyślny czysty) — do zbadania
   (kolejność wgrań tekstur PATH3 względem PATH1/2? `run.ps1 -Pad "99:0:0.1" -At "56,62,80" -Env GT3_GIF_THREAD=1`).
   Diagnostyka: `GT3_INTCLOG=1` (dostarczenia INTC 0), `GT3_VIF1STAT=1` (stan VIF1/GS co 1 s w [gt3stat]).
+  Trop artefaktów: z `GT3_NO_DOF_HACK=1` śmieci znikają (zostaje turkusowy odcień i pojedyncza czarna klatka), z
+  `PS2X_GS_SYNCREADBACK=1` bez zmian → problem w kompozycji DOF (ZBUF 0x1A1, wymuszony test Z w gs_cpu_backend.cpp);
+  wzór wygląda jak bufor Z czytany jako kolor — źródło kompozycji (kopia Z24/rozmycie) nie jest gotowe przy
+  asynchronicznym GIF. Następny krok: `GT3_EVLOG` w klatce z artefaktem w obu trybach i porównanie kolejności XFER/DRAW.
   **Projekt (a) „wątek VIF1” (do realizacji):** samo asynchroniczne VU1 przy MSCAL (`m_vu1MscalCallback`,
   ps2_vif1_interpreter.cpp:512) da mało, bo łańcuch VIF1 przetwarza się synchronicznie przy zapisie CHCR (runVif1Chain).
   Zysk daje dopiero: zapis CHCR VIF1 → zadanie dla wątku roboczego (łańcuch + UNPACK + VU1 + XGKICK/DIRECT do GS),
