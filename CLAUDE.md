@@ -125,7 +125,7 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
 ## GT3 PC: AKTUALNY STAN I NASTĘPNE ZADANIA (czytaj najpierw)
 
 Stan (2026-11-09): menu, Arcade, **GT Mode: salon, zakup auta, zapis/odczyt postępu, wyścigi (Sunday Cup) i testy licencji**,
-**filmy-tła menu (emulacja IPU, domyślnie; opening pominięty)**,
+**filmy: opening i tła menu (emulacja IPU, domyślnie włączone)**,
 wyścig ~60 kl./s w jeździe (przelot kamery ~40–46). Szczegóły i historia: sekcje niżej.
 
 Narzędzia sesyjne są w prywatnym **`C:\gt3-data\recomp\tools`** (nie w scratchpadzie): `build.ps1` (przebudowa
@@ -146,8 +146,8 @@ Następne zadania (kolejność wg wpływu na grywalność):
 1. GT Mode szerzej: wyścig do mety (nagroda, wyniki, powtórka), Tune Shop, kolejne licencje, inne trasy GT,
    długie sesje (wycieki/zawieszenia). Arcade: sprawdzone Super Speedway, Mid-Field, Smokey/Swiss Alps (rajd),
    Trial Mountain — bez zawieszeń.
-2. Filmy (IPU): tła menu działają (sekcja o IPU niżej). Zostało: opening.pss się zapętla (pomijany),
-   miejscami błędne makrobloki w tłach (podejrzenie: ten sam niedobór danych z demuxa co w openingu).
+2. (zrobione) Filmy (IPU): opening i tła menu działają (sekcja „Filmy (IPU)” niżej). Do ręcznego sprawdzenia:
+   dźwięk filmów, koniec openingu (>3 min), filmy końcowe (ending_*.pss).
 3. Dźwięk: odsłuch przez użytkownika, potem pogłos/PMON/interpolacja gaussowska.
 4. Wydajność przelotu kamery (40–46 kl./s); wątek GIF (`GT3_GIF_THREAD=1`) ma przestój — patrz skrót wniosków.
 
@@ -193,9 +193,9 @@ Krzyżyk, V = Trójkąt/wstecz, Enter = Start, strzałki) i pad (XInput) — czy
 (d) F11 pełny ekran, F10 proporcje. (e) Flara słońca: w moim teście (auto stojące przodem do ściany Super Speedway)
 flara rysowała się na środku ściany — sprawdzić, czy przy jeździe flara znika za przeszkodami; jeśli nie, porównać
 z `PS2X_GS_SYNCREADBACK=1` (synchroniczny odczyt GS→EE do testu widoczności słońca) i zgłosić.
-(f) **Filmy** (nowe): tła menu — ekran tytułowy, Arcade, wybór poziomu, podgląd tras — czy grają płynnie, czy mają
-dźwięk, czy widać błędne kwadraty (makrobloki), czy coś się zawiesza przy przechodzeniu między menu.
-Wyłączenie filmów: `GT3_NO_MOVIES=1`.
+(f) **Filmy** (nowe): po starcie gra film otwierający (Start pomija) — czy ma dźwięk i czy po końcu (>3 min) gra
+sama przechodzi do ekranu tytułowego; tła menu (ekran tytułowy, Arcade, wybór poziomu, podgląd tras) — płynność,
+błędne kwadraty, zawieszenia przy przechodzeniu między menu. Wyłączenie filmów: `GT3_NO_MOVIES=1`.
 
 **Okno (2026-11-09):** domyślnie 960×720, obraz 4:3 na całe okno, panel debugera ukryty (F1 pokazuje;
 `PS2X_DEBUG_PANEL=1` od startu). **F11** = pełny ekran (okno bez ramki), **F10** = proporcje 4:3 → 16:9 → rozciągnięte
@@ -251,8 +251,8 @@ zawieszenia: `tools/mkdump.py` + `tools/hang.py`.
 - GS (CPU): odkładanie prymitywów + pula pasów + kolejka zbiorów (`m_flusher`), hazardy RAW/WAR na stronach 8 KB,
   wgrania i LoadClut w kolejce, odczyt GS→EE z opóźnieniem 1–2 klatek (`GT3_GS2EE_LAG`), szybkie ścieżki trójkątów/
   sprite'ów. Obejście DOF (`g_gt3CompositeZPass`, `GT3_NO_DOF_HACK=1`). **TEST.ZTE=0 = brak testu Z**.
-- Filmy: odtwarzacz libmpeg pomijany (`GT3_PLAY_MOVIES=1` włącza; IPU nie jest emulowane). Obrazy „ipum”
-  (0x266090) dekoduje FFmpeg (`gt3DecodeIpum`).
+- Filmy: IPU emulowane (gt3_ipu.cpp, dekoder z PCSX2), libmpeg gry gra filmy normalnie. Obrazy „ipum”
+  (0x266090) nadal dekoduje FFmpeg (`gt3DecodeIpum`).
 - IOP: moduły z płyty na emulatorze IOP; RPC blokujące i NOWAIT dokańczane w tle; `setjmp/longjmp` prawdziwe;
   SPU2 emulowane (`ps2xIOP/src/emulator/core/spu2.*`).
 - Karta pamięci: libmc gry = stuby HLE (`Kernel/Stubs/MemoryCard.cpp`), pierwsze GetInfo = −1, TRUNC > APPEND.
@@ -264,57 +264,31 @@ zawieszenia: `tools/mkdump.py` + `tools/hang.py`.
 **Pamięć (2026-11-09):** kolejka zbiorów GS (`EnqueueSet`) nie miała limitu — przy intensywnych wgraniach (intro,
 demo, wczytywanie) proces rósł do 3–4,6 GB. Teraz limit 256 MB danych w kolejce (`PS2X_GS_MAXQMB`) i 1024 zbiorów
 (`PS2X_GS_MAXSETS`; mały limit, np. 32, spowalnia jazdę ~30%), `PS2X_GS_NOQUEUELIMIT=1` = bez limitu. Szczyt ~270 MB.
-**Filmy — ocena:** odtwarzacz to Sony libmpeg wlinkowany statycznie (wątek dekodera 0x260760, funkcje 0x2600xx–
-0x261Cxx, IPU 0x2644B8–0x266090), bez symboli. Opcje: (a) emulacja IPU (BDEC/IDEC/VDEC/FDEC/CSC, jak PCSX2, ~2–3 tys.
-linii, wierne), (b) HLE sceMpegGetPicture + FFmpeg mpeg2video karmione strumieniem z bufora libmpeg (mniej kodu, ale
-trzeba rozpracować API/bufory). Wybór: (a) emulacja IPU. **Plan (projekt w toku):**
-  Etap 1: rejestry IPU (0x10002000 CMD: DATA+BUSY, 0x10 CTRL: IFC/OFC/CBP/ECD/SCD/IDP/AS/IVF/QST/MP1/PCT/RST/BUSY,
-  0x20 BP: BP|IFC<<8|FP<<16, 0x30 TOP: podgląd 32 bitów), FIFO wejścia z DMA kanału 4 (toIPU, 0x1000B400; w runtime
-  nieobsłużony), czytnik bitów, komendy BCLR(0)/FDEC(4)/VDEC(3)/SETIQ(5)/SETVQ(6)/SETTH(9). Sprawdzian: z
-  `GT3_PLAY_MOVIES=1 GT3_IPULOG=1` gra przechodzi dalej niż pętla FDEC (teraz tysiące FDEC bez odpowiedzi).
-  Etap 2: IDEC(1)/BDEC(2)/CSC(7)/PACK(8), wyjście przez DMA kanału 3 (fromIPU, 0x1000B000). Etap 3: domyślnie filmy
-  włączone (usunąć pomijanie z ps2_runtime.cpp, przełącznik środowiskowy).
-  Wzorce (prywatnie, nie do repo publicznego): `C:\gt3-data\recomp\ref\` — tablice MPEG-1/2 z FFmpeg (mpeg12data.c),
-  IPU z PCSX2 (IPU.cpp/h, IPU_Fifo, IPUdma, IPU_MultiISA.cpp = dekoder, mpeg2_vlc.h, yuv2rgb.cpp). Kod PCSX2 jest GPL —
-  używać jako specyfikacji, pisać własną implementację; plik `ps2xRuntime/src/lib/gt3_ipu.cpp` (nowy, `git add -N`).
-  Decyzja (2026-11-09): port dekodera z `IPU_MultiISA.cpp` + `mpeg2_vlc.h` + CSC z `yuv2rgb.cpp` (wersja skalarna)
-  do jednego pliku z prostymi zamiennikami (u8..u128, pxAssert, IPU_LOG) — kod pochodny z GPL zostaje TYLKO
-  w prywatnym gt3.patch. Własne: FIFO wejścia jako nieograniczona kolejka qwordów (IFC = min(8, rozmiar)),
-  DMA toIPU (ch4: normal + chain) kopiuje od razu całość do kolejki, komendy wykonywane synchronicznie
-  (brak danych → BUSY, ponowienie przy kolejnym DMA/odczycie rejestru), wyjście do kolejki, DMA fromIPU (ch3)
-  kończy się, gdy zbierze qwc (inaczej czeka). Semantyka: `IPUCMD_WRITE`, `ipuRead32` (IPU.cpp), `IPU_Fifo.cpp`.
-  **Stan etapu 1 (2026-11-09):** `gt3_ipu.cpp` + `gt3_ipu_core.inc` (generator `tools/ipugen.py`) dołączone przez
-  `#include` na końcu ps2_memory.cpp (lista źródeł CMake runtime nie wchodzi do łatki). Działa: rejestry, zapisy do
-  FIFO 0x10007010 (gra tak wysyła macierze IQ/VQ!), odczyt 0x10007000, DMA toIPU leniwe (IPU dociąga po 8 qw z
-  łańcucha — pierścień, CHCR STR=0 zatrzymuje), komendy BCLR/SETIQ/SETVQ/SETTH/FDEC; dane wejściowe to poprawny
-  MPEG-2 (00 00 01 B3…). `GT3_NO_IPU=1` = stare atrapy; `GT3_IPULOG=1`, `GT3_IPUDUMP=1` (pierwsze qwordy wejścia).
-  **Etap 1+2 działa (2026-11-09): obraz filmu poprawny** (porównany z FFmpeg). Poprawki: `ld` z rejestrów IPU
-  (64 bity przez emulację), FIFO wejścia dopełniane do 8 qw przy odczycie CTRL/BP (jak DMA na PS2), odczyt CHCR
-  ch3/ch4 nie gasi STR (runtime udawał koniec DMA przy odczycie), fromIPU do scratchpadu (MADR bit 31; libmpeg:
-  0x80000780), `decoder.picture_structure = FRAME_PICTURE` (bez tego VDEC typu MB w P/B czytał bity pola → śmieci).
-  libmpeg: BDEC na makroblok → RAW16 w SPR 0x70000780 → programowa MC (0x262F40, MMI) → RAW8 w buforach klatek
-  (kolumnami MB, 0x180 B/MB) → CSC po 0x300 MB (0x264C28) → RGB32. Kontekst IPU zapisywany/odtwarzany wokół CSC
-  (0x264FC8/0x264EB0: MADR −= (IFC+FP)·16) — zweryfikowane (`GT3_IPUVERIFY=1`: 0 błędów).
-  **Etap 3 (2026-11-09): filmy domyślnie włączone** (ps2_runtime.cpp): tła menu (stream/title_full, arcade_menu_full,
-  level_menu_full, podglądy tras…) grane przez IPU; pomijany tylko `stream/opening.pss` (wrapper play 0x25FD38 po nazwie
-  w a1; komendy 0x25FAD8 dla tego obiektu jak dawniej). `GT3_PLAY_MOVIES=1` = też opening (pętla, Start pomija),
-  `GT3_NO_MOVIES=1` lub `GT3_NO_IPU=1` = dawne pomijanie wszystkiego. Obejście DOF i dekodowanie „ipum” przez FFmpeg
-  są teraz niezależne od filmów (wcześniej `GT3_PLAY_MOVIES=1` je wyłączał!). Wyścig bez zmian (race.ps1 1,34/1,06).
-  **Problem otwarty: opening się zapętla.** Pierścień wideo: 64 bloki × 16 KB 0xAC7300–0xBC7300, tagi `ref` od
-  0xAC6E00, `next` na 0xAC7200 wraca na początek, koniec danych = tag `refe`. Od ~5 s demux nie pisze już do pierścienia
-  (zawartość w 5 s = w 9 s, część bloków to zera), `refe` stoi na 0xAC7190, a libmpeg wznawia DMA za nim → IPU krąży
-  po starych blokach. Strumień PES z IOP (PDISTR.IRX: pierścień CD 0x93890…, wyjście 0xD40D0 8×4 KB → EE 0xABED80)
-  płynie dalej z nowymi danymi (`GT3_SIFLOG`), ale ~200 KB/s wobec ~1,2 MB/s zużycia. Gra nie używa DMA SPR
-  (`GT3_SPRDMALOG`). Dalej: kod demuxa czytający 0xABED80 (czemu przestaje), tempo odczytu CD; `GT3_IPUTAGLOG=1`.
-  Starsza obserwacja: — strumień ES podawany do IPU powtarza ten sam fragment (~22 klatki,
-  rozjaśnienie od czerni) w kółko, gra nie przechodzi dalej (40 s ta sama scena). Dekodowanie idzie w czasie
-  rzeczywistym (~30 kl./s). Odczyty CD postępują (ciągły zakres LSN 0x2D35B…), SIF DMA IOP→EE działa
-  (`GT3_SIFLOG=1`: wpisy + hash danych). Dalej: znaleźć źródło strumienia PSS (demux libmpeg / bufor pierścieniowy
-  wideo 0xAC6E00/0xAC7300 = tagi i dane DMA toIPU) i sprawdzić, czemu demux wraca na początek (może brak końca
-  odczytu/stanu strumienia z IOP, PDICDVD.IRX). Narzędzia: `GT3_IPUESDUMP=plik.m2v` (ES do FFmpeg),
-  `GT3_IPUOUTDUMP` (wyjście BDEC z nagłówkami; `tools/ipuimg2.py`), `GT3_IPUCSCDUMP`, `GT3_IPULOG` ([ipu-st] co 1 s).
-  Filmy domyślnie nadal pomijane (`GT3_PLAY_MOVIES=1` włącza).
-  Obsługa DMA w ps2_memory.cpp: zapis CHCR z bitem STR (gałęzie wg `channelBase`), zakończenie `completeDmacChannel`.
+**Filmy (IPU) — ROZWIĄZANE (2026-11-09): opening i tła menu grają poprawnie, domyślnie włączone.**
+Emulacja IPU: `ps2xRuntime/src/lib/gt3_ipu.cpp` + `gt3_ipu_core.inc` (dekoder z PCSX2 `IPU_MultiISA.cpp`, generator
+`tools/ipugen.py`; kod pochodny z GPL TYLKO w prywatnym gt3.patch; wzorce w `C:\gt3-data\recomp\ref\`), dołączone
+`#include` na końcu ps2_memory.cpp. FIFO wejścia = kolejka qwordów dopełniana do 8 qw z leniwego DMA toIPU (ch4,
+normal + chain; IFC = min(8, rozmiar)), komendy synchronicznie (brak danych → BUSY, ponowienie przy odczycie CTRL/BP/
+DMA), wyjście → DMA fromIPU (ch3, też do scratchpadu: MADR bit 31). Zapisy FIFO 0x10007010 (macierze IQ/VQ), odczyt
+0x10007000, `ld` z rejestrów IPU (64 bity).
+Kluczowe poprawki (każda dawała inny objaw): (1) odczyt CHCR ch3/ch4 nie może gasić STR (runtime udawał koniec DMA);
+(2) `decoder.picture_structure = FRAME_PICTURE` jak w ipuReset PCSX2 (inaczej VDEC typu MB w P/B → śmieci);
+(3) wznowienie łańcucha DMA z QWC>0 kończy się po reszcie, jeśli CHCR.ID = refe/end (libmpeg odtwarza kontekst IPU
+po CSC; bez tego IPU czytało stare bloki pierścienia → zapętlony opening, błędne makrobloki w tłach).
+libmpeg (bez symboli): play 0x25FD38(obj, nazwa), komendy 0x25FAD8 (op 4 = stan), BDEC na makroblok → RAW16 w SPR
+0x70000780 → programowa MC (0x262F40, MMI) → RAW8 (kolumnami MB, 0x180 B/MB) → CSC po 0x300 MB (0x264C28) → RGB32;
+kontekst IPU wokół CSC (0x264FC8 zapis / 0x264EB0 odtworzenie: MADR −= (IFC+FP)·16); pierścień wideo 64×16 KB
+0xAC7300 z tagami `ref` od 0xAC6E00, koniec danych = `refe`, obsługa braku danych 0x260D88 (callback libmpeg).
+Strumień PSS z IOP: PDISTR.IRX (pierścień CD 0x93890…, wyjście 0xD40D0 8×4 KB → EE 0xABED80).
+Przełączniki: `GT3_SKIP_OPENING=1` (pomija tylko stream/opening.pss; run.ps1/race.ps1 ustawiają go domyślnie, żeby
+sekwencje pada pasowały; `-Env "GT3_WITH_OPENING=1"` = z openingiem), `GT3_NO_MOVIES=1` / `GT3_NO_IPU=1` = dawne
+pomijanie wszystkich filmów, `GT3_IPU_OLDRESUME=1` = stare wznawianie DMA. Obejście DOF i dekodowanie „ipum” przez
+FFmpeg są niezależne od filmów. Wyścig bez zmian (race.ps1 1,34/1,06).
+Diagnostyka: `GT3_IPULOG=1` ([ipu-st] co 1 s: liczniki komend, stan FIFO), `GT3_IPUVERIFY=1` (spójność kontekstu),
+`GT3_IPUTAGLOG=1` (tagi refe/next, starty ch4), `GT3_IPUESDUMP=plik.m2v` (strumień do FFmpeg — porównanie wzorcowe),
+`GT3_IPUOUTDUMP` (wyjście BDEC, `tools/ipuimg2.py`), `GT3_IPUCSCDUMP`, `GT3_SIFLOG=1` (SIF DMA IOP→EE + hash),
+`GT3_SPRDMALOG=1`. Metoda, która zadziałała: zrzut strumienia ES → ffmpeg (wzorzec) vs. zrzuty buforów gry
+(`GT3_MEMDUMP`) — zawęża błąd do IPU / kodu gry / zasilania danymi.
 
 **Pułapki:** `sed -i`/`Set-Content` psują CRLF/BOM w plikach PS2Recomp (edytować narzędziem Edit);
 PowerShell 5.1 `Get-Content -Raw` czyta UTF-8 bez BOM jako ANSI (zepsute polskie znaki) — używać
@@ -324,6 +298,6 @@ w argumentach (`run.ps1 -Env` — listy dawać przez `:`); comsvcs MiniDump twor
 pojedyncze pomiary wydajności różnią się o ~20% (A/B po 3 przebiegi); zrzuty `GT3_THRDUMP` są robione w chwili vsync
 (wątek renderujący zawsze „czeka na vsync”).
 
-**Kamienie:** 1 grywalność (Arcade, GT Mode, zapis — jest; XInput i klawiatura do potwierdzenia), 2 grafika (filmy,
-paleta 0x3E80 = zamierzony filtr powtórek), 3 dźwięk (SPU2 v1 — do odsłuchu; brak pogłosu), 4 60 kl./s wszędzie
+**Kamienie:** 1 grywalność (Arcade, GT Mode, zapis — jest; XInput i klawiatura do potwierdzenia), 2 grafika (filmy — jest,
+paleta 0x3E80 = zamierzony filtr powtórek), 3 dźwięk (SPU2 v1 + pogłos — do odsłuchu), 4 60 kl./s wszędzie
 (przelot kamery, wczytywanie), 5 PC (rozdzielczość = GS na GPU, 16:9, pełny ekran F11 — jest).
