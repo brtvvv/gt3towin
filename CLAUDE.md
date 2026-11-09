@@ -155,6 +155,8 @@ Następne zadania (kolejność wg wpływu na grywalność):
    Sprawdzone: licencja B-1 (jazda → FAIL → menu → DEMO), wyścig Arcade 170 s bez wycieków. Arcade: Super Speedway,
    Mid-Field, Smokey/Swiss Alps (rajd), Trial Mountain bez zawieszeń (też z wątkiem GIF; Mid-Field II zablokowana na
    tym zapisie). Z zapisem: wybór trasy ~21 s, Prawo co 2 s = następna trasa, potem X co 3 s. Sunday Cup z wątkiem GIF OK.
+   Licencja B-2 (Viper GTS) też pełny cykl: sekwencja B-1 z `29:0020:0.3` (Prawo na liście testów), dalsze X przesunięte.
+   Decyzja (2026-11-09): przelot 49 kl./s na razie akceptowany; wątek VIF1 = osobny, wielogodzinny projekt.
    Sekwencje: DEMO licencji = B-1 + `42:4000:40,114:0020:0.3,116:0020:0.3,118:4000:0.3`; race.ps1 ma `-Pad/-Hold/-Timeout`.
 3. Dźwięk po odsłuchu użytkownika: PMON, interpolacja gaussowska (jest liniowa, ciągła przez granice bloków), sweep.
 4. Kamień 5: GS na GPU (wyższa rozdzielczość) — duży projekt, najpierw ocena opcji w tym pliku.
