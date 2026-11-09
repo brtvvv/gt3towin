@@ -152,7 +152,13 @@ Następne zadania (kolejność wg wpływu na grywalność):
    Ekran informacji testu ma film demonstracyjny (odtwarzacz filmów pomijamy) — podejrzenie: strumień filmu/BGM na IOP
    bez danych (pomijany film) → pętla w wątku strumienia. Wykluczone: emulacja SPU2 (z `PS2X_SPU2_OFF=1` to samo),
    zgubione iWakeupThread na bieżącym wątku (poprawione i tak, `GT3_WAKEUP_SELF_STRICT=1` = stare).
-   Następny krok: które RPC/komendy startują strumień w teście (`GT3_RPCLOG=0` w momencie wejścia w test, sid MPG1/MPG2/PDIP),
+   Log RPC (`GT3_RPCLOG=0` pokazuje teraz ra i 32 B danych): wszystkie przez wrapper 0x25C1D8 (ra 0x25C288). `PDIP`
+   (0x50444950) = odczyt z płyty (fn1: LSN, rozmiar; fn2 status; fn4) — działa. Przy starcie testu muzyka jest
+   przełączana: PBGM fn2 (stop), fn5, fn1 (start, LSN 0x1B50BA), potem PBGM fn3 (status, NOWAIT) już nie wraca —
+   nowy wątek strumienia BGM kręci się w LIBPDI. W Arcade start muzyki wyścigu działa, więc problem jest w szybkim
+   restarcie strumienia (stop + start), np. przerwanie odczytu CD/kończenie starego wątku (cdvdman w IOP nie ma
+   sceCdBreak/funkcji strumieniowych sceCdSt*, `iop_cdvd.cpp`).
+   Następny krok: które importy cdvdman woła PDICDVD przy stopie, co sprawdza pętla w LIBPDI,
    ewentualnie nie pomijać filmu tylko na tym ekranie albo emulować koniec strumienia.
    Narzędzia: `GT3_IOPTHR=1` (co 0,25 s czasu IOP: który wątek IOP ile cykli dostał i gdzie jest), `GT3_THRDUMP=1`,
    `GT3_IRQSTAT=1`, zrzut procesu własnym skryptem `tools/mkdump.py <pid> plik` + `tools/hang.py plik [all]`
