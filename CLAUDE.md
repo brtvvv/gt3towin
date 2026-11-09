@@ -294,6 +294,9 @@ przez rekompilator na stuby HLE `ps2_stubs::sceMc*` (Kernel/Stubs/MemoryCard.cpp
 Moduły MCMAN/MCSERV z płyty ładują się na IOP, ale gra ich nie używa. Błąd: HLE GetInfo zawsze zwracało 0
 („ta sama karta”); gra (0x23F5B8) pyta o format/wolne miejsce tylko po −1 („nowa karta”), więc karta wyglądała na
 niesformatowaną („Format Memory Card and save”). Teraz pierwsze GetInfo na port zwraca −1 (`PS2X_MC_NOCHANGED=1` = stare).
+Zapis z menu tytułowego (2026-11-09): Dół ×4 (odstęp 1,5 s) + X → Save Game → Góra (slot 1) + X → „OVERWRITE OK?” →
+Lewo + X (bywa potrzebne powtórzenie) → COMPLETE; plik danych nadpisany (Open 0x702 + Write 71 040 B). `PS2X_MC_LOG=1`
+= log GetDir/Open/Write/Delete/Sync na stderr. Uwaga: czas modyfikacji katalogu zapisu się nie zmienia — sprawdzać plik.
 Wolne miejsce w GetInfo = 8 MB minus zawartość katalogu karty (2026-11-09; `PS2X_MC_FIXEDFREE=1` = stałe 8 MB).
 Zapis: `mc0/BESCES-50294GAMEDATA/` (dane 70 464 B, icon.sys, icon0.ico, thumbnail). Z zapisem gra przy starcie
 sama go wczytuje i **pomija wybór języka** (menu trybu po ~8 s) — sekwencje pada dla „czystej karty” wtedy nie pasują
