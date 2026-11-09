@@ -167,6 +167,7 @@ Następne zadania (kolejność wg wpływu na grywalność):
    tym zapisie). Z zapisem: wybór trasy ~21 s, Prawo co 2 s = następna trasa, potem X co 3 s. Sunday Cup z wątkiem GIF OK.
    Licencja B-2 (Viper GTS) też pełny cykl: sekwencja B-1 z `29:0020:0.3` (Prawo na liście testów), dalsze X przesunięte.
    Tune Shop (z mapy: Prawo + X; Suspension → zakup) i GT Auto (2× Lewo + X; myjnia pobiera 50 Cr, model auta) OK.
+   Machine Test (2× Lewo, Góra, X): Maximum Speed Trial na Test Course — jazda, pomiar „Best” 155,7 km/h (Cuore) OK.
    **Licencja B-1 ZALICZONA (złoto 0'35.057)**: sekwencja B-1 do `34:4000:0.3`, potem `38:4000:42.4,80.4:8000:12`
    (gaz, potem hamulec Kwadrat) → puchar 3D „GOLD” i ekran NAME ENTRY poprawne. Trafia ~1/3 przebiegów (start testu
    pływa o ~1 s; G=42 staje przed strefą, G=43 przestrzeli). `GT3_AUTOPAD_VSYNC=1` = czas sekwencji z vsynców gry
