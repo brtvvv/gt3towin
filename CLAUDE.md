@@ -249,7 +249,8 @@ pierwsza ikona → VIEW SELECT 16:9, potem w oknie F10 aż do 16:9 (albo `PS2X_A
 proporcje. Ustawienie gry zapisuje się przez Save Game. Do oceny: czy 16:9 wygląda dobrze na Twoim monitorze.
 (k) **Replay Theatre** (nowe): menu tytułowe → Replay Theatre (Dół ×2 + X) → Demonstration → pierwsza (License
 B-1) → X. U mnie powtórka gra z niskiej kamery jadącej po torze **bez widocznego auta** (tak samo podgląd w menu
-licencji). Jeśli na PS2 w tej powtórce widać auto (kamery TV) — zgłosić, to błąd renderowania. Load Replay pokazuje
+licencji). Powtórka własnego przejazdu (menu licencji → REPLAY) zaczyna się ujęciem TV z poprawnie narysowanym autem,
+potem ten sam niski widok — najpewniej zamierzona kamera; jeśli na PS2 jest inaczej — zgłosić. Load Replay pokazuje
 obie karty (slot 1 z zapisem: 8 096 KB wolne).
 (l) **Filtr obrazu** (nowe): F9 przełącza wygładzanie skalowania (sharp/point/bilinear) — który wygląda najlepiej
 w oknie i na pełnym ekranie (F11)?
