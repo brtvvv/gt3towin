@@ -232,10 +232,15 @@ w keys.ini.example) albo przesłać mi padlog.txt. Uwaga: osie przy pierwszym od
 (i) **Tempo gry** (nowe, wątek VIF1 domyślnie): w teście licencji B-1 i na trasach rajdowych gra powinna mieć
 normalną prędkość (zegar testu ≈ prawdziwe sekundy), choć z ~35 kl./s. Jeśli coś miga/zacina się bardziej niż
 wcześniej, uruchomić z `set GT3_VIF1_THREAD=0` i porównać.
+(j) **16:9** (sprawdzone automatycznie 2026-11-09): menu tytułowe → Option (ostatnia pozycja; menu się zawija) →
+pierwsza ikona → VIEW SELECT 16:9, potem w oknie F10 aż do 16:9 (albo `PS2X_ASPECT=169`). Wyścig ma poprawne
+proporcje. Ustawienie gry zapisuje się przez Save Game. Do oceny: czy 16:9 wygląda dobrze na Twoim monitorze.
 (f) **Filmy** (nowe): po starcie gra film otwierający (Start pomija) — czy ma dźwięk i czy po końcu (>3 min) gra
 sama przechodzi do ekranu tytułowego; tła menu (ekran tytułowy, Arcade, wybór poziomu, podgląd tras) — płynność,
 błędne kwadraty, zawieszenia przy przechodzeniu między menu. Wyłączenie filmów: `GT3_NO_MOVIES=1`.
 
+Menu tytułowe (z zapisem, ~8 s): Arcade, Gran Turismo, Replay Theatre, Load Game, Save Game, File Operation, Option
+(Dół ×6 + X; zawija się — z Option jedno Dół = Arcade). Opcja VIEW SELECT 4:3/16:9 działa (gra rysuje anamorficznie).
 **Okno (2026-11-09):** domyślnie 960×720, obraz 4:3 na całe okno, panel debugera ukryty (F1 pokazuje;
 `PS2X_DEBUG_PANEL=1` od startu). **F11** = pełny ekran (okno bez ramki), **F10** = proporcje 4:3 → 16:9 → rozciągnięte
 → natywne (stare). `PS2X_WINDOW=1280x960`, `PS2X_ASPECT=43|169|stretch|native`. 16:9 ma sens z opcją
