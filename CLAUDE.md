@@ -201,6 +201,14 @@ z `PS2X_GS_SYNCREADBACK=1` (synchroniczny odczyt GS→EE do testu widoczności s
 (g) **Mapowanie klawiszy** (nowe): w folderze gry jest `keys.ini.example` — skopiować jako `keys.ini`, zmienić np.
 `CROSS = X, SPACE` na inne klawisze, uruchomić grę i sprawdzić, czy działa (w logu `[keys] wczytano...`; błędne nazwy
 są zgłaszane). Bez pliku = domyślne klawisze. Inna ścieżka: `PS2X_KEYS=plik`.
+(h) **Kierownica FANATEC / pad** (nowe): runtime widzi u Ciebie urządzenia: 0 „Handbrake”, 1 „TK Shifter Adapter”,
+2 i 3 „FANATEC Wheel” (wcześniej „Handbrake” był używany jako pad 0 — mógł np. skręcać auto). Teraz pad wybierany
+po nazwie (Xbox/XInput/Controller/DualSense…) albo `PS2X_PAD_INDEX=n`; spusty pada = nacisk gazu (Krzyżyk) i hamulca
+(Kwadrat), `PS2X_PAD_NO_TRIGGERS=1` = stare. Kierownica: (1) w folderze gry w cmd: `set PS2X_PAD_LOG=1` i uruchomić
+`ps2EntryRunner.exe CORE.elf 2> padlog.txt`, w menu kręcić kierownicą i wciskać pedały, zamknąć; (2) w padlog.txt
+linie `[padlog] n 'nazwa': ...` — które liczby się zmieniają (oś skrętu, gazu, hamulca) i jakie są przy puszczonych
+pedałach; (3) wpisać do keys.ini sekcję WHEEL/STEER_AXIS/GAS_AXIS/GAS_REST/BRAKE_AXIS/BRAKE_REST (opis
+w keys.ini.example) albo przesłać mi padlog.txt. Uwaga: osie przy pierwszym odczycie były 0 (nie mogłem skalibrować).
 (f) **Filmy** (nowe): po starcie gra film otwierający (Start pomija) — czy ma dźwięk i czy po końcu (>3 min) gra
 sama przechodzi do ekranu tytułowego; tła menu (ekran tytułowy, Arcade, wybór poziomu, podgląd tras) — płynność,
 błędne kwadraty, zawieszenia przy przechodzeniu między menu. Wyłączenie filmów: `GT3_NO_MOVIES=1`.
