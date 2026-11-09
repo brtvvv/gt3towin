@@ -150,16 +150,11 @@ Kody pada (`GT3_AUTOPAD` maska): Góra 0010, Prawo 0020, Dół 0040, Lewo 0080, 
 GT Mode (z zapisem): mapa ~16 s; z My Home Góra → Car Dealer; X → JPN → Daihatsu → Cuore (11 140 Cr).
 
 Następne zadania (kolejność wg wpływu na grywalność):
-1. **Więcej kl./s w ciężkich scenach** (kamień 4): tor testowy licencji ~43 kl./s, demo rajdowe ~32, przelot ~51
-   (tempo gry już poprawne dzięki wątkowi VIF1). Spin wątku GIF przed uśpieniem (`GT3_GIF_SPIN=4000` domyślnie,
-   0 = bez) + budzenie tylko śpiącego: licencja 34,5 → 43 kl./s, przelot 46,6 → 51,2 (wątek VIF1 tracił ~8% na
-   budzeniu wątku GIF). Teraz wąskie gardło: wątek VIF1 (VU1).
-   Profiler: `GT3_SAMPLE_LINES=nazwa_funkcji` dodaje trafienia per linia (`[prof-line]`). UNPACK bez dzielenia przez WL
-   — zysk w szumie (koszt processVIF1Data to nie pętla UNPACK).
-   Demo rajdowe (~32 kl./s) ogranicza rasteryzacja, nie VU1: wątek GS 85% (DrawTriangle 42%, DrawSprite 36% —
-   pełnoekranowe sprite'y rozmycia), pula wierszy 6×52%. Gorące linie DrawSprite: próbkowanie + combineTexture +
-   zapis piksela (gs_cpu_backend.cpp ~2818–2824). Poprawa = SIMD rasteryzatora (duża praca) — odłożone. Profil licencji: wątek EE 100% (VU1 + processVIF1Data 8,6%,
-   budzenie wątków NtAlertThreadByThreadId 6%). Dalej: tańsze VU1/VIF1, mniej budzeń kolejki GIF, HLE semaforów bitu I.
+1. **Więcej kl./s w ciężkich scenach** (kamień 4): licencja ~43 kl./s, przelot ~51, demo rajdowe ~32 (tempo gry zawsze
+   rzeczywiste). Przelot/licencja: ogranicza opóźnienie wymiany EE↔VIF1 i VU1 na wątku VIF1 (szczegóły i wykluczone
+   kierunki w sekcji wydajności niżej). Demo: rasteryzacja na wątku GS (DrawTriangle 42%, pełnoekranowe DrawSprite 36%;
+   gorące: próbkowanie + combineTexture + zapis piksela ~gs_cpu_backend.cpp:2818) → SIMD rasteryzatora (duża praca).
+   Bez wpływu: `PS2X_GS_PARMIN` (próg puli wierszy), dzielenie w UNPACK. Profil linii: `GT3_SAMPLE_LINES=funkcja`.
 2. GT Mode szerzej: wyścig do mety (nagroda, wyniki, powtórka — autopad nie dojeżdża; potrzebny autopilot czytający
    pozycję auta z pamięci albo test ręczny), Tune Shop, kolejne licencje, inne trasy GT (filmy końcowe — sprawdzone).
    Sprawdzone: licencja B-1 (jazda → FAIL → menu → DEMO), wyścig Arcade 170 s bez wycieków. Arcade: Super Speedway,
