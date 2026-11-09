@@ -171,7 +171,13 @@ Następne zadania (kolejność wg wpływu na grywalność):
    Decyzja (2026-11-09): przelot 49 kl./s na razie akceptowany; wątek VIF1 = osobny, wielogodzinny projekt.
    Sekwencje: DEMO licencji = B-1 + `42:4000:40,114:0020:0.3,116:0020:0.3,118:4000:0.3`; race.ps1 ma `-Pad/-Hold/-Timeout`.
 3. Dźwięk po odsłuchu użytkownika: PMON, interpolacja gaussowska (jest liniowa, ciągła przez granice bloków), sweep.
-4. Kamień 5: GS na GPU (wyższa rozdzielczość) — duży projekt, najpierw ocena opcji w tym pliku.
+4. Kamień 5: GS na GPU — ocena opcji (2026-11-09):
+   (A) pełny backend GPU za interfejsem `GSRasterBackend` (gs_backend.h: Submit/LoadClut/UploadImage/ReadVram/Present)
+       jak renderer HW PCSX2 — wyższa rozdzielczość, ale GT3 używa sztuczek zależnych od układu VRAM (kopia Z jako
+       tekstury w DOF, palety 0x3E80, odczyt GS→EE do flary, sprite'y kopiujące bufory) → miesiące pracy, wysokie ryzyko;
+   (B) programowy rasteryzator w 2× rozdzielczości — 4× koszt wypełniania, te same problemy z kopiami przez VRAM; odrzucone;
+   (C) filtry na wyjściu (prezentacja raylib: wygładzanie skalowania, ostrzenie) — tanie, bez ryzyka.
+   Decyzja: (C) teraz, (A) jako osobny projekt po osiągnięciu 60 kl./s wszędzie.
 
 1a. **ROZWIĄZANE (2026-11-09): zawieszenia wyścigów GT Mode i testów licencji** (~2 s po starcie, obraz stał).
    Przyczyna: w HLE sysclib IOP setjmp/longjmp były atrapami. LIBPDI (strumień muzyki PBGM) przy zatrzymaniu
@@ -239,12 +245,17 @@ proporcje. Ustawienie gry zapisuje się przez Save Game. Do oceny: czy 16:9 wygl
 B-1) → X. U mnie powtórka gra z niskiej kamery jadącej po torze **bez widocznego auta** (tak samo podgląd w menu
 licencji). Jeśli na PS2 w tej powtórce widać auto (kamery TV) — zgłosić, to błąd renderowania. Load Replay pokazuje
 obie karty (8 190 KB wolne — sprawdzić, czy to zgodne z zapisem ~70 KB).
+(l) **Filtr obrazu** (nowe): F9 przełącza wygładzanie skalowania (sharp/point/bilinear) — który wygląda najlepiej
+w oknie i na pełnym ekranie (F11)?
 (f) **Filmy** (nowe): po starcie gra film otwierający (Start pomija) — czy ma dźwięk i czy po końcu (>3 min) gra
 sama przechodzi do ekranu tytułowego; tła menu (ekran tytułowy, Arcade, wybór poziomu, podgląd tras) — płynność,
 błędne kwadraty, zawieszenia przy przechodzeniu między menu. Wyłączenie filmów: `GT3_NO_MOVIES=1`.
 
 Menu tytułowe (z zapisem, ~8 s): Arcade, Gran Turismo, Replay Theatre, Load Game, Save Game, File Operation, Option
 (Dół ×6 + X; zawija się — z Option jedno Dół = Arcade). Opcja VIEW SELECT 4:3/16:9 działa (gra rysuje anamorficznie).
+**Filtr obrazu (2026-11-09, kamień 5 opcja C):** domyślnie „sharp bilinear” (shader GLSL w pętli prezentacji
+ps2_runtime.cpp; równe krawędzie przy skali niecałkowitej), **F9** = sharp → point (stare) → bilinear,
+`PS2X_FILTER=sharp|point|bilinear`.
 **Okno (2026-11-09):** domyślnie 960×720, obraz 4:3 na całe okno, panel debugera ukryty (F1 pokazuje;
 `PS2X_DEBUG_PANEL=1` od startu). **F11** = pełny ekran (okno bez ramki), **F10** = proporcje 4:3 → 16:9 → rozciągnięte
 → natywne (stare). `PS2X_WINDOW=1280x960`, `PS2X_ASPECT=43|169|stretch|native`. 16:9 ma sens z opcją
