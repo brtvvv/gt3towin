@@ -264,6 +264,18 @@ zawieszenia: `tools/mkdump.py` + `tools/hang.py`.
 - Pad: klawiatura zawsze + gamepad raylib; `GT3_AUTOPAD="sek:maska:czas,..."` do testów.
 - Wydajność (wyścig Arcade): jazda 60 kl./s, przelot kamery ~40–46 kl./s; ogranicza wątek GS (`m_flusher`) i wątek EE.
   Bez rysowania (`GT3DBG_NODRAW=1`) przelot nadal ~40 kl./s → ogranicza wątek EE (VU1 ~44%), nie rasteryzacja.
+  **Profiler własny** (xperf w tej sesji nie startuje: „Nieprawidłowe flagi”): `GT3_SAMPLE=od:dł` (s) — próbkuje wszystkie
+  wątki co 1 ms (SuspendThread + RIP, symbole z PDB), raport `[prof]` na stderr: zajętość wątków + top funkcji
+  (gt3_sampler.cpp, dołączony #include na końcu EeScheduler.cpp). Pomiar A/B: `tools/fly.ps1 -N 3 [-Env ...]`
+  (średnie kl/s przelotu i jazdy + s/60 odcinków przelotu; szum ~±0,01 s/60).
+  Profil wątku EE w przelocie (2026-11-09): bloki AOT VU1 ~20%, pomocnicze VU1 ~20% (commitReadyPipelines 7%,
+  flagi FMAC: productSticky/updateFmacFlags/exactResult/normalize ~8%, resetScheduler 1,5%), frontend GS ~13%,
+  VIF ~5%, IOP+SPU2 (wykonywane na wątku EE!) ~5%, kod gry ~4%, _NLG_Return2 5% (pewnie źle przypisany AOT).
+  Ocena opcji dla 60 kl./s w przelocie (trzeba ~−35% czasu wątku EE): (a) VU1+VIF1 na osobnym wątku (jak PS2) —
+  największy zysk (~40%), ryzyko synchronizacji (VIF1 stall na bicie I, przerwania, kolejność PATH1/2/3), duży kod;
+  (b) IOP (z SPU2) na osobnym wątku — ~5%, średnie ryzyko (RPC/SIF DMA już asynchroniczne); (c) tańsze flagi/potoki
+  w AOT — ~10%, niskie ryzyko (weryfikacja `GT3_VU1AOT_VERIFY`). Plan: (c) → (b) → (a) etapami z przełącznikami.
+  Wykluczone: kopia pakietów VIF1 do wektora (alokacja) — usunięta, bez mierzalnego zysku (`GT3_VIF1_COPYFEED=1`).
   Wątek GIF — 3. podejście (2026-11-09): przestój = wątek roboczy 9 w 0x253580 → 0x2520C0(kanał 1) czeka na koniec
   DMA VIF1 (flaga +0x1D, limit 120 uśpień = przestój), główny wątek śpi w 0x1AEA20. W przestoju VIF1 CHCR=0x100001C5
   (STR=1), QWC=0, TADR 0x355120, a żaden wątek EE nie dotyka DMA (`GT3_VIF1STAT=1` nic nie wypisuje) — leniwy łańcuch
