@@ -263,6 +263,13 @@ zawieszenia: `tools/mkdump.py` + `tools/hang.py`.
 - Karta pamięci: libmc gry = stuby HLE (`Kernel/Stubs/MemoryCard.cpp`), pierwsze GetInfo = −1, TRUNC > APPEND.
 - Pad: klawiatura zawsze + gamepad raylib; `GT3_AUTOPAD="sek:maska:czas,..."` do testów.
 - Wydajność (wyścig Arcade): jazda 60 kl./s, przelot kamery ~40–46 kl./s; ogranicza wątek GS (`m_flusher`) i wątek EE.
+  Bez rysowania (`GT3DBG_NODRAW=1`) przelot nadal ~40 kl./s → ogranicza wątek EE (VU1 ~44%), nie rasteryzacja.
+  Wątek GIF — 3. podejście (2026-11-09): przestój = wątek roboczy 9 w 0x253580 → 0x2520C0(kanał 1) czeka na koniec
+  DMA VIF1 (flaga +0x1D, limit 120 uśpień = przestój), główny wątek śpi w 0x1AEA20. W przestoju VIF1 CHCR=0x100001C5
+  (STR=1), QWC=0, TADR 0x355120, a żaden wątek EE nie dotyka DMA (`GT3_VIF1STAT=1` nic nie wypisuje) — leniwy łańcuch
+  VIF1 (`runVif1Chain`, wznawiany przy VIF1_FBRST.STC/zapisie CHCR) nie jest kontynuowany, gdy wszystko śpi.
+  Pomysł na kolejną próbę: kontynuować łańcuch VIF1 z wątku GIF / przy vblank, gdy STR=1 i nie ma stallu I.
+  Teraz w tym trybie dodatkowo 0 kl./s przez ~3 s w przelocie. Odłożone.
   Eksperyment wątku GIF (`GT3_GIF_THREAD=1`) ma przestój ~4 s przed wyścigiem (łańcuch VIF1 po kontynuacji po
   odczycie GS→EE nie kończy się) — domyślnie wyłączony.
 
