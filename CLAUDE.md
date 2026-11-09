@@ -169,7 +169,7 @@ Następne zadania (kolejność wg wpływu na grywalność):
    Metoda: stan wątków IOP przed/po zdarzeniu + deasemblacja IRX (`tools/irxdis.py plik.irx baza od do`; skoki `jal`
    w IRX są względne do bazy modułu; tablica importów: nagłówek 0x41E00000 + nazwa biblioteki, potem pary `jr ra;
    addiu zero,zero,N` = funkcja N, np. thsemap 6 Signal/8 WaitSema, thbase 0x18 SleepThread, sysclib 4/5 setjmp/longjmp).
-   Sekwencje (zapis z Cuore): Sunday Cup `9:0040,11:4000,17:0080,19:4000,24:4000,28:4000,31:0020,33:4000,37:0020,
+   Sekwencje (zapis z Cuore; GT3_AUTOPAD wymaga `sek:maska:czas` — poniżej dopisać `:0.3` do wpisów bez czasu): Sunday Cup `9:0040,11:4000,17:0080,19:4000,24:4000,28:4000,31:0020,33:4000,37:0020,
    39:4000,43:4000,47:4000,51:4000,55:4000,59:4000:60` (start ~56 s); licencja B-1:
    `9:0040,11:4000,17:0010,19:0080,21:4000,26:4000,30:4000,34:4000,38:4000,42:4000:40`. Trójkąt (0x1000) = wstecz.
    Zakup Cuore + zapis: zob. `C:\gt3-data\recomp\tools` (sekwencja w historii; po zakupie Trójkąt → mapa).
@@ -300,6 +300,16 @@ zawieszenia: `tools/mkdump.py` + `tools/hang.py`.
   Pomysł na kolejną próbę: kontynuować łańcuch VIF1 z wątku GIF / przy vblank, gdy STR=1 i nie ma stallu I.
   Teraz w tym trybie dodatkowo 0 kl./s przez ~3 s w przelocie. Odłożone.
   4. próba: opróżnienie kolejki wątku GIF przed odczytem GS→EE przez VIF1 DIR=0 — bez zmiany (start 58 s). Wykluczone.
+  **ROZWIĄZANE (5. próba, 2026-11-09): przestój wątku GIF.** Przyczyna: przerwania zgłaszane przez sprzęt z innych
+  wątków (`g_ps2PendingIntcMask`, tu FINISH z wątku GIF odłożony do skasowania CSR) były dostarczane tylko po zapisach
+  IO gry — gdy wszystkie wątki EE spały, czekały do limitu 120 vblanków. Teraz dostarczane też przy każdym vblanku
+  (EeScheduler VBlankStart, `GT3_NO_VBLANK_DRAIN=1` = stare). Pomogło też: GsPutIMR zgłasza oczekujący FINISH przy
+  odmaskowaniu, zatrzask INTC 0 przy wyłączonej przyczynie (oba tylko w trybie wątku GIF; `GT3_NO_INTC_LATCH=1`).
+  Wynik `GT3_GIF_THREAD=1`: start wyścigu 50 s, przelot **48,7 kl./s** (domyślnie 41,3; s/60 1,14 vs 1,32), jazda 60.
+  Menu z filmami i licencja B-1 poprawne. **Nie domyślnie**: w demie rajdowym (bez wejścia ~56–80 s od startu, sceny 3D
+  z logo GT3) okresowo zielono-czerwone śmieci zamiast obrazu i czarne klatki (tryb domyślny czysty) — do zbadania
+  (kolejność wgrań tekstur PATH3 względem PATH1/2? `run.ps1 -Pad "99:0:0.1" -At "56,62,80" -Env GT3_GIF_THREAD=1`).
+  Diagnostyka: `GT3_INTCLOG=1` (dostarczenia INTC 0), `GT3_VIF1STAT=1` (stan VIF1/GS co 1 s w [gt3stat]).
   **Projekt (a) „wątek VIF1” (do realizacji):** samo asynchroniczne VU1 przy MSCAL (`m_vu1MscalCallback`,
   ps2_vif1_interpreter.cpp:512) da mało, bo łańcuch VIF1 przetwarza się synchronicznie przy zapisie CHCR (runVif1Chain).
   Zysk daje dopiero: zapis CHCR VIF1 → zadanie dla wątku roboczego (łańcuch + UNPACK + VU1 + XGKICK/DIRECT do GS),
