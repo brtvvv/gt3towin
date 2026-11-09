@@ -143,6 +143,21 @@ GT Mode (z zapisem): mapa ~16 s; z My Home Góra → Car Dealer; X → JPN → D
 
 Następne zadania (kolejność wg wpływu na grywalność):
 1. GT Mode dalej: licencja, wyścig, zakup auta, zapis po postępie → wczytanie (czy stan się zgadza).
+1a. **Test licencji (GT Mode → License Centre → Domestic B → B-1) zawiesza się ~2 s po starcie jazdy** (obraz stoi,
+   dmac1/flip nie rosną, vsync idzie). Ustalone: (a) RPC `PBGM` (0x5042474D, wątek IOP 21, strumień muzyki) fn 3 w trybie
+   NOWAIT nie kończy się; runtime wykonywał NOWAIT synchronicznie do ~22 s czasu IOP (EE zamrożone) — teraz NOWAIT
+   dokańcza się w tle (`gt3NowaitPending` w RPC.cpp, `GT3_NOWAIT_SYNC=1` = stare), EE już nie stoi, ale gra dalej czeka;
+   (b) w części przebiegów wątek IOP ~102 (nowy wątek strumienia) zajmuje 100% czasu IOP w LIBPDI 0x6A738–0x6AC8C
+   (operacje FIFO z blokadą 0x26BC/0x26AC, offsety względem bazy 0x69E00) i zagładza resztę; w innych IOP jest bezczynne.
+   Ekran informacji testu ma film demonstracyjny (odtwarzacz filmów pomijamy) — podejrzenie: strumień filmu/BGM na IOP
+   bez danych (pomijany film) → pętla w wątku strumienia. Wykluczone: emulacja SPU2 (z `PS2X_SPU2_OFF=1` to samo),
+   zgubione iWakeupThread na bieżącym wątku (poprawione i tak, `GT3_WAKEUP_SELF_STRICT=1` = stare).
+   Następny krok: które RPC/komendy startują strumień w teście (`GT3_RPCLOG=0` w momencie wejścia w test, sid MPG1/MPG2/PDIP),
+   ewentualnie nie pomijać filmu tylko na tym ekranie albo emulować koniec strumienia.
+   Narzędzia: `GT3_IOPTHR=1` (co 0,25 s czasu IOP: który wątek IOP ile cykli dostał i gdzie jest), `GT3_THRDUMP=1`,
+   `GT3_IRQSTAT=1`, zrzut procesu własnym skryptem `tools/mkdump.py <pid> plik` + `tools/hang.py plik [all]`
+   (comsvcs MiniDump tworzy plik tylko dla administratora — nie używać).
+   Sekwencja pada (z zapisem): `9:0040,11:4000,17:0010,19:0080,21:4000,26:4000,30:4000,34:4000,38:4000,42:4000:40`.
 2. (zrobione) Poprawka ZTE naprawiła też wybór koloru w Arcade (model 3D auta) i tło Mid-Field w menu trasy.
    Arcade z zapisem: `9:4000,13:4000,17:4000` → wybór trasy ~20 s (Prawo = następna trasa), dalej X → klasa → auto/kolor.
 
