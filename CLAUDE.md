@@ -127,8 +127,10 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
 Stan (2026-11-09): menu, Arcade, **GT Mode: salon, zakup auta, zapis/odczyt postępu, wyścigi (Sunday Cup) i testy licencji
 (z DEMO/powtórką)**, **filmy: opening i tła menu (emulacja IPU, domyślnie)**, dźwięk SPU2 z pogłosem, mapowanie klawiszy
 (`keys.ini`), spusty pada i kierownica (konfiguracja w `keys.ini`), pełny ekran/proporcje. Wyścig 60 kl./s w jeździe,
-przelot kamery ~49 kl./s (wątek GIF domyślnie od 2026-11-09; `GT3_GIF_THREAD=0` = synchronicznie ~41).
-Pamięć stabilna (~190 MB). Salon aut nie migocze (poprawka ZTE=0 bez zapisu Z).
+przelot kamery ~47–50 kl./s. **Wątek VIF1 domyślnie (2026-11-09, `GT3_VIF1_THREAD=0` = stare)**: w ciężkich scenach
+gra biegnie w tempie rzeczywistym (vsync 60/s, gubi klatki jak PS2) zamiast zwalniać — demo rajdowe było w połowie
+tempa (vsync 31/s), licencja B-1 ~35 kl./s w zwolnionym tempie. Wątek GIF też domyślnie (`GT3_GIF_THREAD=0`).
+Pamięć stabilna (~195 MB). Salon aut nie migocze (poprawka ZTE=0 bez zapisu Z).
 Szczegóły i historia: sekcje niżej oraz docs/HISTORIA_RECOMP.md.
 
 **Czekam na użytkownika:** odsłuch dźwięku i test klawiatury/pada/kierownicy (lista „Do przetestowania ręcznie” niżej).
@@ -148,8 +150,9 @@ Kody pada (`GT3_AUTOPAD` maska): Góra 0010, Prawo 0020, Dół 0040, Lewo 0080, 
 GT Mode (z zapisem): mapa ~16 s; z My Home Góra → Car Dealer; X → JPN → Daihatsu → Cuore (11 140 Cr).
 
 Następne zadania (kolejność wg wpływu na grywalność):
-1. **60 kl./s w przelocie kamery** (kamień 4): teraz ~49 kl./s (wątek GIF). Dalej: projekt „wątek VIF1” (VIF1+VU1
-   równolegle, opis w sekcji wydajności) albo tańsze VU1. Wątek EE nadal wąskim gardłem.
+1. **Więcej kl./s w ciężkich scenach** (kamień 4): tor testowy licencji ~35 kl./s, demo rajdowe ~32, przelot ~47
+   (tempo gry już poprawne dzięki wątkowi VIF1). Profil licencji: wątek EE 100% (VU1 + processVIF1Data 8,6%,
+   budzenie wątków NtAlertThreadByThreadId 6%). Dalej: tańsze VU1/VIF1, mniej budzeń kolejki GIF, HLE semaforów bitu I.
 2. GT Mode szerzej: wyścig do mety (nagroda, wyniki, powtórka — autopad nie dojeżdża; potrzebny autopilot czytający
    pozycję auta z pamięci albo test ręczny), Tune Shop, kolejne licencje, inne trasy GT, filmy końcowe (ending_*.pss).
    Sprawdzone: licencja B-1 (jazda → FAIL → menu → DEMO), wyścig Arcade 170 s bez wycieków. Arcade: Super Speedway,
