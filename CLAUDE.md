@@ -225,6 +225,9 @@ po nazwie (Xbox/XInput/Controller/DualSense…) albo `PS2X_PAD_INDEX=n`; spusty 
 linie `[padlog] n 'nazwa': ...` — które liczby się zmieniają (oś skrętu, gazu, hamulca) i jakie są przy puszczonych
 pedałach; (3) wpisać do keys.ini sekcję WHEEL/STEER_AXIS/GAS_AXIS/GAS_REST/BRAKE_AXIS/BRAKE_REST (opis
 w keys.ini.example) albo przesłać mi padlog.txt. Uwaga: osie przy pierwszym odczycie były 0 (nie mogłem skalibrować).
+(i) **Tempo gry** (nowe, wątek VIF1 domyślnie): w teście licencji B-1 i na trasach rajdowych gra powinna mieć
+normalną prędkość (zegar testu ≈ prawdziwe sekundy), choć z ~35 kl./s. Jeśli coś miga/zacina się bardziej niż
+wcześniej, uruchomić z `set GT3_VIF1_THREAD=0` i porównać.
 (f) **Filmy** (nowe): po starcie gra film otwierający (Start pomija) — czy ma dźwięk i czy po końcu (>3 min) gra
 sama przechodzi do ekranu tytułowego; tła menu (ekran tytułowy, Arcade, wybór poziomu, podgląd tras) — płynność,
 błędne kwadraty, zawieszenia przy przechodzeniu między menu. Wyłączenie filmów: `GT3_NO_MOVIES=1`.
