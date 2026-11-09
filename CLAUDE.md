@@ -153,7 +153,8 @@ Następne zadania (kolejność wg wpływu na grywalność):
 2. GT Mode szerzej: wyścig do mety (nagroda, wyniki, powtórka — autopad nie dojeżdża; potrzebny autopilot czytający
    pozycję auta z pamięci albo test ręczny), Tune Shop, kolejne licencje, inne trasy GT, filmy końcowe (ending_*.pss).
    Sprawdzone: licencja B-1 (jazda → FAIL → menu → DEMO), wyścig Arcade 170 s bez wycieków. Arcade: Super Speedway,
-   Mid-Field, Smokey/Swiss Alps (rajd), Trial Mountain bez zawieszeń; Mid-Field II niesprawdzone.
+   Mid-Field, Smokey/Swiss Alps (rajd), Trial Mountain bez zawieszeń (też z wątkiem GIF; Mid-Field II zablokowana na
+   tym zapisie). Z zapisem: wybór trasy ~21 s, Prawo co 2 s = następna trasa, potem X co 3 s. Sunday Cup z wątkiem GIF OK.
    Sekwencje: DEMO licencji = B-1 + `42:4000:40,114:0020:0.3,116:0020:0.3,118:4000:0.3`; race.ps1 ma `-Pad/-Hold/-Timeout`.
 3. Dźwięk po odsłuchu użytkownika: PMON, interpolacja gaussowska (jest liniowa, ciągła przez granice bloków), sweep.
 4. Kamień 5: GS na GPU (wyższa rozdzielczość) — duży projekt, najpierw ocena opcji w tym pliku.
