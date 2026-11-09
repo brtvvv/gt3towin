@@ -157,9 +157,28 @@ kopii wskazało przebieg, który nic nie zapisuje. `GT3_EVVTX=1` dodaje wierzcho
 3. Wątek GIF (przelot kamery 60 kl./s) — przestój ~4 s przed wyścigiem, do zbadania (zrzut wątków EE).
 4. Dźwięk (SPU2), filmy (IPU/FFmpeg), XInput, pełny ekran, 16:9.
 
-**Do przetestowania ręcznie (zbiorczo):** (a) zapis: GT Mode → My Home → Save Game → slot 1 → OK (strzałka w lewo,
+**Do przetestowania ręcznie (zbiorczo):** (0) **DŹWIĘK** (nowe, 2026-11-09): uruchomić grę i posłuchać menu (muzyka
+GT Mode), dźwięków kursora i wyścigu (muzyka + silnik). Albo odsłuchać nagrania `C:\gt3-data\runs\gt3_menu_spu2.wav`
+(muzyka od ~13 s) i `gt3_race_spu2.wav` (wyścig od ~38 s). Zgłosić: szum zamiast muzyki? zła wysokość/tempo?
+trzaski? Wyłączenie dźwięku: `PS2X_SPU2_MUTE=1`, cała emulacja SPU2 off: `PS2X_SPU2_OFF=1`.
+(a) zapis: GT Mode → My Home → Save Game → slot 1 → OK (strzałka w lewo,
 X); po restarcie gry sprawdzić, czy kredyty/auta się zgadzają. (b) Klawiatura bez `GT3_AUTOPAD` (X/Spacja = Krzyżyk,
 Enter = Start, strzałki). (c) Wyścig Arcade do mety, płynność, brak zawieszeń. Starsze punkty — sekcje niżej.
+
+**Dźwięk — SPU2 (2026-11-09, kamień 3, wersja 1):** nowy moduł `ps2xIOP/src/emulator/core/spu2.{h,cpp}` (nowe pliki:
+przed `save.ps1` musi być `git add -N` w PS2Recomp, inaczej nie wejdą do gt3.patch). IopMemory kieruje rejestry
+0x1F900000–0x1F9007FF do Spu2 (16-bit, efekty KON/KOFF/zapis portu danych), DMA kanałów 4/7 kopiuje dane RAM IOP ↔
+pamięć SPU (TSA rdzenia), AutoDMA (ADMAS) → kolejka PCM. Pętla IOP (`serviceSpu2`, iop_emulator.cpp) taktuje próbkę
+co 768 cykli i zgłasza IRQ 9 z SPDIF_IRQINFO przy trafieniu IRQA (zastępuje dawne przybliżenie `serviceSpu2Irq`).
+Miksowanie wg PCSX2: MMIX (0x800/0x400 głosy, 0x80/0x40 wejście PCM×BVOL, 0x8/0x4 wyjście rdzenia 0×AVOL do rdzenia 1),
+MVOL. Brak: pogłosu (efekty), PMON, interpolacji gaussowskiej (liniowa), dokładnych przejść głośności (sweep = od razu
+wartość docelowa). Wyjście: raylib AudioStream 48 kHz (callback, `ps2xSpu2Pull`), bufor maks. 4096 ramek
+(`PS2X_SPU2_LATENCY`). Diagnostyka: `PS2X_SPU2_LOG=1` (co sekundę KON/aktywne głosy/DMA/IRQ/RMS),
+`PS2X_SPU2_VLOG=1` (stan głosów), `PS2X_SPU2_DMALOG=1`, `PS2X_SPU2_RAW=plik.raw` (s16 stereo 48 kHz;
+`tools/raw2wav.py`, `tools/spec.py raw t0 t1 png` = spektrogram w dB), `PS2X_SPU2_SOLO=rdzeń:maska_hex`.
+Ustalenia GT3: menu GT Mode = muzyka sekwencerowa (~70 KON/s, rdzeń 0); wyścig: strumień muzyki ADPCM 44,1 kHz
+na głosach 22/23 rdzenia 1 (bufory 0xEC000/0xFC000, DMA kanałem 4 po 1 KB, ~49 IRQ/s), efekty/silnik na pozostałych
+głosach obu rdzeni (24/24 aktywne). Tempo wyścigu bez zmian (60 kl./s w jeździe).
 
 Karta pamięci (2026-11-09): libmc gry (0x274040.. sceMcInit/Open/Read/Write/GetInfo/Sync…) jest podmieniony
 przez rekompilator na stuby HLE `ps2_stubs::sceMc*` (Kernel/Stubs/MemoryCard.cpp, pliki w `<folder gry>/mc0`, `mc1`).
