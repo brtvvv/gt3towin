@@ -255,6 +255,9 @@ w oknie i na pełnym ekranie (F11)?
 drugi rozpoznany gamepad (gracz 1 = pierwszy pad + klawiatura); wcześniej port 1 dostawał to samo co port 0
 (`PS2X_PAD_MIRROR=1` = stare). Arcade → 2 Player Battle z dwoma padami: czy gracz 2 steruje swoim autem i czy
 podzielony ekran działa płynnie.
+(o) **Zapis/odczyt w menu** (WAŻNE): menu tytułowe → Save Game → slot 1 → „OVERWRITE OK?” → X (ew. Lewo, X). Czy okno
+reaguje od razu? U mnie (autopad) często ignoruje przyciski. To samo w GT Mode: My Home → Save Game. Jeśli zawiśnie —
+zgłosić, czy pomaga wciskanie kilka razy / innego przycisku.
 (f) **Filmy** (nowe): po starcie gra film otwierający (Start pomija) — czy ma dźwięk i czy po końcu (>3 min) gra
 sama przechodzi do ekranu tytułowego; tła menu (ekran tytułowy, Arcade, wybór poziomu, podgląd tras) — płynność,
 błędne kwadraty, zawieszenia przy przechodzeniu między menu. Wyłączenie filmów: `GT3_NO_MOVIES=1`.
@@ -295,8 +298,14 @@ Moduły MCMAN/MCSERV z płyty ładują się na IOP, ale gra ich nie używa. Bł�
 („ta sama karta”); gra (0x23F5B8) pyta o format/wolne miejsce tylko po −1 („nowa karta”), więc karta wyglądała na
 niesformatowaną („Format Memory Card and save”). Teraz pierwsze GetInfo na port zwraca −1 (`PS2X_MC_NOCHANGED=1` = stare).
 Zapis z menu tytułowego (2026-11-09): Dół ×4 (odstęp 1,5 s) + X → Save Game → Góra (slot 1) + X → „OVERWRITE OK?” →
-Lewo + X (bywa potrzebne powtórzenie) → COMPLETE; plik danych nadpisany (Open 0x702 + Write 71 040 B). `PS2X_MC_LOG=1`
+Lewo + X → COMPLETE (**tylko ~1/3 przebiegów autopada** — OTWARTY PROBLEM, niżej); plik danych nadpisany (Open 0x702 + Write 71 040 B). `PS2X_MC_LOG=1`
 = log GetDir/Open/Write/Delete/Sync na stderr. Uwaga: czas modyfikacji katalogu zapisu się nie zmienia — sprawdzać plik.
+**OTWARTE: okna „OVERWRITE OK?” / „LOAD GAME OK?” często ignorują wejście** (fokus się nie rusza, Lewo/Prawo/X bez
+reakcji przez 8 s, choć gra czyta pada 122×/s i dostaje te przyciski; operacje karty kończą się poprawnie — w udanym
+przebiegu Open/Write zaraz po X). Wykluczone: wynik Sync per wątek (`PS2X_MC_THREADSYNC=1`, 0/3), głodzenie przez wątek
+odpytujący kartę (GetInfo ~15/s), czas wciśnięć, nacisk analogowy (0xFF). Hipoteza: 2 odczyty pada na klatkę (2 wątki)
+i wspólne wykrywanie zbocza — kolejność wątków w planiście decyduje, kto „zje” wciśnięcie. Diagnostyka: `PS2X_PAD_READLOG=1`,
+`PS2X_MC_LOG=1`. Następny krok: znaleźć w kodzie gry odczyt pada w oknie (kto woła scePadRead i jak liczy zbocze).
 Wolne miejsce w GetInfo = 8 MB minus zawartość katalogu karty (2026-11-09; `PS2X_MC_FIXEDFREE=1` = stałe 8 MB).
 Zapis: `mc0/BESCES-50294GAMEDATA/` (dane 70 464 B, icon.sys, icon0.ico, thumbnail). Z zapisem gra przy starcie
 sama go wczytuje i **pomija wybór języka** (menu trybu po ~8 s) — sekwencje pada dla „czystej karty” wtedy nie pasują
