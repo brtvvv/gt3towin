@@ -254,6 +254,14 @@ zawieszenia: `tools/mkdump.py` + `tools/hang.py`.
   Eksperyment wątku GIF (`GT3_GIF_THREAD=1`) ma przestój ~4 s przed wyścigiem (łańcuch VIF1 po kontynuacji po
   odczycie GS→EE nie kończy się) — domyślnie wyłączony.
 
+**Pamięć (2026-11-09):** kolejka zbiorów GS (`EnqueueSet`) nie miała limitu — przy intensywnych wgraniach (intro,
+demo, wczytywanie) proces rósł do 3–4,6 GB. Teraz limit 256 MB danych w kolejce (`PS2X_GS_MAXQMB`) i 1024 zbiorów
+(`PS2X_GS_MAXSETS`; mały limit, np. 32, spowalnia jazdę ~30%), `PS2X_GS_NOQUEUELIMIT=1` = bez limitu. Szczyt ~270 MB.
+**Filmy — ocena:** odtwarzacz to Sony libmpeg wlinkowany statycznie (wątek dekodera 0x260760, funkcje 0x2600xx–
+0x261Cxx, IPU 0x2644B8–0x266090), bez symboli. Opcje: (a) emulacja IPU (BDEC/IDEC/VDEC/FDEC/CSC, jak PCSX2, ~2–3 tys.
+linii, wierne), (b) HLE sceMpegGetPicture + FFmpeg mpeg2video karmione strumieniem z bufora libmpeg (mniej kodu, ale
+trzeba rozpracować API/bufory). Odłożone do czasu ważniejszych zadań; wybór: raczej (a).
+
 **Pułapki:** `sed -i`/`Set-Content` psują CRLF/BOM w plikach PS2Recomp (edytować narzędziem Edit);
 PowerShell 5.1 `Get-Content -Raw` czyta UTF-8 bez BOM jako ANSI (zepsute polskie znaki) — używać
 `[IO.File]::ReadAllText(p, [Text.Encoding]::UTF8)`, a w here-stringach `@"..."@` znak ` jest ucieczką (gubi backticki);
