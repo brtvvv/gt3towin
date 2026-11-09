@@ -146,7 +146,9 @@ Następne zadania (kolejność wg wpływu na grywalność):
 1. GT Mode szerzej: wyścig do mety (nagroda, wyniki, powtórka), Tune Shop, kolejne licencje, inne trasy GT,
    długie sesje (wycieki/zawieszenia). Sprawdzone 2026-11-09: test licencji B-1 pełny cykl (jazda → FAIL → menu
    licencji); wyścig Arcade 170 s: pamięć stała ~187 MB, 60 kl./s (race.ps1 ma teraz `-Hold` i `-Timeout`,
-   shots2.ps1 zapisuje `mem.txt`). Wyścig GT do mety > 3 min — nie mieści się w limicie pomiaru. Arcade: sprawdzone Super Speedway, Mid-Field, Smokey/Swiss Alps (rajd),
+   shots2.ps1 zapisuje `mem.txt`). Wyścig GT do mety > 3 min — nie mieści się w limicie pomiaru.
+   DEMO licencji (ujęcia powtórki, logo GT3) działa: sekwencja B-1 + `42:4000:40,114:0020:0.3,116:0020:0.3,118:4000:0.3`
+   (po FAIL w menu 2× Prawo + X). Sterowanie „w ciemno” (impulsy Lewo) nie dojeżdża do mety Arcade — auto się obraca. Arcade: sprawdzone Super Speedway, Mid-Field, Smokey/Swiss Alps (rajd),
    Trial Mountain — bez zawieszeń.
 2. (zrobione) Filmy (IPU): opening i tła menu działają (sekcja „Filmy (IPU)” niżej). Do ręcznego sprawdzenia:
    dźwięk filmów, koniec openingu (>3 min), filmy końcowe (ending_*.pss).
