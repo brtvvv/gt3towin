@@ -339,6 +339,14 @@ zawieszenia: `tools/mkdump.py` + `tools/hang.py`.
   dodać log w ścieżce wątku GIF. Odłożone (3 podejścia). Wykluczone: zwykła ścieżka GIF przez arbitra (tryb domyślny
   z `GT3_NO_NATIVE_GIF=1` = jak w trybie wątku, bez skrótów natywnych) jest czysta → przyczyną jest wyścig wątkowy
   (coś na EE czyta/zapisuje VRAM bez opróżnienia kolejki wątku GIF).
+  Pomiar `GT3_OVERLAPSTAT=1` (2026-11-09, przelot): praca VIF1/VU1 dzieje się prawie cała we wznowieniach po stallu na
+  bicie I (zapis FBRST.STC w obsłudze przerwania VIF1): ~3 400 kroków/s, łącznie ~60–70% czasu ściennego wątku EE;
+  sam start łańcucha (zapis CHCR) to ~0. Po każdym kroku EE dotyka VIF/DMA po ~1 µs (następne przerwanie jest zgłaszane
+  synchronicznie w trakcie kroku). Wniosek: wątek roboczy ma sens tylko jako „STC zleca wznowienie i wraca; wątek
+  przetwarza do następnego bitu I i zgłasza INTC VIF1 asynchronicznie” — EE wraca wtedy do kodu gry (~30–40% czasu)
+  równolegle. Wymaga: dostarczania oczekujących przerwań w punktach kontrolnych EE (nie tylko po zapisach IO), blokady
+  `m_ioRegisters` (mapa, zapisy z obu wątków), czekania EE na bezczynny wątek przy: odczytach VIF1_STAT/CHCR/D_STAT,
+  zapisach VIF/DMA/GIF, starcie PATH3, dostępie do pamięci VU1, zapisach DISPFB. Szacunek: przelot ~60 kl./s.
   **Projekt (a) „wątek VIF1” (do realizacji):** samo asynchroniczne VU1 przy MSCAL (`m_vu1MscalCallback`,
   ps2_vif1_interpreter.cpp:512) da mało, bo łańcuch VIF1 przetwarza się synchronicznie przy zapisie CHCR (runVif1Chain).
   Zysk daje dopiero: zapis CHCR VIF1 → zadanie dla wątku roboczego (łańcuch + UNPACK + VU1 + XGKICK/DIRECT do GS),
