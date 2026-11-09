@@ -157,6 +157,10 @@ Następne zadania (kolejność wg wpływu na grywalność):
    tym zapisie). Z zapisem: wybór trasy ~21 s, Prawo co 2 s = następna trasa, potem X co 3 s. Sunday Cup z wątkiem GIF OK.
    Licencja B-2 (Viper GTS) też pełny cykl: sekwencja B-1 z `29:0020:0.3` (Prawo na liście testów), dalsze X przesunięte.
    Tune Shop (z mapy: Prawo + X; Suspension → zakup) i GT Auto (2× Lewo + X; myjnia pobiera 50 Cr, model auta) OK.
+   **Licencja B-1 ZALICZONA (złoto 0'35.057)**: sekwencja B-1 do `34:4000:0.3`, potem `38:4000:42.4,80.4:8000:12`
+   (gaz, potem hamulec Kwadrat) → puchar 3D „GOLD” i ekran NAME ENTRY poprawne. Trafia ~1/3 przebiegów (start testu
+   pływa o ~1 s; G=42 staje przed strefą, G=43 przestrzeli). `GT3_AUTOPAD_VSYNC=1` = czas sekwencji z vsynców gry
+   (nie poprawił powtarzalności — zmienny czas wczytywania). Do zrobienia: NAME ENTRY → OK (Dół ×6, X), zapis licencji.
    Decyzja (2026-11-09): przelot 49 kl./s na razie akceptowany; wątek VIF1 = osobny, wielogodzinny projekt.
    Sekwencje: DEMO licencji = B-1 + `42:4000:40,114:0020:0.3,116:0020:0.3,118:4000:0.3`; race.ps1 ma `-Pad/-Hold/-Timeout`.
 3. Dźwięk po odsłuchu użytkownika: PMON, interpolacja gaussowska (jest liniowa, ciągła przez granice bloków), sweep.
