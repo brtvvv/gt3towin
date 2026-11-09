@@ -319,7 +319,9 @@ zawieszenia: `tools/mkdump.py` + `tools/hang.py`.
   asynchronicznym GIF. Kompozycja w demie (tryb domyślny, `GT3_EVLOG=2450` ≈ 55 s): rysowanie do fbp 0x1A1 jako
   PSMZ32 z tekstury tbp 0 psm 0x31 (kopia Z), potem sprite'y na fbp 0 z ZBUF 0x1A1 i teksturami 0xA00 (CT24)
   i 0x1E20 (CT32). W trybie wątku GIF `GT3_EVLOG` nic nie wypisuje (inna ścieżka rysowań) — do porównania trzeba
-  dodać log w ścieżce wątku GIF. Odłożone (3 podejścia).
+  dodać log w ścieżce wątku GIF. Odłożone (3 podejścia). Wykluczone: zwykła ścieżka GIF przez arbitra (tryb domyślny
+  z `GT3_NO_NATIVE_GIF=1` = jak w trybie wątku, bez skrótów natywnych) jest czysta → przyczyną jest wyścig wątkowy
+  (coś na EE czyta/zapisuje VRAM bez opróżnienia kolejki wątku GIF).
   **Projekt (a) „wątek VIF1” (do realizacji):** samo asynchroniczne VU1 przy MSCAL (`m_vu1MscalCallback`,
   ps2_vif1_interpreter.cpp:512) da mało, bo łańcuch VIF1 przetwarza się synchronicznie przy zapisie CHCR (runVif1Chain).
   Zysk daje dopiero: zapis CHCR VIF1 → zadanie dla wątku roboczego (łańcuch + UNPACK + VU1 + XGKICK/DIRECT do GS),
