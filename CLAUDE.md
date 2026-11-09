@@ -272,6 +272,12 @@ trzeba rozpracować API/bufory). Wybór: (a) emulacja IPU. **Plan (projekt w tok
   Wzorce (prywatnie, nie do repo publicznego): `C:\gt3-data\recomp\ref\` — tablice MPEG-1/2 z FFmpeg (mpeg12data.c),
   IPU z PCSX2 (IPU.cpp/h, IPU_Fifo, IPUdma, IPU_MultiISA.cpp = dekoder, mpeg2_vlc.h, yuv2rgb.cpp). Kod PCSX2 jest GPL —
   używać jako specyfikacji, pisać własną implementację; plik `ps2xRuntime/src/lib/gt3_ipu.cpp` (nowy, `git add -N`).
+  Decyzja (2026-11-09): port dekodera z `IPU_MultiISA.cpp` + `mpeg2_vlc.h` + CSC z `yuv2rgb.cpp` (wersja skalarna)
+  do jednego pliku z prostymi zamiennikami (u8..u128, pxAssert, IPU_LOG) — kod pochodny z GPL zostaje TYLKO
+  w prywatnym gt3.patch. Własne: FIFO wejścia jako nieograniczona kolejka qwordów (IFC = min(8, rozmiar)),
+  DMA toIPU (ch4: normal + chain) kopiuje od razu całość do kolejki, komendy wykonywane synchronicznie
+  (brak danych → BUSY, ponowienie przy kolejnym DMA/odczycie rejestru), wyjście do kolejki, DMA fromIPU (ch3)
+  kończy się, gdy zbierze qwc (inaczej czeka). Semantyka: `IPUCMD_WRITE`, `ipuRead32` (IPU.cpp), `IPU_Fifo.cpp`.
   Obsługa DMA w ps2_memory.cpp: zapis CHCR z bitem STR (gałęzie wg `channelBase`), zakończenie `completeDmacChannel`.
 
 **Pułapki:** `sed -i`/`Set-Content` psują CRLF/BOM w plikach PS2Recomp (edytować narzędziem Edit);
