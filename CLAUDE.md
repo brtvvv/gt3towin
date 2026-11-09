@@ -299,6 +299,7 @@ zawieszenia: `tools/mkdump.py` + `tools/hang.py`.
   VIF1 (`runVif1Chain`, wznawiany przy VIF1_FBRST.STC/zapisie CHCR) nie jest kontynuowany, gdy wszystko śpi.
   Pomysł na kolejną próbę: kontynuować łańcuch VIF1 z wątku GIF / przy vblank, gdy STR=1 i nie ma stallu I.
   Teraz w tym trybie dodatkowo 0 kl./s przez ~3 s w przelocie. Odłożone.
+  4. próba: opróżnienie kolejki wątku GIF przed odczytem GS→EE przez VIF1 DIR=0 — bez zmiany (start 58 s). Wykluczone.
   Eksperyment wątku GIF (`GT3_GIF_THREAD=1`) ma przestój ~4 s przed wyścigiem (łańcuch VIF1 po kontynuacji po
   odczycie GS→EE nie kończy się) — domyślnie wyłączony.
 
