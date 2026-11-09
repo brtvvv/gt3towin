@@ -235,6 +235,10 @@ wcześniej, uruchomić z `set GT3_VIF1_THREAD=0` i porównać.
 (j) **16:9** (sprawdzone automatycznie 2026-11-09): menu tytułowe → Option (ostatnia pozycja; menu się zawija) →
 pierwsza ikona → VIEW SELECT 16:9, potem w oknie F10 aż do 16:9 (albo `PS2X_ASPECT=169`). Wyścig ma poprawne
 proporcje. Ustawienie gry zapisuje się przez Save Game. Do oceny: czy 16:9 wygląda dobrze na Twoim monitorze.
+(k) **Replay Theatre** (nowe): menu tytułowe → Replay Theatre (Dół ×2 + X) → Demonstration → pierwsza (License
+B-1) → X. U mnie powtórka gra z niskiej kamery jadącej po torze **bez widocznego auta** (tak samo podgląd w menu
+licencji). Jeśli na PS2 w tej powtórce widać auto (kamery TV) — zgłosić, to błąd renderowania. Load Replay pokazuje
+obie karty (8 190 KB wolne — sprawdzić, czy to zgodne z zapisem ~70 KB).
 (f) **Filmy** (nowe): po starcie gra film otwierający (Start pomija) — czy ma dźwięk i czy po końcu (>3 min) gra
 sama przechodzi do ekranu tytułowego; tła menu (ekran tytułowy, Arcade, wybór poziomu, podgląd tras) — płynność,
 błędne kwadraty, zawieszenia przy przechodzeniu między menu. Wyłączenie filmów: `GT3_NO_MOVIES=1`.
