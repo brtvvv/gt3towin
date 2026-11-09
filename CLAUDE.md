@@ -165,6 +165,11 @@ trzaski? Wyłączenie dźwięku: `PS2X_SPU2_MUTE=1`, cała emulacja SPU2 off: `P
 X); po restarcie gry sprawdzić, czy kredyty/auta się zgadzają. (b) Klawiatura bez `GT3_AUTOPAD` (X/Spacja = Krzyżyk,
 Enter = Start, strzałki). (c) Wyścig Arcade do mety, płynność, brak zawieszeń. Starsze punkty — sekcje niżej.
 
+**Okno (2026-11-09):** domyślnie 960×720, obraz 4:3 na całe okno, panel debugera ukryty (F1 pokazuje;
+`PS2X_DEBUG_PANEL=1` od startu). **F11** = pełny ekran (okno bez ramki), **F10** = proporcje 4:3 → 16:9 → rozciągnięte
+→ natywne (stare). `PS2X_WINDOW=1280x960`, `PS2X_ASPECT=43|169|stretch|native`. 16:9 ma sens z opcją
+panoramiczną w ustawieniach gry (obraz anamorficzny).
+
 **Dźwięk — SPU2 (2026-11-09, kamień 3, wersja 1):** nowy moduł `ps2xIOP/src/emulator/core/spu2.{h,cpp}` (nowe pliki:
 przed `save.ps1` musi być `git add -N` w PS2Recomp, inaczej nie wejdą do gt3.patch). IopMemory kieruje rejestry
 0x1F900000–0x1F9007FF do Spu2 (16-bit, efekty KON/KOFF/zapis portu danych), DMA kanałów 4/7 kopiuje dane RAM IOP ↔
