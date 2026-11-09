@@ -278,6 +278,17 @@ trzeba rozpracować API/bufory). Wybór: (a) emulacja IPU. **Plan (projekt w tok
   DMA toIPU (ch4: normal + chain) kopiuje od razu całość do kolejki, komendy wykonywane synchronicznie
   (brak danych → BUSY, ponowienie przy kolejnym DMA/odczycie rejestru), wyjście do kolejki, DMA fromIPU (ch3)
   kończy się, gdy zbierze qwc (inaczej czeka). Semantyka: `IPUCMD_WRITE`, `ipuRead32` (IPU.cpp), `IPU_Fifo.cpp`.
+  **Stan etapu 1 (2026-11-09):** `gt3_ipu.cpp` + `gt3_ipu_core.inc` (generator `tools/ipugen.py`) dołączone przez
+  `#include` na końcu ps2_memory.cpp (lista źródeł CMake runtime nie wchodzi do łatki). Działa: rejestry, zapisy do
+  FIFO 0x10007010 (gra tak wysyła macierze IQ/VQ!), odczyt 0x10007000, DMA toIPU leniwe (IPU dociąga po 8 qw z
+  łańcucha — pierścień, CHCR STR=0 zatrzymuje), komendy BCLR/SETIQ/SETVQ/SETTH/FDEC; dane wejściowe to poprawny
+  MPEG-2 (00 00 01 B3…). `GT3_NO_IPU=1` = stare atrapy; `GT3_IPULOG=1`, `GT3_IPUDUMP=1` (pierwsze qwordy wejścia).
+  Problem: libmpeg znajduje nagłówki (0x1B3, 0x1B5, 0x1B8, 0x100) i wycinki (0x101…), ale wszystkie wycinki pomija
+  (0 komend IDEC/BDEC/VDEC). Pętla wycinków 0x2620F8(a0 = mb_width·mb_height, 0x262098) porównuje adres wycinka z a0;
+  zmienne libmpeg (gp = 0x359370; gp−0x4888/−0x4884 rozmiar, −0x4898/−0x4894 wymiary w MB) w zrzucie są zerowe —
+  sprawdzić, czy 0x2627E0 (parser nagłówka sekwencji, getbits 0x2652A8 = FDEC + `ld` IPU_CMD + `srlv`) zapisuje
+  wartości (może `ld` z rejestru IO zwraca złe 64 bity; GT3_TRACEFN nie łapie tych wywołań — wewnętrzne skoki).
+  Filmy domyślnie nadal pomijane (`GT3_PLAY_MOVIES=1` włącza).
   Obsługa DMA w ps2_memory.cpp: zapis CHCR z bitem STR (gałęzie wg `channelBase`), zakończenie `completeDmacChannel`.
 
 **Pułapki:** `sed -i`/`Set-Content` psują CRLF/BOM w plikach PS2Recomp (edytować narzędziem Edit);
