@@ -247,7 +247,7 @@ proporcje. Ustawienie gry zapisuje się przez Save Game. Do oceny: czy 16:9 wygl
 (k) **Replay Theatre** (nowe): menu tytułowe → Replay Theatre (Dół ×2 + X) → Demonstration → pierwsza (License
 B-1) → X. U mnie powtórka gra z niskiej kamery jadącej po torze **bez widocznego auta** (tak samo podgląd w menu
 licencji). Jeśli na PS2 w tej powtórce widać auto (kamery TV) — zgłosić, to błąd renderowania. Load Replay pokazuje
-obie karty (8 190 KB wolne — sprawdzić, czy to zgodne z zapisem ~70 KB).
+obie karty (slot 1 z zapisem: 8 096 KB wolne).
 (l) **Filtr obrazu** (nowe): F9 przełącza wygładzanie skalowania (sharp/point/bilinear) — który wygląda najlepiej
 w oknie i na pełnym ekranie (F11)?
 (m) **Interpolacja gaussowska** (nowe): porównać `C:\gt3-data\runs\gt3_menu_gauss.wav` z `gt3_menu_linear.wav`
@@ -291,6 +291,7 @@ przez rekompilator na stuby HLE `ps2_stubs::sceMc*` (Kernel/Stubs/MemoryCard.cpp
 Moduły MCMAN/MCSERV z płyty ładują się na IOP, ale gra ich nie używa. Błąd: HLE GetInfo zawsze zwracało 0
 („ta sama karta”); gra (0x23F5B8) pyta o format/wolne miejsce tylko po −1 („nowa karta”), więc karta wyglądała na
 niesformatowaną („Format Memory Card and save”). Teraz pierwsze GetInfo na port zwraca −1 (`PS2X_MC_NOCHANGED=1` = stare).
+Wolne miejsce w GetInfo = 8 MB minus zawartość katalogu karty (2026-11-09; `PS2X_MC_FIXEDFREE=1` = stałe 8 MB).
 Zapis: `mc0/BESCES-50294GAMEDATA/` (dane 70 464 B, icon.sys, icon0.ico, thumbnail). Z zapisem gra przy starcie
 sama go wczytuje i **pomija wybór języka** (menu trybu po ~8 s) — sekwencje pada dla „czystej karty” wtedy nie pasują
 (czystą kartę daje usunięcie/zmiana nazwy `mc0`). GT Mode z zapisem: `9:0040:0.3,11:4000:0.3` → mapa ok. 16 s.
