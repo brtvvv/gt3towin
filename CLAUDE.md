@@ -347,6 +347,16 @@ zawieszenia: `tools/mkdump.py` + `tools/hang.py`.
   równolegle. Wymaga: dostarczania oczekujących przerwań w punktach kontrolnych EE (nie tylko po zapisach IO), blokady
   `m_ioRegisters` (mapa, zapisy z obu wątków), czekania EE na bezczynny wątek przy: odczytach VIF1_STAT/CHCR/D_STAT,
   zapisach VIF/DMA/GIF, starcie PATH3, dostępie do pamięci VU1, zapisach DISPFB. Szacunek: przelot ~60 kl./s.
+  **Etap 1 wątku VIF1 (2026-11-09, `GT3_VIF1_THREAD=1`, domyślnie off):** STC → zadanie dla wątku roboczego (kolejka
+  zadań, ps2_memory.cpp), zapisy IO 0x10000000–0x1000FFFF z EE przy pracującym wątku → do kolejki (kolejność), odczyty
+  sprzętu (0x1xxxxxxx) czekają na pusty wątek — wyjątki: GIF_CHCR bez odłożonych zapisów (GT3 robi lw/ori 0x100/sw
+  w obsłudze przerwania VIF1, 0x25B6AC/0x25B868/0x25BA48), pamięć VU0 0x11000000–0x11007FFF. Przerwania z wątku:
+  `g_ps2PendingIntcMask` + zdarzenie `EeEventType::Dmac` (drain w planiście). Diagnostyka `GT3_V1STAT=1` (czas
+  czekania EE wg adresu; teraz ~0,05 s/2 s: VIF1_STAT, GS CSR). Wynik przelotu: 46,6 kl./s przy s/60 = 1,000 (czas gry
+  w tempie rzeczywistym, gra gubi klatki) vs domyślnie ~49–50 kl./s przy s/60 1,13 (gra zwalnia). Wątek roboczy 65%,
+  EE 48% — nikt nie nasycony: koszt to ping-pong ~3 400 kroków/s (budzenie wątków). Spin (`GT3_V1_SPIN=n`) pogarsza
+  (8 rdzeni, pule GS). Obraz wyścigu poprawny. Dalsze pomysły: przetwarzać kilka kroków bez EE (HLE obsługi bitu I
+  GT3: STC + wznowienie PATH3), mniejsza pula GS przy wątku VIF1.
   **Projekt (a) „wątek VIF1” (do realizacji):** samo asynchroniczne VU1 przy MSCAL (`m_vu1MscalCallback`,
   ps2_vif1_interpreter.cpp:512) da mało, bo łańcuch VIF1 przetwarza się synchronicznie przy zapisie CHCR (runVif1Chain).
   Zysk daje dopiero: zapis CHCR VIF1 → zadanie dla wątku roboczego (łańcuch + UNPACK + VU1 + XGKICK/DIRECT do GS),
