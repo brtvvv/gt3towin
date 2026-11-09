@@ -150,8 +150,10 @@ Kody pada (`GT3_AUTOPAD` maska): Góra 0010, Prawo 0020, Dół 0040, Lewo 0080, 
 GT Mode (z zapisem): mapa ~16 s; z My Home Góra → Car Dealer; X → JPN → Daihatsu → Cuore (11 140 Cr).
 
 Następne zadania (kolejność wg wpływu na grywalność):
-1. **Więcej kl./s w ciężkich scenach** (kamień 4): tor testowy licencji ~35 kl./s, demo rajdowe ~32, przelot ~47
-   (tempo gry już poprawne dzięki wątkowi VIF1). Profil licencji: wątek EE 100% (VU1 + processVIF1Data 8,6%,
+1. **Więcej kl./s w ciężkich scenach** (kamień 4): tor testowy licencji ~43 kl./s, demo rajdowe ~32, przelot ~51
+   (tempo gry już poprawne dzięki wątkowi VIF1). Spin wątku GIF przed uśpieniem (`GT3_GIF_SPIN=4000` domyślnie,
+   0 = bez) + budzenie tylko śpiącego: licencja 34,5 → 43 kl./s, przelot 46,6 → 51,2 (wątek VIF1 tracił ~8% na
+   budzeniu wątku GIF). Teraz wąskie gardło: wątek VIF1 (VU1). Profil licencji: wątek EE 100% (VU1 + processVIF1Data 8,6%,
    budzenie wątków NtAlertThreadByThreadId 6%). Dalej: tańsze VU1/VIF1, mniej budzeń kolejki GIF, HLE semaforów bitu I.
 2. GT Mode szerzej: wyścig do mety (nagroda, wyniki, powtórka — autopad nie dojeżdża; potrzebny autopilot czytający
    pozycję auta z pamięci albo test ręczny), Tune Shop, kolejne licencje, inne trasy GT, filmy końcowe (ending_*.pss).
