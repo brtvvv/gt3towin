@@ -300,6 +300,15 @@ zawieszenia: `tools/mkdump.py` + `tools/hang.py`.
   Pomysł na kolejną próbę: kontynuować łańcuch VIF1 z wątku GIF / przy vblank, gdy STR=1 i nie ma stallu I.
   Teraz w tym trybie dodatkowo 0 kl./s przez ~3 s w przelocie. Odłożone.
   4. próba: opróżnienie kolejki wątku GIF przed odczytem GS→EE przez VIF1 DIR=0 — bez zmiany (start 58 s). Wykluczone.
+  **Projekt (a) „wątek VIF1” (do realizacji):** samo asynchroniczne VU1 przy MSCAL (`m_vu1MscalCallback`,
+  ps2_vif1_interpreter.cpp:512) da mało, bo łańcuch VIF1 przetwarza się synchronicznie przy zapisie CHCR (runVif1Chain).
+  Zysk daje dopiero: zapis CHCR VIF1 → zadanie dla wątku roboczego (łańcuch + UNPACK + VU1 + XGKICK/DIRECT do GS),
+  EE wraca od razu do gry. Punkty synchronizacji (EE czeka na pusty wątek): odczyt/zapis rejestrów VIF1/DMA ch1
+  i D_STAT, dostęp EE do pamięci VU1, start DMA GIF (PATH3 — kolejność z PATH1/2), odczyty GS→EE, rejestry
+  uprzywilejowane GS (CSR/IMR), przerwania: stall na bicie I → przerwanie VIF1 zgłaszane z wątku, EE obsługuje,
+  FBRST.STC wznawia wątek. Etap 1: zadanie = cały łańcuch, EE czeka na jego koniec przy pierwszym punkcie synchr.
+  (`GT3_VIF1_THREAD=1`, domyślnie off). Ryzyko: jak w wątku GIF (przestój przed wyścigiem) — najpierw zrozumieć
+  ten przestój na zrzutach stanu (`GT3_VIF1STAT`).
   Eksperyment wątku GIF (`GT3_GIF_THREAD=1`) ma przestój ~4 s przed wyścigiem (łańcuch VIF1 po kontynuacji po
   odczycie GS→EE nie kończy się) — domyślnie wyłączony.
 
