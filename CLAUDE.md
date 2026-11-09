@@ -304,6 +304,10 @@ zawieszenia: `tools/mkdump.py` + `tools/hang.py`.
   Pomysł na kolejną próbę: kontynuować łańcuch VIF1 z wątku GIF / przy vblank, gdy STR=1 i nie ma stallu I.
   Teraz w tym trybie dodatkowo 0 kl./s przez ~3 s w przelocie. Odłożone.
   4. próba: opróżnienie kolejki wątku GIF przed odczytem GS→EE przez VIF1 DIR=0 — bez zmiany (start 58 s). Wykluczone.
+  Profil z wątkiem GIF (przelot): wątek EE 98% zajęty — VU1 ~48% (bloki AOT 25%, pomocnicze 23%: commitReadyPipelines
+  7%, productSticky 3,5%, updateFmacFlags 2,7%, resetScheduler 2,2%), IOP+SPU2 6%, VIF 6%, kod gry 4%. Do 60 kl./s
+  brakuje ~17% → realnie tylko „wątek VIF1” (VU1 równolegle). resetScheduler bez czyszczenia tablic gotowości
+  (`PS2X_VU_FULLRESET=1` = stare) — zysk w szumie. Profiler poprawiony (zastój: alokacja przy wstrzymanym wątku).
   **ROZWIĄZANE (2026-11-09): artefakty wątku GIF** — przyczyna: zapis DISPFB1/2 (z EE, natychmiast) przełączał
   wyświetlany bufor, zanim wątek GIF dorysował klatkę (ekran pokazywał bufor w trakcie kompozycji DOF / wyczyszczony).
   Teraz przed zapisem DISPFB opróżniana kolejka wątku GIF (`gt3DispDrain`, ps2_memory.cpp; `GT3_GIF_NODISPDRAIN=1`).
