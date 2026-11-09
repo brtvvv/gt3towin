@@ -198,6 +198,9 @@ o tym samym rozmiarze bez względu na adres (`GT3_GS2EE_KEYADDR=1` = także po a
 do ściany” w race.ps1 `-Hold 60` jest niedeterministyczny (~2/3 przebiegów) — porównanie wariantów niejednoznaczne]: w moim teście (auto stojące przodem do ściany Super Speedway)
 flara rysowała się na środku ściany — sprawdzić, czy przy jeździe flara znika za przeszkodami; jeśli nie, porównać
 z `PS2X_GS_SYNCREADBACK=1` (synchroniczny odczyt GS→EE do testu widoczności słońca) i zgłosić.
+(g) **Mapowanie klawiszy** (nowe): w folderze gry jest `keys.ini.example` — skopiować jako `keys.ini`, zmienić np.
+`CROSS = X, SPACE` na inne klawisze, uruchomić grę i sprawdzić, czy działa (w logu `[keys] wczytano...`; błędne nazwy
+są zgłaszane). Bez pliku = domyślne klawisze. Inna ścieżka: `PS2X_KEYS=plik`.
 (f) **Filmy** (nowe): po starcie gra film otwierający (Start pomija) — czy ma dźwięk i czy po końcu (>3 min) gra
 sama przechodzi do ekranu tytułowego; tła menu (ekran tytułowy, Arcade, wybór poziomu, podgląd tras) — płynność,
 błędne kwadraty, zawieszenia przy przechodzeniu między menu. Wyłączenie filmów: `GT3_NO_MOVIES=1`.
