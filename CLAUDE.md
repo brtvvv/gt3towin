@@ -125,6 +125,7 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
 ## GT3 PC: AKTUALNY STAN I NASTĘPNE ZADANIA (czytaj najpierw)
 
 Stan (2026-11-09): menu, Arcade, **GT Mode: salon, zakup auta, zapis/odczyt postępu, wyścigi (Sunday Cup) i testy licencji**,
+**filmy-tła menu (emulacja IPU, domyślnie; opening pominięty)**,
 wyścig ~60 kl./s w jeździe (przelot kamery ~40–46). Szczegóły i historia: sekcje niżej.
 
 Narzędzia sesyjne są w prywatnym **`C:\gt3-data\recomp\tools`** (nie w scratchpadzie): `build.ps1` (przebudowa
@@ -145,7 +146,8 @@ Następne zadania (kolejność wg wpływu na grywalność):
 1. GT Mode szerzej: wyścig do mety (nagroda, wyniki, powtórka), Tune Shop, kolejne licencje, inne trasy GT,
    długie sesje (wycieki/zawieszenia). Arcade: sprawdzone Super Speedway, Mid-Field, Smokey/Swiss Alps (rajd),
    Trial Mountain — bez zawieszeń.
-2. Filmy (IPU): intro, tła menu (teraz czarne) — duże zadanie (emulacja IPU albo HLE libmpeg + FFmpeg).
+2. Filmy (IPU): tła menu działają (sekcja o IPU niżej). Zostało: opening.pss się zapętla (pomijany),
+   miejscami błędne makrobloki w tłach (podejrzenie: ten sam niedobór danych z demuxa co w openingu).
 3. Dźwięk: odsłuch przez użytkownika, potem pogłos/PMON/interpolacja gaussowska.
 4. Wydajność przelotu kamery (40–46 kl./s); wątek GIF (`GT3_GIF_THREAD=1`) ma przestój — patrz skrót wniosków.
 
@@ -191,6 +193,9 @@ Krzyżyk, V = Trójkąt/wstecz, Enter = Start, strzałki) i pad (XInput) — czy
 (d) F11 pełny ekran, F10 proporcje. (e) Flara słońca: w moim teście (auto stojące przodem do ściany Super Speedway)
 flara rysowała się na środku ściany — sprawdzić, czy przy jeździe flara znika za przeszkodami; jeśli nie, porównać
 z `PS2X_GS_SYNCREADBACK=1` (synchroniczny odczyt GS→EE do testu widoczności słońca) i zgłosić.
+(f) **Filmy** (nowe): tła menu — ekran tytułowy, Arcade, wybór poziomu, podgląd tras — czy grają płynnie, czy mają
+dźwięk, czy widać błędne kwadraty (makrobloki), czy coś się zawiesza przy przechodzeniu między menu.
+Wyłączenie filmów: `GT3_NO_MOVIES=1`.
 
 **Okno (2026-11-09):** domyślnie 960×720, obraz 4:3 na całe okno, panel debugera ukryty (F1 pokazuje;
 `PS2X_DEBUG_PANEL=1` od startu). **F11** = pełny ekran (okno bez ramki), **F10** = proporcje 4:3 → 16:9 → rozciągnięte
@@ -290,7 +295,18 @@ trzeba rozpracować API/bufory). Wybór: (a) emulacja IPU. **Plan (projekt w tok
   libmpeg: BDEC na makroblok → RAW16 w SPR 0x70000780 → programowa MC (0x262F40, MMI) → RAW8 w buforach klatek
   (kolumnami MB, 0x180 B/MB) → CSC po 0x300 MB (0x264C28) → RGB32. Kontekst IPU zapisywany/odtwarzany wokół CSC
   (0x264FC8/0x264EB0: MADR −= (IFC+FP)·16) — zweryfikowane (`GT3_IPUVERIFY=1`: 0 błędów).
-  **Problem otwarty: film się zapętla** — strumień ES podawany do IPU powtarza ten sam fragment (~22 klatki,
+  **Etap 3 (2026-11-09): filmy domyślnie włączone** (ps2_runtime.cpp): tła menu (stream/title_full, arcade_menu_full,
+  level_menu_full, podglądy tras…) grane przez IPU; pomijany tylko `stream/opening.pss` (wrapper play 0x25FD38 po nazwie
+  w a1; komendy 0x25FAD8 dla tego obiektu jak dawniej). `GT3_PLAY_MOVIES=1` = też opening (pętla, Start pomija),
+  `GT3_NO_MOVIES=1` lub `GT3_NO_IPU=1` = dawne pomijanie wszystkiego. Obejście DOF i dekodowanie „ipum” przez FFmpeg
+  są teraz niezależne od filmów (wcześniej `GT3_PLAY_MOVIES=1` je wyłączał!). Wyścig bez zmian (race.ps1 1,34/1,06).
+  **Problem otwarty: opening się zapętla.** Pierścień wideo: 64 bloki × 16 KB 0xAC7300–0xBC7300, tagi `ref` od
+  0xAC6E00, `next` na 0xAC7200 wraca na początek, koniec danych = tag `refe`. Od ~5 s demux nie pisze już do pierścienia
+  (zawartość w 5 s = w 9 s, część bloków to zera), `refe` stoi na 0xAC7190, a libmpeg wznawia DMA za nim → IPU krąży
+  po starych blokach. Strumień PES z IOP (PDISTR.IRX: pierścień CD 0x93890…, wyjście 0xD40D0 8×4 KB → EE 0xABED80)
+  płynie dalej z nowymi danymi (`GT3_SIFLOG`), ale ~200 KB/s wobec ~1,2 MB/s zużycia. Gra nie używa DMA SPR
+  (`GT3_SPRDMALOG`). Dalej: kod demuxa czytający 0xABED80 (czemu przestaje), tempo odczytu CD; `GT3_IPUTAGLOG=1`.
+  Starsza obserwacja: — strumień ES podawany do IPU powtarza ten sam fragment (~22 klatki,
   rozjaśnienie od czerni) w kółko, gra nie przechodzi dalej (40 s ta sama scena). Dekodowanie idzie w czasie
   rzeczywistym (~30 kl./s). Odczyty CD postępują (ciągły zakres LSN 0x2D35B…), SIF DMA IOP→EE działa
   (`GT3_SIFLOG=1`: wpisy + hash danych). Dalej: znaleźć źródło strumienia PSS (demux libmpeg / bufor pierścieniowy
