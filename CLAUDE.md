@@ -124,9 +124,13 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
 
 ## GT3 PC: AKTUALNY STAN I NASTĘPNE ZADANIA (czytaj najpierw)
 
-Stan (2026-11-09): menu, Arcade, **GT Mode: salon, zakup auta, zapis/odczyt postępu, wyścigi (Sunday Cup) i testy licencji**,
-**filmy: opening i tła menu (emulacja IPU, domyślnie włączone)**,
-wyścig ~60 kl./s w jeździe (przelot kamery ~40–46). Szczegóły i historia: sekcje niżej.
+Stan (2026-11-09): menu, Arcade, **GT Mode: salon, zakup auta, zapis/odczyt postępu, wyścigi (Sunday Cup) i testy licencji
+(z DEMO/powtórką)**, **filmy: opening i tła menu (emulacja IPU, domyślnie)**, dźwięk SPU2 z pogłosem, mapowanie klawiszy
+(`keys.ini`), spusty pada i kierownica (konfiguracja w `keys.ini`), pełny ekran/proporcje. Wyścig 60 kl./s w jeździe,
+przelot kamery ~41 kl./s (z `GT3_GIF_THREAD=1` ~49, ale ten tryb ma artefakty w demie). Pamięć stabilna (~190 MB).
+Szczegóły i historia: sekcje niżej oraz docs/HISTORIA_RECOMP.md.
+
+**Czekam na użytkownika:** odsłuch dźwięku i test klawiatury/pada/kierownicy (lista „Do przetestowania ręcznie” niżej).
 
 Narzędzia sesyjne są w prywatnym **`C:\gt3-data\recomp\tools`** (nie w scratchpadzie): `build.ps1` (przebudowa
 out\build\dev), `run.ps1 -Name X -Pad "..." -At "s1,s2" [-Env "K=V;K2=V2"]` (autopad + zrzuty okna do
@@ -143,17 +147,16 @@ Kody pada (`GT3_AUTOPAD` maska): Góra 0010, Prawo 0020, Dół 0040, Lewo 0080, 
 GT Mode (z zapisem): mapa ~16 s; z My Home Góra → Car Dealer; X → JPN → Daihatsu → Cuore (11 140 Cr).
 
 Następne zadania (kolejność wg wpływu na grywalność):
-1. GT Mode szerzej: wyścig do mety (nagroda, wyniki, powtórka), Tune Shop, kolejne licencje, inne trasy GT,
-   długie sesje (wycieki/zawieszenia). Sprawdzone 2026-11-09: test licencji B-1 pełny cykl (jazda → FAIL → menu
-   licencji); wyścig Arcade 170 s: pamięć stała ~187 MB, 60 kl./s (race.ps1 ma teraz `-Hold` i `-Timeout`,
-   shots2.ps1 zapisuje `mem.txt`). Wyścig GT do mety > 3 min — nie mieści się w limicie pomiaru.
-   DEMO licencji (ujęcia powtórki, logo GT3) działa: sekwencja B-1 + `42:4000:40,114:0020:0.3,116:0020:0.3,118:4000:0.3`
-   (po FAIL w menu 2× Prawo + X). Sterowanie „w ciemno” (impulsy Lewo) nie dojeżdża do mety Arcade — auto się obraca. Arcade: sprawdzone Super Speedway, Mid-Field, Smokey/Swiss Alps (rajd),
-   Trial Mountain — bez zawieszeń.
-2. (zrobione) Filmy (IPU): opening i tła menu działają (sekcja „Filmy (IPU)” niżej). Do ręcznego sprawdzenia:
-   dźwięk filmów, koniec openingu (>3 min), filmy końcowe (ending_*.pss).
-3. Dźwięk: odsłuch przez użytkownika, potem pogłos/PMON/interpolacja gaussowska.
-4. Wydajność przelotu kamery (40–46 kl./s); wątek GIF (`GT3_GIF_THREAD=1`) ma przestój — patrz skrót wniosków.
+1. **60 kl./s w przelocie kamery** (kamień 4): wątek EE jest wąskim gardłem (profil niżej, sekcja wydajności).
+   Opcje: dokończyć tryb wątku GIF (`GT3_GIF_THREAD=1`: +18%, zostały artefakty kompozycji DOF w demie rajdowym —
+   trzeba logu rysowań w ścieżce wątku GIF) albo projekt „wątek VIF1” (VIF1+VU1 równolegle, opis niżej).
+2. GT Mode szerzej: wyścig do mety (nagroda, wyniki, powtórka — autopad nie dojeżdża; potrzebny autopilot czytający
+   pozycję auta z pamięci albo test ręczny), Tune Shop, kolejne licencje, inne trasy GT, filmy końcowe (ending_*.pss).
+   Sprawdzone: licencja B-1 (jazda → FAIL → menu → DEMO), wyścig Arcade 170 s bez wycieków. Arcade: Super Speedway,
+   Mid-Field, Smokey/Swiss Alps (rajd), Trial Mountain bez zawieszeń; Mid-Field II niesprawdzone.
+   Sekwencje: DEMO licencji = B-1 + `42:4000:40,114:0020:0.3,116:0020:0.3,118:4000:0.3`; race.ps1 ma `-Pad/-Hold/-Timeout`.
+3. Dźwięk po odsłuchu użytkownika: PMON, interpolacja gaussowska (jest liniowa, ciągła przez granice bloków), sweep.
+4. Kamień 5: GS na GPU (wyższa rozdzielczość) — duży projekt, najpierw ocena opcji w tym pliku.
 
 1a. **ROZWIĄZANE (2026-11-09): zawieszenia wyścigów GT Mode i testów licencji** (~2 s po starcie, obraz stał).
    Przyczyna: w HLE sysclib IOP setjmp/longjmp były atrapami. LIBPDI (strumień muzyki PBGM) przy zatrzymaniu
@@ -228,8 +231,8 @@ co 768 cykli i zgłasza IRQ 9 z SPDIF_IRQINFO przy trafieniu IRQA (zastępuje da
 Pogłos (2026-11-09): algorytm psx-spx co drugą próbkę (24 kHz), bufor ESA..EEA, wysyłki VMIXEL/VMIXER + MMIX
 (0x200/0x100, 0x20/0x10, 0x2/0x1), wyjście × EVOL; GT3: EVOL 0x0FFF (subtelny), bufory 0xEC810–0xEFFFF i 0xFC810–
 0xFFFFF; `PS2X_SPU2_NOREVERB=1` wyłącza; `PS2X_SPU2_LOG=1` wypisuje parametry pogłosu. Miksowanie wg PCSX2: MMIX (0x800/0x400 głosy, 0x80/0x40 wejście PCM×BVOL, 0x8/0x4 wyjście rdzenia 0×AVOL do rdzenia 1),
-MVOL. Brak: pogłosu (efekty), PMON, interpolacji gaussowskiej (liniowa), dokładnych przejść głośności (sweep = od razu
-wartość docelowa). Wyjście: raylib AudioStream 48 kHz (callback, `ps2xSpu2Pull`), bufor maks. 4096 ramek
+MVOL. Brak: PMON, interpolacji gaussowskiej (liniowa, od 2026-11-09 ciągła przez granice bloków ADPCM —
+`PS2X_SPU2_OLDINTERP=1` = stara), dokładnych przejść głośności (sweep = od razu wartość docelowa). Wyjście: raylib AudioStream 48 kHz (callback, `ps2xSpu2Pull`), bufor maks. 4096 ramek
 (`PS2X_SPU2_LATENCY`). Diagnostyka: `PS2X_SPU2_LOG=1` (co sekundę KON/aktywne głosy/DMA/IRQ/RMS),
 `PS2X_SPU2_VLOG=1` (stan głosów), `PS2X_SPU2_DMALOG=1`, `PS2X_SPU2_RAW=plik.raw` (s16 stereo 48 kHz;
 `tools/raw2wav.py`, `tools/spec.py raw t0 t1 png` = spektrogram w dB), `PS2X_SPU2_SOLO=rdzeń:maska_hex`.
