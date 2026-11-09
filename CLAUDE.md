@@ -262,7 +262,17 @@ demo, wczytywanie) proces rósł do 3–4,6 GB. Teraz limit 256 MB danych w kole
 **Filmy — ocena:** odtwarzacz to Sony libmpeg wlinkowany statycznie (wątek dekodera 0x260760, funkcje 0x2600xx–
 0x261Cxx, IPU 0x2644B8–0x266090), bez symboli. Opcje: (a) emulacja IPU (BDEC/IDEC/VDEC/FDEC/CSC, jak PCSX2, ~2–3 tys.
 linii, wierne), (b) HLE sceMpegGetPicture + FFmpeg mpeg2video karmione strumieniem z bufora libmpeg (mniej kodu, ale
-trzeba rozpracować API/bufory). Odłożone do czasu ważniejszych zadań; wybór: raczej (a).
+trzeba rozpracować API/bufory). Wybór: (a) emulacja IPU. **Plan (projekt w toku):**
+  Etap 1: rejestry IPU (0x10002000 CMD: DATA+BUSY, 0x10 CTRL: IFC/OFC/CBP/ECD/SCD/IDP/AS/IVF/QST/MP1/PCT/RST/BUSY,
+  0x20 BP: BP|IFC<<8|FP<<16, 0x30 TOP: podgląd 32 bitów), FIFO wejścia z DMA kanału 4 (toIPU, 0x1000B400; w runtime
+  nieobsłużony), czytnik bitów, komendy BCLR(0)/FDEC(4)/VDEC(3)/SETIQ(5)/SETVQ(6)/SETTH(9). Sprawdzian: z
+  `GT3_PLAY_MOVIES=1 GT3_IPULOG=1` gra przechodzi dalej niż pętla FDEC (teraz tysiące FDEC bez odpowiedzi).
+  Etap 2: IDEC(1)/BDEC(2)/CSC(7)/PACK(8), wyjście przez DMA kanału 3 (fromIPU, 0x1000B000). Etap 3: domyślnie filmy
+  włączone (usunąć pomijanie z ps2_runtime.cpp, przełącznik środowiskowy).
+  Wzorce (prywatnie, nie do repo publicznego): `C:\gt3-data\recomp\ref\` — tablice MPEG-1/2 z FFmpeg (mpeg12data.c),
+  IPU z PCSX2 (IPU.cpp/h, IPU_Fifo, IPUdma, IPU_MultiISA.cpp = dekoder, mpeg2_vlc.h, yuv2rgb.cpp). Kod PCSX2 jest GPL —
+  używać jako specyfikacji, pisać własną implementację; plik `ps2xRuntime/src/lib/gt3_ipu.cpp` (nowy, `git add -N`).
+  Obsługa DMA w ps2_memory.cpp: zapis CHCR z bitem STR (gałęzie wg `channelBase`), zakończenie `completeDmacChannel`.
 
 **Pułapki:** `sed -i`/`Set-Content` psują CRLF/BOM w plikach PS2Recomp (edytować narzędziem Edit);
 PowerShell 5.1 `Get-Content -Raw` czyta UTF-8 bez BOM jako ANSI (zepsute polskie znaki) — używać
