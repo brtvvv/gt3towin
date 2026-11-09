@@ -124,7 +124,7 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
 
 ## GT3 PC: AKTUALNY STAN I NASTĘPNE ZADANIA (czytaj najpierw)
 
-Stan (2026-11-09): menu, Arcade (wyścig do mety?), GT Mode (mapa, My Home), **zapis/odczyt karty pamięci działa**,
+Stan (2026-11-09): menu, Arcade, **GT Mode: salon, zakup auta, zapis/odczyt postępu, wyścigi (Sunday Cup) i testy licencji**,
 wyścig ~60 kl./s w jeździe (przelot kamery ~40–46). Szczegóły i historia: sekcje niżej.
 
 Narzędzia sesyjne są w prywatnym **`C:\gt3-data\recomp\tools`** (nie w scratchpadzie): `build.ps1` (przebudowa
@@ -143,27 +143,23 @@ GT Mode (z zapisem): mapa ~16 s; z My Home Góra → Car Dealer; X → JPN → D
 
 Następne zadania (kolejność wg wpływu na grywalność):
 1. GT Mode dalej: licencja, wyścig, zakup auta, zapis po postępie → wczytanie (czy stan się zgadza).
-1a. **Test licencji (GT Mode → License Centre → Domestic B → B-1) zawiesza się ~2 s po starcie jazdy** (obraz stoi,
-   dmac1/flip nie rosną, vsync idzie). Ustalone: (a) RPC `PBGM` (0x5042474D, wątek IOP 21, strumień muzyki) fn 3 w trybie
-   NOWAIT nie kończy się; runtime wykonywał NOWAIT synchronicznie do ~22 s czasu IOP (EE zamrożone) — teraz NOWAIT
-   dokańcza się w tle (`gt3NowaitPending` w RPC.cpp, `GT3_NOWAIT_SYNC=1` = stare), EE już nie stoi, ale gra dalej czeka;
-   (b) w części przebiegów wątek IOP ~102 (nowy wątek strumienia) zajmuje 100% czasu IOP w LIBPDI 0x6A738–0x6AC8C
-   (operacje FIFO z blokadą 0x26BC/0x26AC, offsety względem bazy 0x69E00) i zagładza resztę; w innych IOP jest bezczynne.
-   Ekran informacji testu ma film demonstracyjny (odtwarzacz filmów pomijamy) — podejrzenie: strumień filmu/BGM na IOP
-   bez danych (pomijany film) → pętla w wątku strumienia. Wykluczone: emulacja SPU2 (z `PS2X_SPU2_OFF=1` to samo),
-   zgubione iWakeupThread na bieżącym wątku (poprawione i tak, `GT3_WAKEUP_SELF_STRICT=1` = stare).
-   Log RPC (`GT3_RPCLOG=0` pokazuje teraz ra i 32 B danych): wszystkie przez wrapper 0x25C1D8 (ra 0x25C288). `PDIP`
-   (0x50444950) = odczyt z płyty (fn1: LSN, rozmiar; fn2 status; fn4) — działa. Przy starcie testu muzyka jest
-   przełączana: PBGM fn2 (stop), fn5, fn1 (start, LSN 0x1B50BA), potem PBGM fn3 (status, NOWAIT) już nie wraca —
-   nowy wątek strumienia BGM kręci się w LIBPDI. W Arcade start muzyki wyścigu działa, więc problem jest w szybkim
-   restarcie strumienia (stop + start), np. przerwanie odczytu CD/kończenie starego wątku (cdvdman w IOP nie ma
-   sceCdBreak/funkcji strumieniowych sceCdSt*, `iop_cdvd.cpp`).
-   Następny krok: które importy cdvdman woła PDICDVD przy stopie, co sprawdza pętla w LIBPDI,
-   ewentualnie nie pomijać filmu tylko na tym ekranie albo emulować koniec strumienia.
-   Narzędzia: `GT3_IOPTHR=1` (co 0,25 s czasu IOP: który wątek IOP ile cykli dostał i gdzie jest), `GT3_THRDUMP=1`,
-   `GT3_IRQSTAT=1`, zrzut procesu własnym skryptem `tools/mkdump.py <pid> plik` + `tools/hang.py plik [all]`
-   (comsvcs MiniDump tworzy plik tylko dla administratora — nie używać).
-   Sekwencja pada (z zapisem): `9:0040,11:4000,17:0010,19:0080,21:4000,26:4000,30:4000,34:4000,38:4000,42:4000:40`.
+1a. **ROZWIĄZANE (2026-11-09): zawieszenia wyścigów GT Mode i testów licencji** (~2 s po starcie, obraz stał).
+   Przyczyna: w HLE sysclib IOP setjmp/longjmp były atrapami. LIBPDI (strumień muzyki PBGM) przy zatrzymaniu
+   utworu wychodzi longjmp-em z pętli kopiującej FIFO; bez tego wątek kopiujący (prio 23) kręcił się bez końca
+   i zagładzał handler RPC PBGM (prio 24) → komenda PBGM fn3 nie wracała. Zdarza się przy przełączeniu muzyki
+   (stop + start krótkiego, niezapętlonego utworu przed wyścigiem GT / testem). Teraz prawdziwe setjmp/longjmp
+   (jmp_buf: ra, sp, fp, s0–s7, gp; iop_sysclib.cpp, GT3_IOP_FAKE_SETJMP=1 = stara atrapa). Sunday Cup
+   (Super Speedway, Cuore) i test B-1 jadą, Arcade bez zmian.
+   Przy okazji: RPC NOWAIT dokańczane w tle zamiast synchronicznie do ~22 s (GT3_NOWAIT_SYNC=1 = stare),
+   iWakeupThread na bieżącym wątku zwiększa licznik (GT3_WAKEUP_SELF_STRICT=1 = stare).
+   Diagnostyka IOP: GT3_IOPTHR=1 (co 0,25 s: czas wątków IOP + co 1 s stan wszystkich wątków [iop-thr]),
+   GT3_CDLOG=1 (sceCdRead i nieobsłużone funkcje cdvdman), GT3_IRQSTAT=1, GT3_RPCLOG=sid|0 (ra + 32 B danych).
+   Metoda: stan wątków IOP przed/po zdarzeniu + deasemblacja IRX (	ools/irxdis.py plik.irx baza od do; skoki jal
+   w IRX są względne do bazy modułu; tablica importów: nagłówek 0x41E00000 + nazwa biblioteki, potem pary jr ra;
+   addiu zero,zero,N = funkcja N, np. thsemap 6 Signal/8 WaitSema, thbase 0x18 SleepThread, sysclib 4/5 setjmp/longjmp).
+   Sekwencje (z zapisem z Cuore): Sunday Cup 9:0040,11:4000,17:0080,19:4000,24:4000,28:4000,31:0020,33:4000,37:0020,
+   39:4000,43:4000,47:4000,51:4000,55:4000,59:4000:60 (start ~56 s); licencja B-1: patrz wyżej (Góra, Lewo z mapy).
+   W GT3 Trójkąt (0x1000) = wstecz.
 2. (zrobione) Poprawka ZTE naprawiła też wybór koloru w Arcade (model 3D auta) i tło Mid-Field w menu trasy.
    Arcade z zapisem: `9:4000,13:4000,17:4000` → wybór trasy ~20 s (Prawo = następna trasa), dalej X → klasa → auto/kolor.
 
