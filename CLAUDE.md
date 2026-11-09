@@ -342,6 +342,10 @@ zawieszenia: `tools/mkdump.py` + `tools/hang.py`.
   dzielenie w UNPACK, spin wątku VIF1 (8 rdzeni), HLE bitu I bez flag (GT3 zawsze ma flagi NUM — semafory PATH2/3:
   handler INTC5 0x25B5C0, druga strona DMAC2 0x25B738, bajty 0x4A8395..98). Narzędzia: `GT3_SAMPLE=od:dł`
   (+`GT3_SAMPLE_LINES=funkcja`), `tools/fly.ps1 -N 3`, `GT3_V1STAT=1`, `GT3_OVERLAPSTAT=1`, `GT3_INTCLOG`, `GT3_VIF1STAT`.
+  Przelot (profil 2026-11-09): żaden wątek nie jest nasycony (GIF 72% — głównie spin, VIF1 65%, GS 53%, EE 30%) →
+  ogranicza opóźnienie wymiany EE↔VIF1 na bitach I (~3 400/s). Wykluczone: spin wątku VIF1 (`GT3_V1_SPIN` 4000/20000:
+  48–49 vs 51 kl./s) i spin planisty EE przed uśpieniem (`GT3_EE_SPIN`: ~40 kl./s). Realna droga: HLE semaforów bitu I
+  na wątku VIF1 z wyłącznością względem handlera DMAC2 na EE.
   Szczegółowa historia (wątek GIF 5 prób, artefakty DISPFB, migotanie salonu ZTE, etap 1 VIF1): docs/HISTORIA_RECOMP.md.
 **Pamięć (2026-11-09):** kolejka zbiorów GS (`EnqueueSet`) nie miała limitu — przy intensywnych wgraniach (intro,
 demo, wczytywanie) proces rósł do 3–4,6 GB. Teraz limit 256 MB danych w kolejce (`PS2X_GS_MAXQMB`) i 1024 zbiorów
@@ -363,7 +367,8 @@ kontekst IPU wokół CSC (0x264FC8 zapis / 0x264EB0 odtworzenie: MADR −= (IFC+
 0xAC7300 z tagami `ref` od 0xAC6E00, koniec danych = `refe`, obsługa braku danych 0x260D88 (callback libmpeg).
 Strumień PSS z IOP: PDISTR.IRX (pierścień CD 0x93890…, wyjście 0xD40D0 8×4 KB → EE 0xABED80).
 Filmy końcowe sprawdzone (2026-11-09): `GT3_MOVIE_SUBST=ending_long_full` / `ending_short_full` (+`GT3_WITH_OPENING=1`)
-gra wskazany `stream/<nazwa>.pss` zamiast openingu — oba grają poprawnie, krótki kończy się powrotem do tytułu.
+gra wskazany `stream/<nazwa>.pss` zamiast openingu — oba grają poprawnie, krótki kończy się powrotem do tytułu;
+laguna_full (krótki klip) też OK.
 Inne filmy: title_full, arcade_menu_full, level_menu_full, laguna_full, menu_bg/menu_bg2, arcade_top, arcade_level.
 Przełączniki: `GT3_SKIP_OPENING=1` (pomija tylko stream/opening.pss; run.ps1/race.ps1 ustawiają go domyślnie, żeby
 sekwencje pada pasowały; `-Env "GT3_WITH_OPENING=1"` = z openingiem), `GT3_NO_MOVIES=1` / `GT3_NO_IPU=1` = dawne
