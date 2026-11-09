@@ -276,6 +276,10 @@ zawieszenia: `tools/mkdump.py` + `tools/hang.py`.
   (b) IOP (z SPU2) na osobnym wątku — ~5%, średnie ryzyko (RPC/SIF DMA już asynchroniczne); (c) tańsze flagi/potoki
   w AOT — ~10%, niskie ryzyko (weryfikacja `GT3_VU1AOT_VERIFY`). Plan: (c) → (b) → (a) etapami z przełącznikami.
   Wykluczone: kopia pakietów VIF1 do wektora (alokacja) — usunięta, bez mierzalnego zysku (`GT3_VIF1_COPYFEED=1`).
+  (c) ocenione: szybka ścieżka flag dla zwykłych wyników już jest (normalizeFmacResult); koszt robią wyniki zerowe
+  (dokładne liczenie Z/U) i sumy iloczynów (productSticky) — realnie ~2–3%, więc 60 kl./s w przelocie wymaga (a).
+  race.ps1 ma `-Pad` (własna sekwencja, świeża karta); wybór trasy Arcade jest na ekranie ~26 s, ale Prawo w 26,5–29 s
+  nie zmieniło trasy (do dopracowania, jeśli potrzebny przegląd tras).
   Wątek GIF — 3. podejście (2026-11-09): przestój = wątek roboczy 9 w 0x253580 → 0x2520C0(kanał 1) czeka na koniec
   DMA VIF1 (flaga +0x1D, limit 120 uśpień = przestój), główny wątek śpi w 0x1AEA20. W przestoju VIF1 CHCR=0x100001C5
   (STR=1), QWC=0, TADR 0x355120, a żaden wątek EE nie dotyka DMA (`GT3_VIF1STAT=1` nic nie wypisuje) — leniwy łańcuch
