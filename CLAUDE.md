@@ -253,6 +253,8 @@ obie karty (slot 1 z zapisem: 8 096 KB wolne).
 w oknie i na pełnym ekranie (F11)?
 (m) **Interpolacja gaussowska** (nowe): porównać `C:\gt3-data\runs\gt3_menu_gauss.wav` z `gt3_menu_linear.wav`
 (muzyka od ~13 s) — gaussowska powinna brzmieć łagodniej/mniej „metalicznie”, jak na PS2.
+(n) **2 Player Battle** (nie da się automatycznie — autopad steruje tylko portem 0): Arcade → 2 Player Battle z dwoma
+padami (lub pad + klawiatura) — czy drugi gracz się zgłasza i czy podzielony ekran działa płynnie.
 (f) **Filmy** (nowe): po starcie gra film otwierający (Start pomija) — czy ma dźwięk i czy po końcu (>3 min) gra
 sama przechodzi do ekranu tytułowego; tła menu (ekran tytułowy, Arcade, wybór poziomu, podgląd tras) — płynność,
 błędne kwadraty, zawieszenia przy przechodzeniu między menu. Wyłączenie filmów: `GT3_NO_MOVIES=1`.
