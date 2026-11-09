@@ -173,7 +173,7 @@ Następne zadania (kolejność wg wpływu na grywalność):
    (nie poprawił powtarzalności — zmienny czas wczytywania). Do zrobienia: NAME ENTRY → OK (Dół ×6, X), zapis licencji.
    Decyzja (2026-11-09): przelot 49 kl./s na razie akceptowany; wątek VIF1 = osobny, wielogodzinny projekt.
    Sekwencje: DEMO licencji = B-1 + `42:4000:40,114:0020:0.3,116:0020:0.3,118:4000:0.3`; race.ps1 ma `-Pad/-Hold/-Timeout`.
-3. Dźwięk po odsłuchu użytkownika: PMON, sweep (interpolacja gaussowska już jest).
+3. Dźwięk: czeka na odsłuch użytkownika (PMON/sweep niepotrzebne — GT3 ich nie używa; gaussowska już jest).
 4. Kamień 5: GS na GPU — ocena opcji (2026-11-09):
    (A) pełny backend GPU za interfejsem `GSRasterBackend` (gs_backend.h: Submit/LoadClut/UploadImage/ReadVram/Present)
        jak renderer HW PCSX2 — wyższa rozdzielczość, ale GT3 używa sztuczek zależnych od układu VRAM (kopia Z jako
@@ -276,7 +276,9 @@ Pogłos (2026-11-09): algorytm psx-spx co drugą próbkę (24 kHz), bufor ESA..E
 0xFFFFF; `PS2X_SPU2_NOREVERB=1` wyłącza; `PS2X_SPU2_LOG=1` wypisuje parametry pogłosu. Miksowanie wg PCSX2: MMIX (0x800/0x400 głosy, 0x80/0x40 wejście PCM×BVOL, 0x8/0x4 wyjście rdzenia 0×AVOL do rdzenia 1),
 MVOL. **Interpolacja gaussowska** 4-punktowa jak w SPU (tabela 512 wsp. z psx-spx, sumy ~0x7F80; domyślnie od
 2026-11-09; `PS2X_SPU2_INTERP=linear` = liniowa, `PS2X_SPU2_OLDINTERP=1` = najstarsza) — w menu −5 dB powyżej 16 kHz
-(mniej aliasingu), RMS bez zmian. Brak: PMON, dokładnych przejść głośności (sweep = od razu wartość docelowa). Wyjście: raylib AudioStream 48 kHz (callback, `ps2xSpu2Pull`), bufor maks. 4096 ramek
+(mniej aliasingu), RMS bez zmian; wyścig też (bez przesterowań, `C:\gt3-datauns\gt3_race_gauss.wav`).
+GT3 nie używa PMON ani sweepu głośności (diagnostyka `[spu2] PMON`/`sweep` w e.txt — w menu i wyścigu pusto),
+więc ich brak nie ma znaczenia. Wyjście: raylib AudioStream 48 kHz (callback, `ps2xSpu2Pull`), bufor maks. 4096 ramek
 (`PS2X_SPU2_LATENCY`). Diagnostyka: `PS2X_SPU2_LOG=1` (co sekundę KON/aktywne głosy/DMA/IRQ/RMS),
 `PS2X_SPU2_VLOG=1` (stan głosów), `PS2X_SPU2_DMALOG=1`, `PS2X_SPU2_RAW=plik.raw` (s16 stereo 48 kHz;
 `tools/raw2wav.py`, `tools/spec.py raw t0 t1 png` = spektrogram w dB), `PS2X_SPU2_SOLO=rdzeń:maska_hex`.
