@@ -326,99 +326,17 @@ zawieszenia: `tools/mkdump.py` + `tools/hang.py`.
   SPU2 emulowane (`ps2xIOP/src/emulator/core/spu2.*`).
 - Karta pamięci: libmc gry = stuby HLE (`Kernel/Stubs/MemoryCard.cpp`), pierwsze GetInfo = −1, TRUNC > APPEND.
 - Pad: klawiatura zawsze + gamepad raylib; `GT3_AUTOPAD="sek:maska:czas,..."` do testów.
-- Wydajność (wyścig Arcade): jazda 60 kl./s, przelot kamery ~40–46 kl./s; ogranicza wątek GS (`m_flusher`) i wątek EE.
-  Bez rysowania (`GT3DBG_NODRAW=1`) przelot nadal ~40 kl./s → ogranicza wątek EE (VU1 ~44%), nie rasteryzacja.
-  **Profiler własny** (xperf w tej sesji nie startuje: „Nieprawidłowe flagi”): `GT3_SAMPLE=od:dł` (s) — próbkuje wszystkie
-  wątki co 1 ms (SuspendThread + RIP, symbole z PDB), raport `[prof]` na stderr: zajętość wątków + top funkcji
-  (gt3_sampler.cpp, dołączony #include na końcu EeScheduler.cpp). Pomiar A/B: `tools/fly.ps1 -N 3 [-Env ...]`
-  (średnie kl/s przelotu i jazdy + s/60 odcinków przelotu; szum ~±0,01 s/60).
-  Profil wątku EE w przelocie (2026-11-09): bloki AOT VU1 ~20%, pomocnicze VU1 ~20% (commitReadyPipelines 7%,
-  flagi FMAC: productSticky/updateFmacFlags/exactResult/normalize ~8%, resetScheduler 1,5%), frontend GS ~13%,
-  VIF ~5%, IOP+SPU2 (wykonywane na wątku EE!) ~5%, kod gry ~4%, _NLG_Return2 5% (pewnie źle przypisany AOT).
-  Ocena opcji dla 60 kl./s w przelocie (trzeba ~−35% czasu wątku EE): (a) VU1+VIF1 na osobnym wątku (jak PS2) —
-  największy zysk (~40%), ryzyko synchronizacji (VIF1 stall na bicie I, przerwania, kolejność PATH1/2/3), duży kod;
-  (b) IOP (z SPU2) na osobnym wątku — ~5%, średnie ryzyko (RPC/SIF DMA już asynchroniczne); (c) tańsze flagi/potoki
-  w AOT — ~10%, niskie ryzyko (weryfikacja `GT3_VU1AOT_VERIFY`). Plan: (c) → (b) → (a) etapami z przełącznikami.
-  Wykluczone: kopia pakietów VIF1 do wektora (alokacja) — usunięta, bez mierzalnego zysku (`GT3_VIF1_COPYFEED=1`).
-  (c) ocenione: szybka ścieżka flag dla zwykłych wyników już jest (normalizeFmacResult); koszt robią wyniki zerowe
-  (dokładne liczenie Z/U) i sumy iloczynów (productSticky) — realnie ~2–3%, więc 60 kl./s w przelocie wymaga (a).
-  race.ps1 ma `-Pad` (własna sekwencja, świeża karta); wybór trasy Arcade jest na ekranie ~26 s, ale Prawo w 26,5–29 s
-  nie zmieniło trasy (do dopracowania, jeśli potrzebny przegląd tras).
-  Wątek GIF — 3. podejście (2026-11-09): przestój = wątek roboczy 9 w 0x253580 → 0x2520C0(kanał 1) czeka na koniec
-  DMA VIF1 (flaga +0x1D, limit 120 uśpień = przestój), główny wątek śpi w 0x1AEA20. W przestoju VIF1 CHCR=0x100001C5
-  (STR=1), QWC=0, TADR 0x355120, a żaden wątek EE nie dotyka DMA (`GT3_VIF1STAT=1` nic nie wypisuje) — leniwy łańcuch
-  VIF1 (`runVif1Chain`, wznawiany przy VIF1_FBRST.STC/zapisie CHCR) nie jest kontynuowany, gdy wszystko śpi.
-  Pomysł na kolejną próbę: kontynuować łańcuch VIF1 z wątku GIF / przy vblank, gdy STR=1 i nie ma stallu I.
-  Teraz w tym trybie dodatkowo 0 kl./s przez ~3 s w przelocie. Odłożone.
-  4. próba: opróżnienie kolejki wątku GIF przed odczytem GS→EE przez VIF1 DIR=0 — bez zmiany (start 58 s). Wykluczone.
-  Profil z wątkiem GIF (przelot): wątek EE 98% zajęty — VU1 ~48% (bloki AOT 25%, pomocnicze 23%: commitReadyPipelines
-  7%, productSticky 3,5%, updateFmacFlags 2,7%, resetScheduler 2,2%), IOP+SPU2 6%, VIF 6%, kod gry 4%. Do 60 kl./s
-  brakuje ~17% → realnie tylko „wątek VIF1” (VU1 równolegle). resetScheduler bez czyszczenia tablic gotowości
-  (`PS2X_VU_FULLRESET=1` = stare) — zysk w szumie. Profiler poprawiony (zastój: alokacja przy wstrzymanym wątku).
-  **ROZWIĄZANE (2026-11-09): artefakty wątku GIF** — przyczyna: zapis DISPFB1/2 (z EE, natychmiast) przełączał
-  wyświetlany bufor, zanim wątek GIF dorysował klatkę (ekran pokazywał bufor w trakcie kompozycji DOF / wyczyszczony).
-  Teraz przed zapisem DISPFB opróżniana kolejka wątku GIF (`gt3DispDrain`, ps2_memory.cpp; `GT3_GIF_NODISPDRAIN=1`).
-  Demo, menu, filmy, GT Mode, licencja, wyścig 170 s (pamięć ~190 MB) poprawne → **wątek GIF domyślnie włączony**
-  (`GT3_GIF_THREAD=0` = stare). Przelot 49,4 kl./s (było 41,3), jazda 60.
-  **ROZWIĄZANE (2026-11-09): migotanie salonu aut (30 Hz)** — w salonie gra przełącza DISPFB co vblank między fbp 0x00
-  i 0xA0, a każdą klatkę zaczyna sprite'em z TEST.ZTE=0 i ZBUF na stronie 0 (= drugi bufor ekranu). Backend zapisywał
-  Z mimo ZTE=0 i czyścił drugi bufor na czarno. Teraz ZTE=0 = brak zapisu Z (`gsEffectiveZmask`, gs_cpu_backend.cpp;
-  `PS2X_GS_ZTE_ZWRITE=1` = stare). Wykrycie: `GT3_DISPLOG=1` (zmiany DISPFB co vblank) + jasność gęstych zrzutów.
-  **ROZWIĄZANE (5. próba, 2026-11-09): przestój wątku GIF.** Przyczyna: przerwania zgłaszane przez sprzęt z innych
-  wątków (`g_ps2PendingIntcMask`, tu FINISH z wątku GIF odłożony do skasowania CSR) były dostarczane tylko po zapisach
-  IO gry — gdy wszystkie wątki EE spały, czekały do limitu 120 vblanków. Teraz dostarczane też przy każdym vblanku
-  (EeScheduler VBlankStart, `GT3_NO_VBLANK_DRAIN=1` = stare). Pomogło też: GsPutIMR zgłasza oczekujący FINISH przy
-  odmaskowaniu, zatrzask INTC 0 przy wyłączonej przyczynie (oba tylko w trybie wątku GIF; `GT3_NO_INTC_LATCH=1`).
-  Wynik `GT3_GIF_THREAD=1`: start wyścigu 50 s, przelot **48,7 kl./s** (domyślnie 41,3; s/60 1,14 vs 1,32), jazda 60.
-  Menu z filmami i licencja B-1 poprawne. **Nie domyślnie**: w demie rajdowym (bez wejścia ~56–80 s od startu, sceny 3D
-  z logo GT3) okresowo zielono-czerwone śmieci zamiast obrazu i czarne klatki (tryb domyślny czysty) — do zbadania
-  (kolejność wgrań tekstur PATH3 względem PATH1/2? `run.ps1 -Pad "99:0:0.1" -At "56,62,80" -Env GT3_GIF_THREAD=1`).
-  Diagnostyka: `GT3_INTCLOG=1` (dostarczenia INTC 0), `GT3_VIF1STAT=1` (stan VIF1/GS co 1 s w [gt3stat]).
-  Trop artefaktów: z `GT3_NO_DOF_HACK=1` śmieci znikają (zostaje turkusowy odcień i pojedyncza czarna klatka), z
-  `PS2X_GS_SYNCREADBACK=1` bez zmian → problem w kompozycji DOF (ZBUF 0x1A1, wymuszony test Z w gs_cpu_backend.cpp);
-  wzór wygląda jak bufor Z czytany jako kolor — źródło kompozycji (kopia Z24/rozmycie) nie jest gotowe przy
-  asynchronicznym GIF. Kompozycja w demie (tryb domyślny, `GT3_EVLOG=2450` ≈ 55 s): rysowanie do fbp 0x1A1 jako
-  PSMZ32 z tekstury tbp 0 psm 0x31 (kopia Z), potem sprite'y na fbp 0 z ZBUF 0x1A1 i teksturami 0xA00 (CT24)
-  i 0x1E20 (CT32). W trybie wątku GIF `GT3_EVLOG` nic nie wypisuje (inna ścieżka rysowań) — do porównania trzeba
-  dodać log w ścieżce wątku GIF. Odłożone (3 podejścia). Wykluczone: zwykła ścieżka GIF przez arbitra (tryb domyślny
-  z `GT3_NO_NATIVE_GIF=1` = jak w trybie wątku, bez skrótów natywnych) jest czysta → przyczyną jest wyścig wątkowy
-  (coś na EE czyta/zapisuje VRAM bez opróżnienia kolejki wątku GIF).
-  Pomiar `GT3_OVERLAPSTAT=1` (2026-11-09, przelot): praca VIF1/VU1 dzieje się prawie cała we wznowieniach po stallu na
-  bicie I (zapis FBRST.STC w obsłudze przerwania VIF1): ~3 400 kroków/s, łącznie ~60–70% czasu ściennego wątku EE;
-  sam start łańcucha (zapis CHCR) to ~0. Po każdym kroku EE dotyka VIF/DMA po ~1 µs (następne przerwanie jest zgłaszane
-  synchronicznie w trakcie kroku). Wniosek: wątek roboczy ma sens tylko jako „STC zleca wznowienie i wraca; wątek
-  przetwarza do następnego bitu I i zgłasza INTC VIF1 asynchronicznie” — EE wraca wtedy do kodu gry (~30–40% czasu)
-  równolegle. Wymaga: dostarczania oczekujących przerwań w punktach kontrolnych EE (nie tylko po zapisach IO), blokady
-  `m_ioRegisters` (mapa, zapisy z obu wątków), czekania EE na bezczynny wątek przy: odczytach VIF1_STAT/CHCR/D_STAT,
-  zapisach VIF/DMA/GIF, starcie PATH3, dostępie do pamięci VU1, zapisach DISPFB. Szacunek: przelot ~60 kl./s.
-  **Etap 1 wątku VIF1 (2026-11-09, `GT3_VIF1_THREAD=1`, domyślnie off):** STC → zadanie dla wątku roboczego (kolejka
-  zadań, ps2_memory.cpp), zapisy IO 0x10000000–0x1000FFFF z EE przy pracującym wątku → do kolejki (kolejność), odczyty
-  sprzętu (0x1xxxxxxx) czekają na pusty wątek — wyjątki: GIF_CHCR bez odłożonych zapisów (GT3 robi lw/ori 0x100/sw
-  w obsłudze przerwania VIF1, 0x25B6AC/0x25B868/0x25BA48), pamięć VU0 0x11000000–0x11007FFF. Przerwania z wątku:
-  `g_ps2PendingIntcMask` + zdarzenie `EeEventType::Dmac` (drain w planiście). Diagnostyka `GT3_V1STAT=1` (czas
-  czekania EE wg adresu; teraz ~0,05 s/2 s: VIF1_STAT, GS CSR). Wynik przelotu: 46,6 kl./s przy s/60 = 1,000 (czas gry
-  w tempie rzeczywistym, gra gubi klatki) vs domyślnie ~49–50 kl./s przy s/60 1,13 (gra zwalnia). Wątek roboczy 65%,
-  EE 48% — nikt nie nasycony: koszt to ping-pong ~3 400 kroków/s (budzenie wątków). Spin (`GT3_V1_SPIN=n`) pogarsza
-  (8 rdzeni, pule GS). Obraz wyścigu poprawny. Dalsze pomysły: przetwarzać kilka kroków bez EE (HLE obsługi bitu I
-  GT3: STC + wznowienie PATH3), mniejsza pula GS przy wątku VIF1.
-  Obsługa bitu I w GT3 (jedyny handler INTC 5 = 0x25B5C0): czyta VIF1_STAT/VIF1_CODE; NUM&1 (0x10000) → dec bajt
-  0x4A8396 (+0x16), STC tylko gdy ≥0; NUM&4 (0x40000) → dec +0x18, j.w.; NUM&2 (0x20000) → STC + inc +0x17, przy 0
-  wznowienie GIF (CHCR|=0x100). Druga strona semaforów: obsługa DMAC 2 (0x25B738, tagi z flagami, inc +0x15/+0x16/
-  +0x18, STC 0x25B8AC). Rozkład bitów I w wyścigu: NUM&7 = 1: 83%, 2: 16%, 4: <1%, 0: nigdy → `GT3_V1_HLEI=1` (pomija
-  tylko NUM&7=0) nic nie daje. HLE semaforów na wątku VIF1 wymaga wyłączności z handlerem DMAC na EE (inaczej utrata
-  aktualizacji bajtu) — odłożone. `GT3_V1STAT=1` wypisuje też histogram `[ibit]`.
-  **Projekt (a) „wątek VIF1” (do realizacji):** samo asynchroniczne VU1 przy MSCAL (`m_vu1MscalCallback`,
-  ps2_vif1_interpreter.cpp:512) da mało, bo łańcuch VIF1 przetwarza się synchronicznie przy zapisie CHCR (runVif1Chain).
-  Zysk daje dopiero: zapis CHCR VIF1 → zadanie dla wątku roboczego (łańcuch + UNPACK + VU1 + XGKICK/DIRECT do GS),
-  EE wraca od razu do gry. Punkty synchronizacji (EE czeka na pusty wątek): odczyt/zapis rejestrów VIF1/DMA ch1
-  i D_STAT, dostęp EE do pamięci VU1, start DMA GIF (PATH3 — kolejność z PATH1/2), odczyty GS→EE, rejestry
-  uprzywilejowane GS (CSR/IMR), przerwania: stall na bicie I → przerwanie VIF1 zgłaszane z wątku, EE obsługuje,
-  FBRST.STC wznawia wątek. Etap 1: zadanie = cały łańcuch, EE czeka na jego koniec przy pierwszym punkcie synchr.
-  (`GT3_VIF1_THREAD=1`, domyślnie off). Ryzyko: jak w wątku GIF (przestój przed wyścigiem) — najpierw zrozumieć
-  ten przestój na zrzutach stanu (`GT3_VIF1STAT`).
-  Eksperyment wątku GIF (`GT3_GIF_THREAD=1`) ma przestój ~4 s przed wyścigiem (łańcuch VIF1 po kontynuacji po
-  odczycie GS→EE nie kończy się) — domyślnie wyłączony.
-
+- **Wydajność — stan (2026-11-09):** wątek GIF i wątek VIF1 domyślnie (`GT3_GIF_THREAD=0` / `GT3_VIF1_THREAD=0` =
+  synchronicznie). Wątek VIF1: wznowienie po STC = zadanie dla wątku roboczego, zapisy IO z EE do kolejki, odczyty
+  sprzętu czekają (wyjątki: GIF_CHCR bez odłożonych zapisów, pamięć VU0); przerwania z wątków przez
+  `g_ps2PendingIntcMask` + zdarzenie planisty `Dmac` i drain przy vblank. Wątek GIF: spin 4000 przed uśpieniem
+  (`GT3_GIF_SPIN`), DISPFB czeka na opróżnienie kolejki (`gt3DispDrain`). Wyniki: jazda 60, przelot ~51, licencja ~43
+  (tempo gry zawsze rzeczywiste), demo rajdowe ~32 (ogranicza rasteryzacja). Wąskie gardło w grze: wątek VIF1 (VU1:
+  commitReadyPipelines, flagi FMAC; processVIF1Data). Wykluczone/zbadane: kopia pakietów VIF1, resetScheduler,
+  dzielenie w UNPACK, spin wątku VIF1 (8 rdzeni), HLE bitu I bez flag (GT3 zawsze ma flagi NUM — semafory PATH2/3:
+  handler INTC5 0x25B5C0, druga strona DMAC2 0x25B738, bajty 0x4A8395..98). Narzędzia: `GT3_SAMPLE=od:dł`
+  (+`GT3_SAMPLE_LINES=funkcja`), `tools/fly.ps1 -N 3`, `GT3_V1STAT=1`, `GT3_OVERLAPSTAT=1`, `GT3_INTCLOG`, `GT3_VIF1STAT`.
+  Szczegółowa historia (wątek GIF 5 prób, artefakty DISPFB, migotanie salonu ZTE, etap 1 VIF1): docs/HISTORIA_RECOMP.md.
 **Pamięć (2026-11-09):** kolejka zbiorów GS (`EnqueueSet`) nie miała limitu — przy intensywnych wgraniach (intro,
 demo, wczytywanie) proces rósł do 3–4,6 GB. Teraz limit 256 MB danych w kolejce (`PS2X_GS_MAXQMB`) i 1024 zbiorów
 (`PS2X_GS_MAXSETS`; mały limit, np. 32, spowalnia jazdę ~30%), `PS2X_GS_NOQUEUELIMIT=1` = bez limitu. Szczyt ~270 MB.
