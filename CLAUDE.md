@@ -127,7 +127,8 @@ Szczegóły są w STATUS.md (aktualizuje go `tools/status.sh`).
 Stan (2026-11-09): menu, Arcade, **GT Mode: salon, zakup auta, zapis/odczyt postępu, wyścigi (Sunday Cup) i testy licencji
 (z DEMO/powtórką)**, **filmy: opening i tła menu (emulacja IPU, domyślnie)**, dźwięk SPU2 z pogłosem, mapowanie klawiszy
 (`keys.ini`), spusty pada i kierownica (konfiguracja w `keys.ini`), pełny ekran/proporcje. Wyścig 60 kl./s w jeździe,
-przelot kamery ~41 kl./s (z `GT3_GIF_THREAD=1` ~49, ale ten tryb ma artefakty w demie). Pamięć stabilna (~190 MB).
+przelot kamery ~49 kl./s (wątek GIF domyślnie od 2026-11-09; `GT3_GIF_THREAD=0` = synchronicznie ~41).
+Pamięć stabilna (~190 MB). Salon aut nie migocze (poprawka ZTE=0 bez zapisu Z).
 Szczegóły i historia: sekcje niżej oraz docs/HISTORIA_RECOMP.md.
 
 **Czekam na użytkownika:** odsłuch dźwięku i test klawiatury/pada/kierownicy (lista „Do przetestowania ręcznie” niżej).
@@ -147,9 +148,8 @@ Kody pada (`GT3_AUTOPAD` maska): Góra 0010, Prawo 0020, Dół 0040, Lewo 0080, 
 GT Mode (z zapisem): mapa ~16 s; z My Home Góra → Car Dealer; X → JPN → Daihatsu → Cuore (11 140 Cr).
 
 Następne zadania (kolejność wg wpływu na grywalność):
-1. **60 kl./s w przelocie kamery** (kamień 4): wątek EE jest wąskim gardłem (profil niżej, sekcja wydajności).
-   Opcje: dokończyć tryb wątku GIF (`GT3_GIF_THREAD=1`: +18%, zostały artefakty kompozycji DOF w demie rajdowym —
-   trzeba logu rysowań w ścieżce wątku GIF) albo projekt „wątek VIF1” (VIF1+VU1 równolegle, opis niżej).
+1. **60 kl./s w przelocie kamery** (kamień 4): teraz ~49 kl./s (wątek GIF). Dalej: projekt „wątek VIF1” (VIF1+VU1
+   równolegle, opis w sekcji wydajności) albo tańsze VU1. Wątek EE nadal wąskim gardłem.
 2. GT Mode szerzej: wyścig do mety (nagroda, wyniki, powtórka — autopad nie dojeżdża; potrzebny autopilot czytający
    pozycję auta z pamięci albo test ręczny), Tune Shop, kolejne licencje, inne trasy GT, filmy końcowe (ending_*.pss).
    Sprawdzone: licencja B-1 (jazda → FAIL → menu → DEMO), wyścig Arcade 170 s bez wycieków. Arcade: Super Speedway,
@@ -303,6 +303,15 @@ zawieszenia: `tools/mkdump.py` + `tools/hang.py`.
   Pomysł na kolejną próbę: kontynuować łańcuch VIF1 z wątku GIF / przy vblank, gdy STR=1 i nie ma stallu I.
   Teraz w tym trybie dodatkowo 0 kl./s przez ~3 s w przelocie. Odłożone.
   4. próba: opróżnienie kolejki wątku GIF przed odczytem GS→EE przez VIF1 DIR=0 — bez zmiany (start 58 s). Wykluczone.
+  **ROZWIĄZANE (2026-11-09): artefakty wątku GIF** — przyczyna: zapis DISPFB1/2 (z EE, natychmiast) przełączał
+  wyświetlany bufor, zanim wątek GIF dorysował klatkę (ekran pokazywał bufor w trakcie kompozycji DOF / wyczyszczony).
+  Teraz przed zapisem DISPFB opróżniana kolejka wątku GIF (`gt3DispDrain`, ps2_memory.cpp; `GT3_GIF_NODISPDRAIN=1`).
+  Demo, menu, filmy, GT Mode, licencja, wyścig 170 s (pamięć ~190 MB) poprawne → **wątek GIF domyślnie włączony**
+  (`GT3_GIF_THREAD=0` = stare). Przelot 49,4 kl./s (było 41,3), jazda 60.
+  **ROZWIĄZANE (2026-11-09): migotanie salonu aut (30 Hz)** — w salonie gra przełącza DISPFB co vblank między fbp 0x00
+  i 0xA0, a każdą klatkę zaczyna sprite'em z TEST.ZTE=0 i ZBUF na stronie 0 (= drugi bufor ekranu). Backend zapisywał
+  Z mimo ZTE=0 i czyścił drugi bufor na czarno. Teraz ZTE=0 = brak zapisu Z (`gsEffectiveZmask`, gs_cpu_backend.cpp;
+  `PS2X_GS_ZTE_ZWRITE=1` = stare). Wykrycie: `GT3_DISPLOG=1` (zmiany DISPFB co vblank) + jasność gęstych zrzutów.
   **ROZWIĄZANE (5. próba, 2026-11-09): przestój wątku GIF.** Przyczyna: przerwania zgłaszane przez sprzęt z innych
   wątków (`g_ps2PendingIntcMask`, tu FINISH z wątku GIF odłożony do skasowania CSR) były dostarczane tylko po zapisach
   IO gry — gdy wszystkie wątki EE spały, czekały do limitu 120 vblanków. Teraz dostarczane też przy każdym vblanku
