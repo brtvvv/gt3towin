@@ -142,7 +142,13 @@ Kody pada (`GT3_AUTOPAD` maska): Góra 0010, Prawo 0020, Dół 0040, Lewo 0080, 
 GT Mode (z zapisem): mapa ~16 s; z My Home Góra → Car Dealer; X → JPN → Daihatsu → Cuore (11 140 Cr).
 
 Następne zadania (kolejność wg wpływu na grywalność):
-1. GT Mode dalej: licencja, wyścig, zakup auta, zapis po postępie → wczytanie (czy stan się zgadza).
+1. GT Mode szerzej: wyścig do mety (nagroda, wyniki, powtórka), Tune Shop, kolejne licencje, inne trasy GT,
+   długie sesje (wycieki/zawieszenia). Arcade: sprawdzone Super Speedway, Mid-Field, Smokey/Swiss Alps (rajd),
+   Trial Mountain — bez zawieszeń.
+2. Filmy (IPU): intro, tła menu (teraz czarne) — duże zadanie (emulacja IPU albo HLE libmpeg + FFmpeg).
+3. Dźwięk: odsłuch przez użytkownika, potem pogłos/PMON/interpolacja gaussowska.
+4. Wydajność przelotu kamery (40–46 kl./s); wątek GIF (`GT3_GIF_THREAD=1`) ma przestój — patrz skrót wniosków.
+
 1a. **ROZWIĄZANE (2026-11-09): zawieszenia wyścigów GT Mode i testów licencji** (~2 s po starcie, obraz stał).
    Przyczyna: w HLE sysclib IOP setjmp/longjmp były atrapami. LIBPDI (strumień muzyki PBGM) przy zatrzymaniu
    utworu wychodzi longjmp-em z pętli kopiującej FIFO; bez tego wątek kopiujący (prio 23) kręcił się bez końca
@@ -154,13 +160,14 @@ Następne zadania (kolejność wg wpływu na grywalność):
    iWakeupThread na bieżącym wątku zwiększa licznik (GT3_WAKEUP_SELF_STRICT=1 = stare).
    Diagnostyka IOP: GT3_IOPTHR=1 (co 0,25 s: czas wątków IOP + co 1 s stan wszystkich wątków [iop-thr]),
    GT3_CDLOG=1 (sceCdRead i nieobsłużone funkcje cdvdman), GT3_IRQSTAT=1, GT3_RPCLOG=sid|0 (ra + 32 B danych).
-   Metoda: stan wątków IOP przed/po zdarzeniu + deasemblacja IRX (	ools/irxdis.py plik.irx baza od do; skoki jal
-   w IRX są względne do bazy modułu; tablica importów: nagłówek 0x41E00000 + nazwa biblioteki, potem pary jr ra;
-   addiu zero,zero,N = funkcja N, np. thsemap 6 Signal/8 WaitSema, thbase 0x18 SleepThread, sysclib 4/5 setjmp/longjmp).
-   Sekwencje (z zapisem z Cuore): Sunday Cup 9:0040,11:4000,17:0080,19:4000,24:4000,28:4000,31:0020,33:4000,37:0020,
-   39:4000,43:4000,47:4000,51:4000,55:4000,59:4000:60 (start ~56 s); licencja B-1: patrz wyżej (Góra, Lewo z mapy).
-   W GT3 Trójkąt (0x1000) = wstecz.
-2. (zrobione) Poprawka ZTE naprawiła też wybór koloru w Arcade (model 3D auta) i tło Mid-Field w menu trasy.
+   Metoda: stan wątków IOP przed/po zdarzeniu + deasemblacja IRX (`tools/irxdis.py plik.irx baza od do`; skoki `jal`
+   w IRX są względne do bazy modułu; tablica importów: nagłówek 0x41E00000 + nazwa biblioteki, potem pary `jr ra;
+   addiu zero,zero,N` = funkcja N, np. thsemap 6 Signal/8 WaitSema, thbase 0x18 SleepThread, sysclib 4/5 setjmp/longjmp).
+   Sekwencje (zapis z Cuore): Sunday Cup `9:0040,11:4000,17:0080,19:4000,24:4000,28:4000,31:0020,33:4000,37:0020,
+   39:4000,43:4000,47:4000,51:4000,55:4000,59:4000:60` (start ~56 s); licencja B-1:
+   `9:0040,11:4000,17:0010,19:0080,21:4000,26:4000,30:4000,34:4000,38:4000,42:4000:40`. Trójkąt (0x1000) = wstecz.
+   Zakup Cuore + zapis: zob. `C:\gt3-data\recomp\tools` (sekwencja w historii; po zakupie Trójkąt → mapa).
+1b. (zrobione) Poprawka ZTE naprawiła też wybór koloru w Arcade (model 3D auta) i tło Mid-Field w menu trasy.
    Arcade z zapisem: `9:4000,13:4000,17:4000` → wybór trasy ~20 s (Prawo = następna trasa), dalej X → klasa → auto/kolor.
 
 **ROZWIĄZANE (2026-11-09): śmieci na ekranie auta w salonie / po zakupie.** Przyczyna: backend GS ignorował
@@ -171,16 +178,17 @@ VRAM (tekstury T4 czytane jako CT32). Teraz ZTE=0 = test Z wyłączony (`gsEffec
 Metoda, która zadziałała: `GT3_EVLOG` (lista rysowań klatki z TEST) + `GT3_TEXDUMP=tbp:tbp` (zrzut bufora/tekstury
 w chwili pierwszego rysowania, które go czyta, do `C:/gt3-data/runs/tex_<tbp>_N.ppm`) — porównanie źródła i wyniku
 kopii wskazało przebieg, który nic nie zapisuje. `GT3_EVVTX=1` dodaje wierzchołki sprite'ów.
-3. Wątek GIF (przelot kamery 60 kl./s) — przestój ~4 s przed wyścigiem, do zbadania (zrzut wątków EE).
-4. Dźwięk (SPU2), filmy (IPU/FFmpeg), XInput, pełny ekran, 16:9.
 
 **Do przetestowania ręcznie (zbiorczo):** (0) **DŹWIĘK** (nowe, 2026-11-09): uruchomić grę i posłuchać menu (muzyka
 GT Mode), dźwięków kursora i wyścigu (muzyka + silnik). Albo odsłuchać nagrania `C:\gt3-data\runs\gt3_menu_spu2.wav`
 (muzyka od ~13 s) i `gt3_race_spu2.wav` (wyścig od ~38 s). Zgłosić: szum zamiast muzyki? zła wysokość/tempo?
 trzaski? Wyłączenie dźwięku: `PS2X_SPU2_MUTE=1`, cała emulacja SPU2 off: `PS2X_SPU2_OFF=1`.
-(a) zapis: GT Mode → My Home → Save Game → slot 1 → OK (strzałka w lewo,
-X); po restarcie gry sprawdzić, czy kredyty/auta się zgadzają. (b) Klawiatura bez `GT3_AUTOPAD` (X/Spacja = Krzyżyk,
-Enter = Start, strzałki). (c) Wyścig Arcade do mety, płynność, brak zawieszeń. Starsze punkty — sekcje niżej.
+(a) GT Mode od zera: kupić auto w Car Dealer, zapisać (My Home → Save Game → slot 1 → OK), wyjść z gry, uruchomić
+ponownie — kredyty i auto muszą się zgadzać (u mnie działa: 6 860 Cr + Cuore). Uwaga: stary zapis w `mc0` jest
+mój testowy (Cuore) — można go usunąć, by zacząć od nowa. (b) Wyścig GT (Go Race → Beginner League → Sunday Cup →
+Entry) i test licencji B-1 do końca: wyniki, nagroda, powtórka. (c) Klawiatura bez `GT3_AUTOPAD` (X/Spacja =
+Krzyżyk, V = Trójkąt/wstecz, Enter = Start, strzałki) i pad (XInput) — czy działa sterowanie w wyścigu.
+(d) F11 pełny ekran, F10 proporcje.
 
 **Okno (2026-11-09):** domyślnie 960×720, obraz 4:3 na całe okno, panel debugera ukryty (F1 pokazuje;
 `PS2X_DEBUG_PANEL=1` od startu). **F11** = pełny ekran (okno bez ramki), **F10** = proporcje 4:3 → 16:9 → rozciągnięte
