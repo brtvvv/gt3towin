@@ -253,6 +253,8 @@ zawieszenia: `tools/mkdump.py` + `tools/hang.py`.
   odczycie GS→EE nie kończy się) — domyślnie wyłączony.
 
 **Pułapki:** `sed -i`/`Set-Content` psują CRLF/BOM w plikach PS2Recomp (edytować narzędziem Edit);
+PowerShell 5.1 `Get-Content -Raw` czyta UTF-8 bez BOM jako ANSI (zepsute polskie znaki) — używać
+`[IO.File]::ReadAllText(p, [Text.Encoding]::UTF8)`, a w here-stringach `@"..."@` znak ` jest ucieczką (gubi backticki);
 `ps2xRuntime/CMakeLists.txt` ma LF; lambdy nie przechwytują `thread_local`; `powershell -File` psuje przecinki
 w argumentach (`run.ps1 -Env` — listy dawać przez `:`); comsvcs MiniDump tworzy plik tylko dla administratora;
 pojedyncze pomiary wydajności różnią się o ~20% (A/B po 3 przebiegi); zrzuty `GT3_THRDUMP` są robione w chwili vsync
