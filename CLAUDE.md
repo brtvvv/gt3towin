@@ -144,7 +144,9 @@ GT Mode (z zapisem): mapa ~16 s; z My Home Góra → Car Dealer; X → JPN → D
 
 Następne zadania (kolejność wg wpływu na grywalność):
 1. GT Mode szerzej: wyścig do mety (nagroda, wyniki, powtórka), Tune Shop, kolejne licencje, inne trasy GT,
-   długie sesje (wycieki/zawieszenia). Arcade: sprawdzone Super Speedway, Mid-Field, Smokey/Swiss Alps (rajd),
+   długie sesje (wycieki/zawieszenia). Sprawdzone 2026-11-09: test licencji B-1 pełny cykl (jazda → FAIL → menu
+   licencji); wyścig Arcade 170 s: pamięć stała ~187 MB, 60 kl./s (race.ps1 ma teraz `-Hold` i `-Timeout`,
+   shots2.ps1 zapisuje `mem.txt`). Wyścig GT do mety > 3 min — nie mieści się w limicie pomiaru. Arcade: sprawdzone Super Speedway, Mid-Field, Smokey/Swiss Alps (rajd),
    Trial Mountain — bez zawieszeń.
 2. (zrobione) Filmy (IPU): opening i tła menu działają (sekcja „Filmy (IPU)” niżej). Do ręcznego sprawdzenia:
    dźwięk filmów, koniec openingu (>3 min), filmy końcowe (ending_*.pss).
@@ -190,7 +192,10 @@ ponownie — kredyty i auto muszą się zgadzać (u mnie działa: 6 860 Cr + Cuo
 mój testowy (Cuore) — można go usunąć, by zacząć od nowa. (b) Wyścig GT (Go Race → Beginner League → Sunday Cup →
 Entry) i test licencji B-1 do końca: wyniki, nagroda, powtórka. (c) Klawiatura bez `GT3_AUTOPAD` (X/Spacja =
 Krzyżyk, V = Trójkąt/wstecz, Enter = Start, strzałki) i pad (XInput) — czy działa sterowanie w wyścigu.
-(d) F11 pełny ekran, F10 proporcje. (e) Flara słońca: w moim teście (auto stojące przodem do ściany Super Speedway)
+(d) F11 pełny ekran, F10 proporcje. (e) Flara słońca [moje ustalenia 2026-11-09: GT3 co ~0,2 s czyta przez GS→EE
+blok 64×8 CT32 z rotujących adresów (sbp 0x3680…0x3FA0, `GT3_RBLOG=1`); runtime oddaje wynik poprzedniego zapytania
+o tym samym rozmiarze bez względu na adres (`GT3_GS2EE_KEYADDR=1` = także po adresie). Scenariusz „auto utknęło przodem
+do ściany” w race.ps1 `-Hold 60` jest niedeterministyczny (~2/3 przebiegów) — porównanie wariantów niejednoznaczne]: w moim teście (auto stojące przodem do ściany Super Speedway)
 flara rysowała się na środku ściany — sprawdzić, czy przy jeździe flara znika za przeszkodami; jeśli nie, porównać
 z `PS2X_GS_SYNCREADBACK=1` (synchroniczny odczyt GS→EE do testu widoczności słońca) i zgłosić.
 (f) **Filmy** (nowe): po starcie gra film otwierający (Start pomija) — czy ma dźwięk i czy po końcu (>3 min) gra
