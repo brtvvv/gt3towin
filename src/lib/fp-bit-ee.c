@@ -462,7 +462,9 @@ pack_d ( fp_number_type *  src)
   else if (fraction == 0)
     {
       exp = 0;
+#ifndef PACK_KEEP_SIGN
       sign = 0;
+#endif
     }
   else
     {
@@ -1099,13 +1101,19 @@ divide (FLO_type arg_a, FLO_type arg_b)
 {
   fp_number_type a;
   fp_number_type b;
+#ifndef DIV_NO_TMP
   fp_number_type tmp;
+#endif
   fp_number_type *res;
 
   unpack_d ((FLO_union_type *) & arg_a, &a);
   unpack_d ((FLO_union_type *) & arg_b, &b);
 
+#ifdef DIV_NO_TMP
+  res = _fpdiv_parts (&a, &b, 0);
+#else
   res = _fpdiv_parts (&a, &b, &tmp);
+#endif
 
   return pack_d (res);
 }
