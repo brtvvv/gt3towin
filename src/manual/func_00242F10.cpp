@@ -1,0 +1,3 @@
+extern "C" char *func_0027F9CC(char *, char *); extern "C" int func_0026AFB8(char *, int); extern "C" int func_0026B000(int, int, int); extern "C" void *func_0026D5E0(unsigned); extern "C" unsigned func_0026B058(int, void *, unsigned); extern "C" int func_0026B108(int);
+extern "C" void *func_00242F10(char *name, void *dst, int off, unsigned len) { char buf[0x80]; unsigned n; __builtin_strcpy(buf, "host:"); func_0027F9CC(buf, name); int fd = func_0026AFB8(buf, 1); if (fd < 0) return 0; unsigned size = func_0026B000(fd, 0, 2) - off; func_0026B000(fd, off, 0); if (!len || size < len) len = size; if (!dst) { dst = func_0026D5E0(len); if (!dst) goto out; } n = func_0026B058(fd, dst, len); out: func_0026B108(fd); return n == len ? dst : 0; }
+
