@@ -2601,9 +2601,7 @@
 <rect x='584' y='484' width='76' height='4' fill='#2ea043'/>
 <rect x='20' y='488' width='16' height='4' fill='#2ea043'/>
 <rect x='36' y='488' width='8' height='4' fill='#30363d'/>
-<rect x='44' y='488' width='16' height='4' fill='#2ea043'/>
-<rect x='60' y='488' width='8' height='4' fill='#30363d'/>
-<rect x='68' y='488' width='20' height='4' fill='#2ea043'/>
+<rect x='44' y='488' width='44' height='4' fill='#2ea043'/>
 <rect x='88' y='488' width='8' height='4' fill='#30363d'/>
 <rect x='96' y='488' width='40' height='4' fill='#2ea043'/>
 <rect x='136' y='488' width='8' height='4' fill='#30363d'/>
