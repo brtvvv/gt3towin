@@ -2,11 +2,11 @@
 <rect width='720' height='134' rx='10' fill='#0d1117'/>
 <text x='20' y='24' font-family='-apple-system,Segoe UI,Helvetica,Arial,sans-serif' font-size='14' font-weight='600' fill='#c9d1d9'>Gran Turismo 3 A-Spec (PAL v2.00) - matching decompilation</text>
 <text x='20' y='52' font-family='-apple-system,Segoe UI,Helvetica,Arial,sans-serif' font-size='12' fill='#8b949e'>Instructions / Instrukcje</text>
-<text x='700' y='52' font-family='-apple-system,Segoe UI,Helvetica,Arial,sans-serif' font-size='12' fill='#c9d1d9' text-anchor='end'>156,933 / 403,899  -  <tspan font-weight='700'>38.85%</tspan></text>
+<text x='700' y='52' font-family='-apple-system,Segoe UI,Helvetica,Arial,sans-serif' font-size='12' fill='#c9d1d9' text-anchor='end'>157,101 / 403,899  -  <tspan font-weight='700'>38.90%</tspan></text>
 <rect x='20' y='60' width='680' height='16' rx='8' fill='#30363d'/>
-<rect x='20' y='60' width='264.2' height='16' rx='8' fill='#2ea043'/>
+<rect x='20' y='60' width='264.5' height='16' rx='8' fill='#2ea043'/>
 <text x='20' y='104' font-family='-apple-system,Segoe UI,Helvetica,Arial,sans-serif' font-size='12' fill='#8b949e'>Functions / Funkcje</text>
-<text x='700' y='104' font-family='-apple-system,Segoe UI,Helvetica,Arial,sans-serif' font-size='12' fill='#c9d1d9' text-anchor='end'>8,756 / 11,433  -  <tspan font-weight='700'>76.59%</tspan></text>
+<text x='700' y='104' font-family='-apple-system,Segoe UI,Helvetica,Arial,sans-serif' font-size='12' fill='#c9d1d9' text-anchor='end'>8,759 / 11,433  -  <tspan font-weight='700'>76.61%</tspan></text>
 <rect x='20' y='112' width='680' height='16' rx='8' fill='#30363d'/>
-<rect x='20' y='112' width='520.8' height='16' rx='8' fill='#1f6feb'/>
+<rect x='20' y='112' width='521.0' height='16' rx='8' fill='#1f6feb'/>
 </svg>
