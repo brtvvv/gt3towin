@@ -793,7 +793,9 @@
 <rect x='224' y='192' width='32' height='4' fill='#2ea043'/>
 <rect x='256' y='192' width='88' height='4' fill='#30363d'/>
 <rect x='344' y='192' width='8' height='4' fill='#2ea043'/>
-<rect x='352' y='192' width='244' height='4' fill='#30363d'/>
+<rect x='352' y='192' width='64' height='4' fill='#30363d'/>
+<rect x='416' y='192' width='8' height='4' fill='#2ea043'/>
+<rect x='424' y='192' width='172' height='4' fill='#30363d'/>
 <rect x='596' y='192' width='12' height='4' fill='#2ea043'/>
 <rect x='608' y='192' width='52' height='4' fill='#30363d'/>
 <rect x='20' y='196' width='8' height='4' fill='#30363d'/>

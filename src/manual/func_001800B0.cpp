@@ -1,0 +1,2 @@
+extern "C" float func_001EC340(void *, float); extern "C" float func_001EC3A0(void *, float); extern "C" float func_001EC3D0(void *, float); extern "C" int func_0024D088(float *, float *);
+extern "C" int func_001800B0(void *t, float x) { float a = func_001EC340(t, x); float b = func_001EC3A0(t, x); float c = func_001EC3D0(t, x); float lo[4], hi[4]; float k = 4.0f; lo[0] = a - k; hi[0] = a + k; lo[1] = b - k; hi[1] = b + k; lo[2] = c - k; hi[2] = c + k; return func_0024D088(lo, hi) != 0; }
