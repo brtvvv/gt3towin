@@ -183,6 +183,8 @@ Listy robocze są w `work/`:
   `E *b = (E *)(t + off); if (b) { E *e = b + N; while (b != e) { e--; e->dtor(2); } }` (wirtualny dtor: baza z vptr bez danych).
 - Kolejność bloków `case` w kodzie = kolejność etykiet w asm (sortuj grupy przypadków po adresie celu z tablicy skoków).
 - Adres `D + (n/4)*0x1BC + 0x1418 + (n%4)*0x6C + 0xC` (dwa `mult`, osobne `addiu` stałych) = zagnieżdżone tablice struktur `&D->g[n/4].h[n%4]` (`struct W { char p[0x1418]; G g[]; }`, `G { char p[0xC]; H h[4]; ... }`).
+- `jal func_0027E260` z argumentami (vtbl[0].pfn, &typeinfo_fn, 1, obj+vtbl[0].delta, &typeinfo_fn2, obj) = `dynamic_cast<X *>(o)` (RTTI gcc2; nazwy maskowane). Szkic: work/close/func_0014C9B8.cpp (zostaje przydział s0/s1).
+- Sign-extend `dsll32/dsra32` po `lw` = zmienna lokalna `long o = x;` (rzutowanie inline nie wystarcza).
 - Zapis do globala tuż PO wywołaniu (`f(h); G = -1;`) gcc 2.9 potrafi wstawić w delay slot `jal`.
 - **Nie do zrobienia tą metodą** (od razu do skip):
   ręczne instrukcje (`ei`, `syscall`, `sync.p`), wstawki VU0 (`vmula`, `qmtc2`),
