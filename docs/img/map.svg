@@ -649,9 +649,7 @@
 <rect x='208' y='176' width='8' height='4' fill='#30363d'/>
 <rect x='216' y='176' width='8' height='4' fill='#2ea043'/>
 <rect x='224' y='176' width='8' height='4' fill='#30363d'/>
-<rect x='232' y='176' width='4' height='4' fill='#2ea043'/>
-<rect x='236' y='176' width='12' height='4' fill='#30363d'/>
-<rect x='248' y='176' width='4' height='4' fill='#2ea043'/>
+<rect x='232' y='176' width='20' height='4' fill='#2ea043'/>
 <rect x='252' y='176' width='16' height='4' fill='#30363d'/>
 <rect x='268' y='176' width='4' height='4' fill='#2ea043'/>
 <rect x='272' y='176' width='4' height='4' fill='#30363d'/>
@@ -922,9 +920,7 @@
 <rect x='460' y='224' width='4' height='4' fill='#30363d'/>
 <rect x='464' y='224' width='108' height='4' fill='#2ea043'/>
 <rect x='572' y='224' width='16' height='4' fill='#30363d'/>
-<rect x='588' y='224' width='4' height='4' fill='#2ea043'/>
-<rect x='592' y='224' width='12' height='4' fill='#30363d'/>
-<rect x='604' y='224' width='8' height='4' fill='#2ea043'/>
+<rect x='588' y='224' width='24' height='4' fill='#2ea043'/>
 <rect x='612' y='224' width='20' height='4' fill='#30363d'/>
 <rect x='632' y='224' width='28' height='4' fill='#2ea043'/>
 <rect x='20' y='228' width='16' height='4' fill='#2ea043'/>
