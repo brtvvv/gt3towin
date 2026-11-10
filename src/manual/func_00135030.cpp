@@ -1,0 +1,5 @@
+struct V { char p[0x10]; short d; short pad; void (*f)(void *); };
+extern "C" void func_001D3700(int, int, int); extern "C" void func_001B8AD8(int *, int); extern "C" void func_001B75E8(int *, int, int); extern "C" void func_001B8170(int *, int); extern "C" int func_00253458(int); extern "C" unsigned char func_001B8B10(int *); extern "C" void func_001B8610(int *); extern "C" void func_001B79F8(int *, int); extern "C" void func_00212A08(int); extern "C" void func_00101A58(int); extern "C" void func_0022CA98(); extern "C" int func_00129988(char *); extern "C" void func_00135110(void *);
+struct T { char p[0x288]; V *v; char q[0x2EC - 0x28C]; int x2EC; int m; char r[0xE4C - 0x2F4]; int xE4C; int xE50; };
+extern "C" void func_00135030(T *t) { int *m = &t->m; func_001B8170(m, 0); func_001D3700(t->xE50, 0, 1); if (t->xE4C) { func_001B79F8(m, 0); func_001B75E8(m, t->xE4C, 0); func_001B8170(m, 0); } t->x2EC = 0; while (!t->m) { func_001B8B10(m); func_00135110(t); t->v->f((char *)t + t->v->d); func_00212A08(1); } func_00253458(2); func_00101A58(0); func_00253458(2); func_0022CA98(); }
+
