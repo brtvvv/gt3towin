@@ -23,7 +23,7 @@ Instrukcje dla niego podawaj krok po kroku, jedną rzecz naraz.
   Pobiera plik gry z PRYWATNEGO repo brtvvv/gt3-data; jeśli klon się nie uda,
   dodaj to repo do sesji.
 - Lokalnie (WSL2): `bash tools/setup_local.sh /mnt/c/.../CORE.GT3`.
-- Kompilator jest w `$GT3_COMPILERS` (domyślnie `~/compilers`).
+- Kompilator jest w `$GT3_COMPILERS` (domyślnie `~/compilers`). Maszyna: 8 rdzeni — automat z `JOBS=6 bash tools/run_local.sh 90`.
 - Nigdy nie kopiuj niczego z gt3-data do tego publicznego repo.
 
 ## Oszczędzanie tokenów (najważniejsze)
@@ -60,7 +60,9 @@ Kolejność pracy:
 | `python3 tools/sib.py` | funkcje-rodzeństwo o identycznych opcode'ach |
 | `python3 tools/ginit2.py` | generator statycznych inicjalizatorów (`_GLOBAL_$I$`) |
 | `python3 tools/mkwrap.py`, `libmatch.py` | dopasowania funkcji bibliotecznych (newlib) |
-| `sh tools/status.sh` | STATUS.md + commit + push |
+| `python3 tools/ehgen.py lista` | generator fabryk `new X(...)` z wyjątkami |
+| `python3 tools/progress.py` | statystyki + wykresy SVG w README (woła go status.sh) |
+| `sh tools/status.sh` | STATUS.md + README + commit + push |
 
 Listy robocze są w `work/`:
 - `small.txt`: niedopasowane funkcje ≤40 instrukcji, posortowane po rozmiarze,
@@ -113,6 +115,14 @@ Listy robocze są w `work/`:
   a po MATCH zamień ją na względną w `src/manual/`.
 - **Biblioteki:** newlib (`src/lib/`): mprec.c, strtol, vfprintf (`-DINTEGER_ONLY`, `vfprintf-ee.c`).
   vfscanf się nie zgadza (pominięte).
+- **Wyjątki (EH, 2026-11-10):** funkcje z martwymi blokami `jal func_002794A0` (+ delete, `b` w pętli,
+  `jal func_0027AEE0`) to kod z `-fexceptions` (`// @flags -fexceptions`). Typowo `return new X(args);` —
+  blok handlera woła operator delete obiektu. Nazwy wołanych funkcji nie mają znaczenia (relokacje maskowane),
+  więc `struct X { char d[ROZMIAR]; X(int); void *operator new(size_t); void operator delete(void*[, size_t]); };`
+  wystarcza. Alokator `func_0027D370`/`func_0027D2F8` = globalne ::new/::delete; `func_001C02C8` = inline new
+  klasy. Generator: `python3 tools/ehgen.py <lista>`. Około 540 funkcji (~61 tys. instrukcji) ma EH —
+  auto_m2c ich nie dopasuje (m2c nie widzi `new`), trzeba ręcznie z `-fexceptions`.
+  Nieprzekazany argument wołanej funkcji (np. `check(a0)`) zmienia kolejność prologu — przekaż go jawnie.
 - **Nie do zrobienia tą metodą** (od razu do skip):
   ręczne instrukcje (`ei`, `syscall`, `sync.p`), wstawki VU0 (`vmula`, `qmtc2`),
   tablice skoków bez danych, funkcje z `lw` w delay slocie `jal`.

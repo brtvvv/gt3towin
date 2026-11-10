@@ -8,7 +8,7 @@ import os, struct, subprocess, sys, tempfile
 from elftools.elf.elffile import ELFFile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-COMP = os.environ.get('GT3_COMPILERS', '/home/claude/compilers')
+COMP = os.environ.get('GT3_COMPILERS', os.path.expanduser('~/compilers'))
 BIN = os.path.join(ROOT, 'orig', 'core_100000.bin')
 BASE = 0x100000
 

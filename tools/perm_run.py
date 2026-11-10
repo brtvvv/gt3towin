@@ -8,7 +8,7 @@ import os, re, subprocess, sys, shutil, glob
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import try_ as T
 ROOT = T.ROOT
-PERM = os.environ.get('PERMUTER', '/home/claude/decomp-permuter/permuter.py')
+PERM = os.environ.get('PERMUTER', os.path.expanduser('~/decomp-permuter/permuter.py'))
 WORK = os.environ.get('PERM_WORK', '/tmp/gt3perm')
 secs = int(sys.argv[2]) if len(sys.argv) > 2 else 90
 os.makedirs(os.path.join(ROOT, 'src/perm'), exist_ok=True)

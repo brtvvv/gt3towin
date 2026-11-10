@@ -3,7 +3,7 @@
 # Uzycie: bash tools/run_local.sh [sekundy_permutera_na_funkcje]
 cd "$(dirname "$0")/.."
 export GT3_COMPILERS="$HOME/compilers" PERMUTER="$HOME/decomp-permuter/permuter.py" PERM_WORK="/tmp/gt3perm"
-N=$(nproc); SECS=${1:-60}
+N=${JOBS:-$(nproc)}; SECS=${1:-60}
 echo "Rdzenie: $N"
 ( while true; do sleep 600; sh tools/status.sh; done ) & PUSHER=$!
 # 1) automat m2c na wszystkich rdzeniach

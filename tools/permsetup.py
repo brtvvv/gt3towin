@@ -6,7 +6,7 @@ Zrodlo: domyslnie /tmp/<func>.cpp (szkic z auto_m2c).
 """
 import os, re, subprocess, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CC = os.path.join(os.environ.get('GT3_COMPILERS', '/home/claude/compilers'), 'ee-gcc2.9-991111-01/bin/ee-gcc')
+CC = os.path.join(os.environ.get('GT3_COMPILERS', os.path.expanduser('~/compilers')), 'ee-gcc2.9-991111-01/bin/ee-gcc')
 name, d = sys.argv[1], sys.argv[2]
 src = sys.argv[3] if len(sys.argv) > 3 else f'/tmp/{name}.cpp'
 os.makedirs(d, exist_ok=True)
