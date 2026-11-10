@@ -324,8 +324,8 @@
 <rect x='600' y='104' width='8' height='4' fill='#30363d'/>
 <rect x='608' y='104' width='20' height='4' fill='#2ea043'/>
 <rect x='628' y='104' width='32' height='4' fill='#30363d'/>
-<rect x='20' y='108' width='40' height='4' fill='#30363d'/>
-<rect x='60' y='108' width='60' height='4' fill='#2ea043'/>
+<rect x='20' y='108' width='28' height='4' fill='#30363d'/>
+<rect x='48' y='108' width='72' height='4' fill='#2ea043'/>
 <rect x='120' y='108' width='16' height='4' fill='#30363d'/>
 <rect x='136' y='108' width='524' height='4' fill='#2ea043'/>
 <rect x='20' y='112' width='376' height='4' fill='#2ea043'/>
