@@ -1,5 +1,5 @@
 // @flags -fexceptions
-#include "/tmp/claude-1000/b54/hdr.h"
+#include "../../include/eh_heap.h"
 struct V3 { float a, b, c; void set(float x, float y, float z) { a = x; c = z; b = y; } };
 struct P { char p[0x1C]; virtual ~P(); };
 struct Q { V3 v20, v2C; float x38, x3C; char q[0x78]; virtual ~Q(); };

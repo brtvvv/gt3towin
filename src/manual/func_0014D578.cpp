@@ -1,5 +1,5 @@
 // @flags -fexceptions
-#include "/tmp/claude-1000/b32/hdr.h"
+#include "../../include/eh_heap.h"
 extern "C" int func_001C36B0(int, int);
 extern float D_0035156C;
 struct V4 { float x, y, z, w; void set(float f) { x = f; y = f; z = f; w = f; } void copy(const V4 &o) { x = o.x; y = o.y; z = o.z; w = o.w; } };

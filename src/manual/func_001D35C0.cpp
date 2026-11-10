@@ -1,4 +1,4 @@
-#include "/home/brtvvv/gt3towin/src/lib/ginclude/stdarg.h"
+#include "../lib/ginclude/stdarg.h"
 extern "C" int func_0026DA10(char *, const char *, va_list);
 extern "C" void func_00253458(int);
 extern char *D_003540C0;

@@ -1,5 +1,5 @@
 // @flags -fexceptions
-#include "/tmp/claude-1000/b35/hdr.h"
+#include "../../include/eh_heap.h"
 extern "C" int func_001C36B0(int, int);
 extern "C" int func_0023B0D0(long);
 extern "C" void func_0026D950(char *, const char *, ...);

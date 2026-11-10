@@ -1,5 +1,5 @@
 // @flags -fexceptions
-#include "/tmp/claude-1000/b19/hdr.h"
+#include "../../include/eh_heap.h"
 struct A { int a; };
 struct Q { char p[0x100]; };
 struct DD : Q, A { };

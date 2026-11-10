@@ -1,5 +1,5 @@
 // @flags -fexceptions
-#include "/tmp/claude-1000/b68/hdr.h"
+#include "../../include/eh_heap.h"
 extern char D_00352E20[];
 extern "C" int sprintf(char *, const char *, ...);
 extern "C" char *func_00219680();

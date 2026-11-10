@@ -1,4 +1,4 @@
-#include "/home/brtvvv/gt3towin/src/lib/ginclude/stdarg.h"
+#include "../lib/ginclude/stdarg.h"
 extern "C" void func_002884E0();
 extern void *D_00309840[];
 extern "C" void func_002887C0(int, va_list);

@@ -1,5 +1,5 @@
 // @flags -fexceptions
-#include "/tmp/claude-1000/b7/hdr.h"
+#include "../../include/eh_heap.h"
 struct X { HEAPOPS char d[0xC4]; X(); };
 extern "C" int func_001C34A0(void *, void *);
 extern "C" void func_001C38A0(void *, void *, int);

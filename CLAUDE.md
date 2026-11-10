@@ -94,6 +94,7 @@ Listy robocze są w `work/`:
 - **volatile** na zmiennej globalnej blokuje wypełnienie delay slotu (zakończenie `jr ra; nop`).
 - `-ffast-math` (przez `// @flags -ffast-math` w pliku) daje `min.s`/`max.s` i `sqrt.s`.
   Uwaga: oryginalne `sqrt.s`/`rsqrt.s` mają inne kodowanie niż nasz gas, więc te funkcje pomijamy.
+- **Nagłówki:** nigdy `#include` ze ścieżki w /tmp ani absolutnej — w src/ tylko względne. Operatory new/delete klas EH: `#include "../../include/eh_heap.h"` (`HEAPOPS`, xnew/xdel).
 - **Wywołania wirtualne (gcc2):** wpis vtable ma 8 bajtów (`short delta`, wskaźnik funkcji).
   Indeks metody = (offset w vtable − 8) / 8.
   vptr leży ZA danymi klasy, która wprowadza wirtualne metody:
