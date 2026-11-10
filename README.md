@@ -1,7 +1,7 @@
 # gt3towin
 
 <!-- BADGES -->
-![instructions](https://img.shields.io/badge/instructions-29.8%25-brightgreen) ![functions](https://img.shields.io/badge/functions-7903/11433%20(69.1%25)-blue) ![compiler](https://img.shields.io/badge/compiler-ee--gcc%202.9--991111-orange) ![platform](https://img.shields.io/badge/platform-PS2%20→%20PC-lightgrey)
+![instructions](https://img.shields.io/badge/instructions-29.9%25-brightgreen) ![functions](https://img.shields.io/badge/functions-7911/11433%20(69.2%25)-blue) ![compiler](https://img.shields.io/badge/compiler-ee--gcc%202.9--991111-orange) ![platform](https://img.shields.io/badge/platform-PS2%20→%20PC-lightgrey)
 <!-- /BADGES -->
 
 **A matching decompilation of Gran Turismo 3 A-Spec (PlayStation 2)** — C/C++ source that compiles
@@ -16,13 +16,13 @@ byte-for-byte into the original game code. The long-term goal is a native PC por
 <!-- STATS_EN -->
 ![progress](docs/img/progress.svg)
 
-**120,272 / 403,899 instructions (29.78%)** and **7,903 / 11,433 functions (69.12%)** compile byte-for-byte identical to the original. *(updated 2026-11-10)*
+**120,619 / 403,899 instructions (29.86%)** and **7,911 / 11,433 functions (69.19%)** compile byte-for-byte identical to the original. *(updated 2026-11-10)*
 
 | Function size | Functions | Done | Instructions | Progress |
 |---|---:|---:|---:|---|
 | 1–10 insn | 4,189 | 4,125 | 19,805 / 20,335 | `███████████████████░` 97.4% |
-| 11–40 insn | 4,674 | 3,443 | 67,243 / 101,203 | `█████████████░░░░░░░` 66.4% |
-| 41–100 insn | 1,790 | 291 | 14,593 / 111,096 | `███░░░░░░░░░░░░░░░░░` 13.1% |
+| 11–40 insn | 4,674 | 3,444 | 67,281 / 101,203 | `█████████████░░░░░░░` 66.5% |
+| 41–100 insn | 1,790 | 298 | 14,902 / 111,096 | `███░░░░░░░░░░░░░░░░░` 13.4% |
 | 101–300 insn | 654 | 27 | 3,956 / 104,699 | `█░░░░░░░░░░░░░░░░░░░` 3.8% |
 | 301–1000 insn | 121 | 13 | 6,642 / 57,449 | `██░░░░░░░░░░░░░░░░░░` 11.6% |
 | >1000 insn | 5 | 4 | 8,033 / 9,117 | `██████████████████░░` 88.1% |
@@ -112,13 +112,13 @@ dokładnie do oryginalnego kodu gry. Cel długoterminowy: natywny port na PC, a 
 ### Postęp
 
 <!-- STATS_PL -->
-**120,272 / 403,899 instrukcji (29.78%)** i **7,903 / 11,433 funkcji (69.12%)** kompiluje się bajt w bajt identycznie z oryginałem. *(stan na 2026-11-10)*
+**120,619 / 403,899 instrukcji (29.86%)** i **7,911 / 11,433 funkcji (69.19%)** kompiluje się bajt w bajt identycznie z oryginałem. *(stan na 2026-11-10)*
 
 | Rozmiar funkcji | Funkcje | Gotowe | Instrukcje | Postęp |
 |---|---:|---:|---:|---|
 | 1–10 instr. | 4,189 | 4,125 | 19,805 / 20,335 | `███████████████████░` 97.4% |
-| 11–40 instr. | 4,674 | 3,443 | 67,243 / 101,203 | `█████████████░░░░░░░` 66.4% |
-| 41–100 instr. | 1,790 | 291 | 14,593 / 111,096 | `███░░░░░░░░░░░░░░░░░` 13.1% |
+| 11–40 instr. | 4,674 | 3,444 | 67,281 / 101,203 | `█████████████░░░░░░░` 66.5% |
+| 41–100 instr. | 1,790 | 298 | 14,902 / 111,096 | `███░░░░░░░░░░░░░░░░░` 13.4% |
 | 101–300 instr. | 654 | 27 | 3,956 / 104,699 | `█░░░░░░░░░░░░░░░░░░░` 3.8% |
 | 301–1000 instr. | 121 | 13 | 6,642 / 57,449 | `██░░░░░░░░░░░░░░░░░░` 11.6% |
 | >1000 instr. | 5 | 4 | 8,033 / 9,117 | `██████████████████░░` 88.1% |
