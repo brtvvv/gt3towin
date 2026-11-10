@@ -2435,7 +2435,9 @@
 <rect x='644' y='492' width='16' height='4' fill='#30363d'/>
 <rect x='20' y='496' width='24' height='4' fill='#30363d'/>
 <rect x='44' y='496' width='20' height='4' fill='#2ea043'/>
-<rect x='64' y='496' width='80' height='4' fill='#30363d'/>
+<rect x='64' y='496' width='36' height='4' fill='#30363d'/>
+<rect x='100' y='496' width='16' height='4' fill='#2ea043'/>
+<rect x='116' y='496' width='28' height='4' fill='#30363d'/>
 <rect x='144' y='496' width='4' height='4' fill='#2ea043'/>
 <rect x='148' y='496' width='8' height='4' fill='#30363d'/>
 <rect x='156' y='496' width='16' height='4' fill='#2ea043'/>
