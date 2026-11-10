@@ -1,12 +1,12 @@
 # Postep
 
-Ostatnia aktualizacja: 2026-11-10 17:04
+Ostatnia aktualizacja: 2026-11-10 17:06
 
 | | |
 |---|---|
 | Funkcji w grze | 11434 |
-| Dopasowane funkcje (pliki func_*) | 8996 |
+| Dopasowane funkcje (pliki func_*) | 8998 |
 | Dopasowane metody klas + pierwsze testy | 6 |
-| **Razem** | **9002** (78%) |
-| Dopasowane instrukcje (pliki func_*) | 169758 z 403856 (42.0%) |
-| Automatyczny przebieg | zakonczony, sprawdzono ok. 12628 funkcji |
+| **Razem** | **9004** (78%) |
+| Dopasowane instrukcje (pliki func_*) | 169909 z 403856 (42.1%) |
+| Automatyczny przebieg | zakonczony, sprawdzono ok. 12630 funkcji |
