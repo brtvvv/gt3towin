@@ -8,7 +8,7 @@ fl = []
 for m in re.findall(r'//\s*@flags\s+(.*)', open(src).read()):
     fl += m.split()
 obj = t.compile_obj(t.CC, src, t.FLAGS + fl)
-fn = os.path.splitext(os.path.basename(src))[0]
+fn = sys.argv[2] if len(sys.argv) > 2 else os.path.splitext(os.path.basename(src))[0]
 out = subprocess.run(['mips-linux-gnu-objdump', '-d', '-r', '--no-show-raw-insn', obj], capture_output=True, text=True).stdout
 blk = out.split('<%s>:' % fn, 1)[-1].split('\n\n')[0]
 print(blk)
