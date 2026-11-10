@@ -1,0 +1,2 @@
+extern "C" unsigned func_00231718(unsigned char *b, unsigned *d) { unsigned r = b[1] != 0; if (b[3]) r |= 0x8000; if (b[0]) r |= 8; if (b[2]) r |= 0x4000; if (b[4]) r |= 4; if (b[5]) r |= 0x20; if (b[6]) r |= 0x400; if (b[7]) r |= 0x2000; if (b[8]) r |= 0x800; if (b[9]) r |= 0x1000; switch (*d) { case 0: r |= 0x40; break; case 1: r |= 0x240; break; case 2: r |= 0x200; break; case 3: r |= 0x280; break; case 4: r |= 0x80; break; case 5: r |= 0x180; break; case 6: r |= 0x100; break; case 7: r |= 0x140; break; } return r; }
+
