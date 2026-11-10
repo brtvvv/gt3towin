@@ -1,7 +1,7 @@
 # gt3towin
 
 <!-- BADGES -->
-![instructions](https://img.shields.io/badge/instructions-40.9%25-brightgreen) ![functions](https://img.shields.io/badge/functions-8889/11433%20(77.7%25)-blue) ![compiler](https://img.shields.io/badge/compiler-ee--gcc%202.9--991111-orange) ![platform](https://img.shields.io/badge/platform-PS2%20→%20PC-lightgrey)
+![instructions](https://img.shields.io/badge/instructions-41.0%25-brightgreen) ![functions](https://img.shields.io/badge/functions-8893/11433%20(77.8%25)-blue) ![compiler](https://img.shields.io/badge/compiler-ee--gcc%202.9--991111-orange) ![platform](https://img.shields.io/badge/platform-PS2%20→%20PC-lightgrey)
 <!-- /BADGES -->
 
 **A matching decompilation of Gran Turismo 3 A-Spec (PlayStation 2)** — C/C++ source that compiles
@@ -16,13 +16,13 @@ byte-for-byte into the original game code. The long-term goal is a native PC por
 <!-- STATS_EN -->
 ![progress](docs/img/progress.svg)
 
-**165,343 / 403,899 instructions (40.94%)** and **8,889 / 11,433 functions (77.75%)** compile byte-for-byte identical to the original. *(updated 2026-11-10)*
+**165,603 / 403,899 instructions (41.00%)** and **8,893 / 11,433 functions (77.78%)** compile byte-for-byte identical to the original. *(updated 2026-11-10)*
 
 | Function size | Functions | Done | Instructions | Progress |
 |---|---:|---:|---:|---|
 | 1–10 insn | 4,189 | 4,125 | 19,805 / 20,335 | `███████████████████░` 97.4% |
 | 11–40 insn | 4,674 | 3,932 | 81,000 / 101,203 | `████████████████░░░░` 80.0% |
-| 41–100 insn | 1,790 | 749 | 41,199 / 111,096 | `███████░░░░░░░░░░░░░` 37.1% |
+| 41–100 insn | 1,790 | 753 | 41,459 / 111,096 | `███████░░░░░░░░░░░░░` 37.3% |
 | 101–300 insn | 654 | 66 | 8,664 / 104,699 | `██░░░░░░░░░░░░░░░░░░` 8.3% |
 | 301–1000 insn | 121 | 13 | 6,642 / 57,449 | `██░░░░░░░░░░░░░░░░░░` 11.6% |
 | >1000 insn | 5 | 4 | 8,033 / 9,117 | `██████████████████░░` 88.1% |
@@ -31,18 +31,18 @@ byte-for-byte into the original game code. The long-term goal is a native PC por
 
 | Class (RTTI) | Virtual methods | Done | Instructions done |
 |---|---:|---:|---|
-| `RaceSplitBattle` | 72 | 51 | `███░░░░░░░░░` 22% |
-| `RaceLinkBattle` | 70 | 49 | `██░░░░░░░░░░` 21% |
-| `RaceSolitaire` | 60 | 36 | `██░░░░░░░░░░` 19% |
-| `RaceFreeRun` | 60 | 38 | `███░░░░░░░░░` 23% |
-| `RaceMachineTest` | 60 | 37 | `██░░░░░░░░░░` 20% |
-| `RaceTimeTrial` | 60 | 38 | `███░░░░░░░░░` 22% |
-| `RaceLicense` | 60 | 38 | `███░░░░░░░░░` 21% |
-| `RaceArcade` | 56 | 40 | `███░░░░░░░░░` 23% |
-| `RaceChampionship` | 56 | 40 | `███░░░░░░░░░` 23% |
-| `RaceArcadeSingle` | 56 | 40 | `███░░░░░░░░░` 23% |
-| `RaceFreePractice` | 56 | 40 | `███░░░░░░░░░` 23% |
-| `RacePS2Base` | 56 | 39 | `██░░░░░░░░░░` 19% |
+| `RaceSplitBattle` | 72 | 52 | `███░░░░░░░░░` 23% |
+| `RaceLinkBattle` | 70 | 50 | `███░░░░░░░░░` 22% |
+| `RaceSolitaire` | 60 | 37 | `██░░░░░░░░░░` 21% |
+| `RaceFreeRun` | 60 | 39 | `███░░░░░░░░░` 24% |
+| `RaceMachineTest` | 60 | 38 | `███░░░░░░░░░` 22% |
+| `RaceTimeTrial` | 60 | 39 | `███░░░░░░░░░` 24% |
+| `RaceLicense` | 60 | 39 | `███░░░░░░░░░` 23% |
+| `RaceArcade` | 56 | 41 | `███░░░░░░░░░` 25% |
+| `RaceChampionship` | 56 | 41 | `███░░░░░░░░░` 25% |
+| `RaceArcadeSingle` | 56 | 41 | `███░░░░░░░░░` 25% |
+| `RaceFreePractice` | 56 | 41 | `███░░░░░░░░░` 25% |
+| `RacePS2Base` | 56 | 40 | `███░░░░░░░░░` 21% |
 
 </details>
 
@@ -112,13 +112,13 @@ dokładnie do oryginalnego kodu gry. Cel długoterminowy: natywny port na PC, a 
 ### Postęp
 
 <!-- STATS_PL -->
-**165,343 / 403,899 instrukcji (40.94%)** i **8,889 / 11,433 funkcji (77.75%)** kompiluje się bajt w bajt identycznie z oryginałem. *(stan na 2026-11-10)*
+**165,603 / 403,899 instrukcji (41.00%)** i **8,893 / 11,433 funkcji (77.78%)** kompiluje się bajt w bajt identycznie z oryginałem. *(stan na 2026-11-10)*
 
 | Rozmiar funkcji | Funkcje | Gotowe | Instrukcje | Postęp |
 |---|---:|---:|---:|---|
 | 1–10 instr. | 4,189 | 4,125 | 19,805 / 20,335 | `███████████████████░` 97.4% |
 | 11–40 instr. | 4,674 | 3,932 | 81,000 / 101,203 | `████████████████░░░░` 80.0% |
-| 41–100 instr. | 1,790 | 749 | 41,199 / 111,096 | `███████░░░░░░░░░░░░░` 37.1% |
+| 41–100 instr. | 1,790 | 753 | 41,459 / 111,096 | `███████░░░░░░░░░░░░░` 37.3% |
 | 101–300 instr. | 654 | 66 | 8,664 / 104,699 | `██░░░░░░░░░░░░░░░░░░` 8.3% |
 | 301–1000 instr. | 121 | 13 | 6,642 / 57,449 | `██░░░░░░░░░░░░░░░░░░` 11.6% |
 | >1000 instr. | 5 | 4 | 8,033 / 9,117 | `██████████████████░░` 88.1% |
@@ -127,18 +127,18 @@ dokładnie do oryginalnego kodu gry. Cel długoterminowy: natywny port na PC, a 
 
 | Klasa (RTTI) | Metody wirtualne | Gotowe | Instrukcje gotowe |
 |---|---:|---:|---|
-| `RaceSplitBattle` | 72 | 51 | `███░░░░░░░░░` 22% |
-| `RaceLinkBattle` | 70 | 49 | `██░░░░░░░░░░` 21% |
-| `RaceSolitaire` | 60 | 36 | `██░░░░░░░░░░` 19% |
-| `RaceFreeRun` | 60 | 38 | `███░░░░░░░░░` 23% |
-| `RaceMachineTest` | 60 | 37 | `██░░░░░░░░░░` 20% |
-| `RaceTimeTrial` | 60 | 38 | `███░░░░░░░░░` 22% |
-| `RaceLicense` | 60 | 38 | `███░░░░░░░░░` 21% |
-| `RaceArcade` | 56 | 40 | `███░░░░░░░░░` 23% |
-| `RaceChampionship` | 56 | 40 | `███░░░░░░░░░` 23% |
-| `RaceArcadeSingle` | 56 | 40 | `███░░░░░░░░░` 23% |
-| `RaceFreePractice` | 56 | 40 | `███░░░░░░░░░` 23% |
-| `RacePS2Base` | 56 | 39 | `██░░░░░░░░░░` 19% |
+| `RaceSplitBattle` | 72 | 52 | `███░░░░░░░░░` 23% |
+| `RaceLinkBattle` | 70 | 50 | `███░░░░░░░░░` 22% |
+| `RaceSolitaire` | 60 | 37 | `██░░░░░░░░░░` 21% |
+| `RaceFreeRun` | 60 | 39 | `███░░░░░░░░░` 24% |
+| `RaceMachineTest` | 60 | 38 | `███░░░░░░░░░` 22% |
+| `RaceTimeTrial` | 60 | 39 | `███░░░░░░░░░` 24% |
+| `RaceLicense` | 60 | 39 | `███░░░░░░░░░` 23% |
+| `RaceArcade` | 56 | 41 | `███░░░░░░░░░` 25% |
+| `RaceChampionship` | 56 | 41 | `███░░░░░░░░░` 25% |
+| `RaceArcadeSingle` | 56 | 41 | `███░░░░░░░░░` 25% |
+| `RaceFreePractice` | 56 | 41 | `███░░░░░░░░░` 25% |
+| `RacePS2Base` | 56 | 40 | `███░░░░░░░░░` 21% |
 
 </details>
 
