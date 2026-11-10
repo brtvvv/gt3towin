@@ -2433,7 +2433,9 @@
 <rect x='304' y='496' width='12' height='4' fill='#2ea043'/>
 <rect x='316' y='496' width='56' height='4' fill='#30363d'/>
 <rect x='372' y='496' width='28' height='4' fill='#2ea043'/>
-<rect x='400' y='496' width='84' height='4' fill='#30363d'/>
+<rect x='400' y='496' width='12' height='4' fill='#30363d'/>
+<rect x='412' y='496' width='12' height='4' fill='#2ea043'/>
+<rect x='424' y='496' width='60' height='4' fill='#30363d'/>
 <rect x='484' y='496' width='76' height='4' fill='#2ea043'/>
 <rect x='560' y='496' width='16' height='4' fill='#30363d'/>
 <rect x='576' y='496' width='4' height='4' fill='#2ea043'/>
