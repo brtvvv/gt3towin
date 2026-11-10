@@ -1128,7 +1128,9 @@
 <rect x='40' y='260' width='60' height='4' fill='#2ea043'/>
 <rect x='100' y='260' width='16' height='4' fill='#30363d'/>
 <rect x='116' y='260' width='92' height='4' fill='#2ea043'/>
-<rect x='208' y='260' width='56' height='4' fill='#30363d'/>
+<rect x='208' y='260' width='32' height='4' fill='#30363d'/>
+<rect x='240' y='260' width='12' height='4' fill='#2ea043'/>
+<rect x='252' y='260' width='12' height='4' fill='#30363d'/>
 <rect x='264' y='260' width='8' height='4' fill='#2ea043'/>
 <rect x='272' y='260' width='8' height='4' fill='#30363d'/>
 <rect x='280' y='260' width='24' height='4' fill='#2ea043'/>
