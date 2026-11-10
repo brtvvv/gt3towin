@@ -63,6 +63,7 @@ Kolejność pracy:
 | `python3 tools/funcasm.py func_X` | asm jednej funkcji |
 | `python3 tools/sd.py plik [sym]` | **obok siebie** oryginał \| moja, tylko różne linie (z operandami) — najszybsza diagnoza |
 | `python3 tools/od.py plik [sym]` | objdump skompilowanej funkcji |
+| `python3 tools/famgen.py [maks]` | rodzeństwo (te same mnemoniki co dopasowana) → podmiana symboli/stałych w źródle i wf.py (lista prób: work/famgen_done.txt) |
 | `python3 tools/sib.py` | funkcje-rodzeństwo o identycznych opcode'ach |
 | `python3 tools/ginit2.py` | generator statycznych inicjalizatorów (`_GLOBAL_$I$`) |
 | `python3 tools/mkwrap.py`, `libmatch.py` | dopasowania funkcji bibliotecznych (newlib) |
