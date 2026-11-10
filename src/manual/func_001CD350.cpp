@@ -1,0 +1,6 @@
+struct G { char p[0x40]; int x40; };
+struct T { char p[0x28]; float x28; char q[8]; float x34, x38, x3C; char r[0xAC - 0x40]; int xAC; char s[0xCC - 0xB0]; int xCC; char u[0x110 - 0xD0]; int x110, x114; };
+extern G D_002CF1D0; extern "C" void func_001D1380(); extern "C" void func_001CE070(G *); extern "C" void *func_00256880(int); extern "C" void func_001D10C8(T *, void *); extern "C" void func_001D1080(T *, void *, float, float, float, float); extern "C" void func_001D0F38(T *, void *, float, float, float, float); extern "C" void func_001CCF70(T *, void *); extern "C" void func_002512B0(void *, int, void *, void *, int); extern "C" void func_001CE0B0(G *); extern "C" void func_001CD190(T *); extern "C" void func_001D0258(T *);
+extern "C" void func_001CD350(T *t) { if (!t->xAC) return; if (D_002CF1D0.x40) { func_001D1380(); func_001CE070(&D_002CF1D0); void *a = func_00256880(1); func_001D10C8(t, a); void *b = func_00256880(3); if (t->x110) func_001D1080(t, b, t->x28, t->x34, t->x38, t->x3C); else func_001D0F38(t, b, t->x28, t->x34, t->x38, t->x3C); void *c = func_00256880(2); func_001CCF70(t, c); func_002512B0(b, 0, a, c, 4); func_001CE0B0(&D_002CF1D0); }
+ else if (t->x114) func_001CD190(t); else if (t->xCC) func_001D0258(t); }
+
