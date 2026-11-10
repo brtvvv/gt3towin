@@ -67,6 +67,7 @@ Kolejność pracy:
 | `python3 tools/ginit2.py` | generator statycznych inicjalizatorów (`_GLOBAL_$I$`) |
 | `python3 tools/mkwrap.py`, `libmatch.py` | dopasowania funkcji bibliotecznych (newlib) |
 | `python3 tools/swgen.py [f]` | generator `switch` zwracającego stałe (tablica skoków; bez argumentów skanuje grę) |
+| `python3 tools/cpygen.py [f]` | generator kopii struktury `*a = *b; return a;` (pętla ld/sd, typ elementu char/short/int/long) |
 | `python3 tools/ehgen.py lista` | generator fabryk `new X(...)` z wyjątkami |
 | `python3 tools/progress.py` | statystyki + wykresy SVG w README (woła go status.sh) |
 | `sh tools/status.sh` | STATUS.md + README + commit + push |
