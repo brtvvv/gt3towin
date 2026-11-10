@@ -1,7 +1,7 @@
 # gt3towin
 
 <!-- BADGES -->
-![instructions](https://img.shields.io/badge/instructions-37.4%25-brightgreen) ![functions](https://img.shields.io/badge/functions-8646/11433%20(75.6%25)-blue) ![compiler](https://img.shields.io/badge/compiler-ee--gcc%202.9--991111-orange) ![platform](https://img.shields.io/badge/platform-PS2%20→%20PC-lightgrey)
+![instructions](https://img.shields.io/badge/instructions-37.5%25-brightgreen) ![functions](https://img.shields.io/badge/functions-8649/11433%20(75.6%25)-blue) ![compiler](https://img.shields.io/badge/compiler-ee--gcc%202.9--991111-orange) ![platform](https://img.shields.io/badge/platform-PS2%20→%20PC-lightgrey)
 <!-- /BADGES -->
 
 **A matching decompilation of Gran Turismo 3 A-Spec (PlayStation 2)** — C/C++ source that compiles
@@ -16,14 +16,14 @@ byte-for-byte into the original game code. The long-term goal is a native PC por
 <!-- STATS_EN -->
 ![progress](docs/img/progress.svg)
 
-**150,928 / 403,899 instructions (37.37%)** and **8,646 / 11,433 functions (75.62%)** compile byte-for-byte identical to the original. *(updated 2026-11-10)*
+**151,312 / 403,899 instructions (37.46%)** and **8,649 / 11,433 functions (75.65%)** compile byte-for-byte identical to the original. *(updated 2026-11-10)*
 
 | Function size | Functions | Done | Instructions | Progress |
 |---|---:|---:|---:|---|
 | 1–10 insn | 4,189 | 4,125 | 19,805 / 20,335 | `███████████████████░` 97.4% |
 | 11–40 insn | 4,674 | 3,920 | 80,620 / 101,203 | `████████████████░░░░` 79.7% |
 | 41–100 insn | 1,790 | 527 | 28,496 / 111,096 | `█████░░░░░░░░░░░░░░░` 25.6% |
-| 101–300 insn | 654 | 57 | 7,332 / 104,699 | `█░░░░░░░░░░░░░░░░░░░` 7.0% |
+| 101–300 insn | 654 | 60 | 7,716 / 104,699 | `█░░░░░░░░░░░░░░░░░░░` 7.4% |
 | 301–1000 insn | 121 | 13 | 6,642 / 57,449 | `██░░░░░░░░░░░░░░░░░░` 11.6% |
 | >1000 insn | 5 | 4 | 8,033 / 9,117 | `██████████████████░░` 88.1% |
 
@@ -112,14 +112,14 @@ dokładnie do oryginalnego kodu gry. Cel długoterminowy: natywny port na PC, a 
 ### Postęp
 
 <!-- STATS_PL -->
-**150,928 / 403,899 instrukcji (37.37%)** i **8,646 / 11,433 funkcji (75.62%)** kompiluje się bajt w bajt identycznie z oryginałem. *(stan na 2026-11-10)*
+**151,312 / 403,899 instrukcji (37.46%)** i **8,649 / 11,433 funkcji (75.65%)** kompiluje się bajt w bajt identycznie z oryginałem. *(stan na 2026-11-10)*
 
 | Rozmiar funkcji | Funkcje | Gotowe | Instrukcje | Postęp |
 |---|---:|---:|---:|---|
 | 1–10 instr. | 4,189 | 4,125 | 19,805 / 20,335 | `███████████████████░` 97.4% |
 | 11–40 instr. | 4,674 | 3,920 | 80,620 / 101,203 | `████████████████░░░░` 79.7% |
 | 41–100 instr. | 1,790 | 527 | 28,496 / 111,096 | `█████░░░░░░░░░░░░░░░` 25.6% |
-| 101–300 instr. | 654 | 57 | 7,332 / 104,699 | `█░░░░░░░░░░░░░░░░░░░` 7.0% |
+| 101–300 instr. | 654 | 60 | 7,716 / 104,699 | `█░░░░░░░░░░░░░░░░░░░` 7.4% |
 | 301–1000 instr. | 121 | 13 | 6,642 / 57,449 | `██░░░░░░░░░░░░░░░░░░` 11.6% |
 | >1000 instr. | 5 | 4 | 8,033 / 9,117 | `██████████████████░░` 88.1% |
 
