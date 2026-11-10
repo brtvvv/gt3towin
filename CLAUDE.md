@@ -217,6 +217,7 @@ Listy robocze są w `work/`:
 - `daddu aN, aN, $zero` (kopia rejestru w miejscu) przy argumencie = int przekazany do parametru `long` wołanej funkcji (zmień prototyp na `long`).
 - Zapis do globala tuż PO wywołaniu (`f(h); G = -1;`) gcc 2.9 potrafi wstawić w delay slot `jal`.
 - Także `mfc0 %0, $12/$28` (`__asm__ volatile("mfc0 %0, $12" : "=r"(s))`) i bloki `sync; cache 0x10, 0(%0); sync` w pętli (func_00287648, plik .c) dopasowują się 1:1.
+- **`lq`/`sq` (128 bit)**: `typedef int qword __attribute__((mode(TI)));` — kopie/zapisy qword dają lq/sq (func_00265768, IPU FIFO).
 - **`mult1` generuje sam kompilator** (dwa niezależne mnożenia obok siebie) — to NIE jest powód do skip (np. func_00240880). Funkcje z mult1 w skip.txt warto ponowić.
 - **`ei`/`sync` (2026-11-10): DA SIĘ** — `__asm__ volatile("ei");` / `__asm__ volatile("sync");` w C kompiluje się 1:1. Wzorzec sekcji krytycznej:
   `int r = func_0026AD38(); ...; if (r) __asm__ volatile("ei");` (DI zwraca stary stan); `func_0026AE48(x); sync; ei` = koniec. ~120 funkcji z `ei` i ~57 z `sync` czeka (lista: grep w asm/funcs; funcasm.py ukrywa linię `ei` przez komentarz — sprawdzaj sd.py).
