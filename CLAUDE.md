@@ -183,8 +183,10 @@ Listy robocze są w `work/`:
   `E *b = (E *)(t + off); if (b) { E *e = b + N; while (b != e) { e--; e->dtor(2); } }` (wirtualny dtor: baza z vptr bez danych).
 - Kolejność bloków `case` w kodzie = kolejność etykiet w asm (sortuj grupy przypadków po adresie celu z tablicy skoków).
 - Adres `D + (n/4)*0x1BC + 0x1418 + (n%4)*0x6C + 0xC` (dwa `mult`, osobne `addiu` stałych) = zagnieżdżone tablice struktur `&D->g[n/4].h[n%4]` (`struct W { char p[0x1418]; G g[]; }`, `G { char p[0xC]; H h[4]; ... }`).
-- `jal func_0027E260` z argumentami (vtbl[0].pfn, &typeinfo_fn, 1, obj+vtbl[0].delta, &typeinfo_fn2, obj) = `dynamic_cast<X *>(o)` (RTTI gcc2; nazwy maskowane). Szkic: work/close/func_0014C9B8.cpp (zostaje przydział s0/s1).
+- `jal func_0027E260` z argumentami (vtbl[0].pfn, &typeinfo_fn, 1, obj+vtbl[0].delta, &typeinfo_fn2, obj) = `X *x = dynamic_cast<X *>(o);` bezpośrednio (gcc2 sam sprawdza null; RTTI, nazwy maskowane). Przykład: src/manual/func_0014C9B8.cpp. Gdy null-check ma fallthrough do rzutowania (`beqz` → v0=0; s=v0), użyj inline: `static inline T *cv(B *q) { return q ? dynamic_cast<T *>(q) : 0; }` (src/manual/func_001D8C60.cpp, func_001D8110.cpp).
+- `addiu v1,v0,-0x100; movz v1,zero,v0` przed dynamic_cast = rzut z drugiej bazy: `struct BL : B, L {}` (B ma 0x100 B), `dynamic_cast<U *>((SB *)static_cast<BL *>(l))` (src/manual/func_001B68E8.cpp).
 - Sign-extend `dsll32/dsra32` po `lw` = zmienna lokalna `long o = x;` (rzutowanie inline nie wystarcza).
+- Rodzina klienta RPC (semafor `D_0030750C`, `func_00289DA8` = sceSifCallRpc, bufory `D_004AD680`/`D_004AD6B0`): szablony w src/manual/func_00274D00.cpp, func_002750F8.cpp (adres pola przez `d - 0x14` gdy oryginał liczy od bufora napisu; wołana funkcja `char *` zamiast void zmienia v0/v1).
 - Zapis do globala tuż PO wywołaniu (`f(h); G = -1;`) gcc 2.9 potrafi wstawić w delay slot `jal`.
 - **Nie do zrobienia tą metodą** (od razu do skip):
   ręczne instrukcje (`ei`, `syscall`, `sync.p`), wstawki VU0 (`vmula`, `qmtc2`),
