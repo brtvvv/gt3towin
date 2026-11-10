@@ -19,11 +19,9 @@
 <rect x='500' y='36' width='116' height='4' fill='#2ea043'/>
 <rect x='616' y='36' width='16' height='4' fill='#30363d'/>
 <rect x='632' y='36' width='28' height='4' fill='#2ea043'/>
-<rect x='20' y='40' width='40' height='4' fill='#2ea043'/>
-<rect x='60' y='40' width='20' height='4' fill='#30363d'/>
-<rect x='80' y='40' width='64' height='4' fill='#2ea043'/>
-<rect x='144' y='40' width='8' height='4' fill='#30363d'/>
-<rect x='152' y='40' width='8' height='4' fill='#2ea043'/>
+<rect x='20' y='40' width='48' height='4' fill='#2ea043'/>
+<rect x='68' y='40' width='12' height='4' fill='#30363d'/>
+<rect x='80' y='40' width='80' height='4' fill='#2ea043'/>
 <rect x='160' y='40' width='12' height='4' fill='#30363d'/>
 <rect x='172' y='40' width='20' height='4' fill='#2ea043'/>
 <rect x='192' y='40' width='152' height='4' fill='#30363d'/>
@@ -190,8 +188,8 @@
 <rect x='68' y='80' width='8' height='4' fill='#30363d'/>
 <rect x='76' y='80' width='36' height='4' fill='#2ea043'/>
 <rect x='112' y='80' width='28' height='4' fill='#30363d'/>
-<rect x='140' y='80' width='32' height='4' fill='#2ea043'/>
-<rect x='172' y='80' width='32' height='4' fill='#30363d'/>
+<rect x='140' y='80' width='40' height='4' fill='#2ea043'/>
+<rect x='180' y='80' width='24' height='4' fill='#30363d'/>
 <rect x='204' y='80' width='8' height='4' fill='#2ea043'/>
 <rect x='212' y='80' width='16' height='4' fill='#30363d'/>
 <rect x='228' y='80' width='4' height='4' fill='#2ea043'/>
@@ -2222,8 +2220,8 @@
 <rect x='532' y='444' width='40' height='4' fill='#30363d'/>
 <rect x='572' y='444' width='12' height='4' fill='#2ea043'/>
 <rect x='584' y='444' width='16' height='4' fill='#30363d'/>
-<rect x='600' y='444' width='20' height='4' fill='#2ea043'/>
-<rect x='620' y='444' width='16' height='4' fill='#30363d'/>
+<rect x='600' y='444' width='28' height='4' fill='#2ea043'/>
+<rect x='628' y='444' width='8' height='4' fill='#30363d'/>
 <rect x='636' y='444' width='24' height='4' fill='#2ea043'/>
 <rect x='20' y='448' width='152' height='4' fill='#2ea043'/>
 <rect x='172' y='448' width='8' height='4' fill='#30363d'/>
