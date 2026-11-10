@@ -203,6 +203,7 @@ Listy robocze są w `work/`:
 - `nop` przed `div.s` w oryginale wstawia asembler (hazard FPU) — to NIE jest różnica; sd.py pokazuje je jako przesunięcie, rozstrzyga wf.py/dd.py.
 - Stałe float ładowane do $f20+ (callee-saved) zaraz PO wywołaniu, choć użyte tylko później = przypisanie w źródle PRZED tym wywołaniem (`x = 400.0f; y = 350.0f; k = f();`); deklaracja z inicjalizacją na początku funkcji hoistuje za wysoko (func_001F43E0).
 - Destruktor wirtualny z tablicą elementów-z-członkami (pętla od końca, `beqz` na początku tablicy): zwykłe `C::~C() {}` + `// @_$_1C 0xADR` (src/manual/func_00208B10.cpp); vptr pod 0 = baza `struct B { virtual ~B(); };` bez danych.
+- Pętla opóźniająca `lui v0,0x10` + w pętli `addiu v0,v0,-1; bne v0,-1` = `int i = 0x100000; while (i--);` (gcc2 nie usuwa pustych pętli; src/manual/func_0028DC98.cpp).
 - Dwie pętle z tym samym s-rejestrem licznika (np. odliczanie `for(i=7;i>=0;i--)` i potem `for(i=0;i<n;i++)`) = jedna zmienna `int i;` użyta w obu pętlach.
 - Globalne zapisy w ściśle zachowanej kolejności (`lw next; sw head; lw cnt; addiu; sw cnt`) = `volatile` na globalach (kolejka z `ei`).
 - `daddu aN, aN, $zero` (kopia rejestru w miejscu) przy argumencie = int przekazany do parametru `long` wołanej funkcji (zmień prototyp na `long`).
