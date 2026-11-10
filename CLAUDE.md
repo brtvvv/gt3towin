@@ -177,6 +177,8 @@ Listy robocze są w `work/`:
   przypadki prowadzące do default (`case -1: case 7: break;`, `case 7: case 8: return 0;`); tablicę czytaj z orig/core_100000.bin.
 - `mtc1 $zero,$f0` + `swc1 $f0` (zero float przez rejestr) = przypisanie łańcuchowe `*a = *b = 0.0f;` (osobne przypisania dają `sw $zero`).
 - Dwie gałęzie z osobnym `lw`/`beqz` prowadzące do wspólnego `1.0f`/`0.0f` = zagnieżdżony ternary `G = (a ? p->x : p->y) ? 1.0f : 0.0f;`.
+- Ramka z `$fp`, `addiu sp,sp,-0x80`, `addiu sX,sp,0x3F` + `and -0x40` = bufor wyrównany do 64 przez alloca:
+  `int *b = (int *)(((int)__builtin_alloca(0x7F) + 0x3F) & -64);` (`__attribute__((aligned))` NIE daje tego kodu).
 - Zapis do globala tuż PO wywołaniu (`f(h); G = -1;`) gcc 2.9 potrafi wstawić w delay slot `jal`.
 - **Nie do zrobienia tą metodą** (od razu do skip):
   ręczne instrukcje (`ei`, `syscall`, `sync.p`), wstawki VU0 (`vmula`, `qmtc2`),
