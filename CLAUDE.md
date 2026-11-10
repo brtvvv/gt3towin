@@ -66,6 +66,7 @@ Kolejność pracy:
 | `python3 tools/sib.py` | funkcje-rodzeństwo o identycznych opcode'ach |
 | `python3 tools/ginit2.py` | generator statycznych inicjalizatorów (`_GLOBAL_$I$`) |
 | `python3 tools/mkwrap.py`, `libmatch.py` | dopasowania funkcji bibliotecznych (newlib) |
+| `python3 tools/swgen.py [f]` | generator `switch` zwracającego stałe (tablica skoków; bez argumentów skanuje grę) |
 | `python3 tools/ehgen.py lista` | generator fabryk `new X(...)` z wyjątkami |
 | `python3 tools/progress.py` | statystyki + wykresy SVG w README (woła go status.sh) |
 | `sh tools/status.sh` | STATUS.md + README + commit + push |
@@ -192,6 +193,10 @@ Listy robocze są w `work/`:
 - Rodzina klienta RPC (semafor `D_0030750C`, `func_00289DA8` = sceSifCallRpc, bufory `D_004AD680`/`D_004AD6B0`): szablony w src/manual/func_00274D00.cpp, func_002750F8.cpp (adres pola przez `d - 0x14` gdy oryginał liczy od bufora napisu; wołana funkcja `char *` zamiast void zmienia v0/v1).
 - Kilka wskaźników-givów z `slt` na końcu (np. 4 adresy co 0x44) = pętla indeksowa `for (i=0;i<8;i++) t->e[i].a = ...` (wersja wskaźnikowa daje sltu i jeden wskaźnik); licznik w dół `bgez` bez użycia i = pętla wskaźnikowa. Pola przy `this+0xE388`: struktura z dużym offsetem (`struct T { char p[0xE384]; int n; int o[8]; }`) zamiast arytmetyki wskaźników.
 - `a = b = c = 0.0f` zapisuje od prawej (c, b, a) — kolejność zapisów `swc1` 0x3C, 0x38 = `x38 = x3C = 0`.
+- Adres elementu liczony w każdej gałęzi osobno (`mult; addu v0,v1,t; addiu v0,off`) zamiast `&t->a[k]` = jawna arytmetyka `(O *)((char *)t + k * SIZE + OFF)`; `addu v0,v0,t` (odwrotnie) = `(char *)(k * SIZE + (int)t) + OFF`.
+- Kopia struktury: pętla ld/sd po 0x20 z wariantem ldl/sdl (test `(a|b)&7`) + ogon `lwl/swl` = struktura wyrównana do 2 (`struct S { short d[N]; }; *a = *b;`); ogon `lw/sw` = wyrównana do 4 (`int d[N]`).
+- Dwie pętle z tym samym s-rejestrem licznika (np. odliczanie `for(i=7;i>=0;i--)` i potem `for(i=0;i<n;i++)`) = jedna zmienna `int i;` użyta w obu pętlach.
+- Globalne zapisy w ściśle zachowanej kolejności (`lw next; sw head; lw cnt; addiu; sw cnt`) = `volatile` na globalach (kolejka z `ei`).
 - `daddu aN, aN, $zero` (kopia rejestru w miejscu) przy argumencie = int przekazany do parametru `long` wołanej funkcji (zmień prototyp na `long`).
 - Zapis do globala tuż PO wywołaniu (`f(h); G = -1;`) gcc 2.9 potrafi wstawić w delay slot `jal`.
 - **Nie do zrobienia tą metodą** (od razu do skip):
