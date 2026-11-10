@@ -28,7 +28,8 @@ Ostatnia aktualizacja: $(TZ=Europe/Warsaw date '+%Y-%m-%d %H:%M')
 | Dopasowane instrukcje (pliki func_*) | $INS |
 | Automatyczny przebieg | $RUN, sprawdzono ok. $TRIED funkcji |
 EOS
-git add -f STATUS.md src/auto src/perm src/tf src/xfer src/manual src/dtor >/dev/null 2>&1
+python3 tools/progress.py >/dev/null 2>&1
+git add -f STATUS.md README.md docs/img docs/progress_history.json tools src/auto src/perm src/tf src/xfer src/manual src/dtor >/dev/null 2>&1
 git -c user.name="Bartosz Ołka" -c user.email=bartekolka@outlook.com commit -q -m "Postep: $((AUTO + MAN)) dopasowanych funkcji
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
