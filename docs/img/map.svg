@@ -2716,11 +2716,7 @@
 <rect x='408' y='512' width='4' height='4' fill='#30363d'/>
 <rect x='412' y='512' width='12' height='4' fill='#2ea043'/>
 <rect x='424' y='512' width='20' height='4' fill='#30363d'/>
-<rect x='444' y='512' width='4' height='4' fill='#2ea043'/>
-<rect x='448' y='512' width='8' height='4' fill='#30363d'/>
-<rect x='456' y='512' width='4' height='4' fill='#2ea043'/>
-<rect x='460' y='512' width='16' height='4' fill='#30363d'/>
-<rect x='476' y='512' width='56' height='4' fill='#2ea043'/>
+<rect x='444' y='512' width='88' height='4' fill='#2ea043'/>
 <rect x='532' y='512' width='36' height='4' fill='#30363d'/>
 <rect x='568' y='512' width='32' height='4' fill='#2ea043'/>
 <rect x='600' y='512' width='8' height='4' fill='#30363d'/>
