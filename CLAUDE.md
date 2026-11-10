@@ -39,6 +39,9 @@ Kolejność pracy:
 2. **Rodziny funkcji.** `tools/sib.py` szuka funkcji o identycznych opcode'ach
    jak już dopasowane. Takie funkcje generuj skryptem z szablonu (podmiana adresów
    i stałych) zamiast pisać je ręcznie.
+2b. **Permuter na moich bliskich szkicach:** `bash tools/perm_close.sh 300 4` (w tle) puszcza decomp-permuter na `work/close/*.cpp`
+   (bez virtual/asm/C++); wynik `work/close/<f>.perm.c` → zawinąć w `extern "C" {}` do `src/perm/<f>.cpp` i sprawdzić `tools/try.py`
+   (pierwszy przebieg: 9 trafień z 30). Szkice z różnicą tylko w rejestrach/kolejności odkładaj do work/close — permuter je dobija.
 3. **Dopiero potem ręcznie.** Pobieraj partie: `sh tools/nexta.sh 20 | grep -v '^nop$'`.
    Pisz wszystkie szkice partii naraz (heredoki do katalogu roboczego),
    potem jedno `python3 tools/wf.py <katalog>/*.c*`.
