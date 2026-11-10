@@ -1,0 +1,5 @@
+struct S { float x0, x4, x8, xC, x10, x14, x18, x1C; char *x20; float x24; int x28; };
+struct O { char p[8]; virtual void f0(); virtual void f1(); virtual void f2(); virtual void f3(); virtual void f4(); virtual void f5(); virtual void f6(); virtual void f7(); virtual void f8(); virtual void f9(); virtual void a0(); virtual void a1(); virtual void a2(); virtual void a3(); virtual void h(S *); };
+struct T { char p[0xA4]; float xA4; char q[0x100 - 0xA8]; int x100; char x104[0xF24 - 0x104]; O *xF24; int xF28; float xF2C, xF30, xF34, xF38, xF3C; int xF40; };
+extern "C" void func_001BB688(T *); extern "C" O *func_0014ADA8(int);
+extern "C" void func_0014E528(T *t) { func_001BB688(t); float h = t->xA4 * 0.5f; S s; s.x20 = t->x104; s.x24 = t->xF3C; s.x28 = t->xF40 != 0; s.x8 = t->xF34; s.xC = t->xF38; s.x0 = t->xF2C; s.x4 = t->xF30; s.x10 = 0.5f; s.x14 = 0.5f; s.x18 = 0.5f; s.x1C = h; if (!t->xF28) { if (func_0014ADA8(t->x100) != t->xF24) t->xF24 = 0; } if (0.0078125f < h && t->xF24) t->xF24->h(&s); }
