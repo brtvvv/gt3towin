@@ -1,0 +1,3 @@
+extern "C" int func_0023D4B8(char *); extern "C" char *func_0023D558(char *, int); extern "C" void func_0023D378(char *); extern "C" void func_0027EE20(void *, int, int, void *); extern "C" void func_0023D208(char *, char *);
+extern "C" void func_001BFFC0(char *t, void *cmp) { char *l = t + 0xB0; int i = 0; int n = func_0023D4B8(l); char **b = (char **)__builtin_alloca(n * 4); for (; i < n; i++) { char *p = func_0023D558(l, i); b[i] = p ? p - 0x100 : 0; } func_0023D378(l); func_0027EE20(b, n, 4, cmp); if (n > 0) { char **q = b; int k = n; do { char *p = *q; q++; func_0023D208(l, p ? p + 0x100 : 0); } while (--k); } }
+
