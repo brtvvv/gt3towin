@@ -1,0 +1,6 @@
+struct B { char p[0x1C]; virtual void f0(); virtual void f1(); virtual void f2(); virtual void f3(); virtual void f4(); virtual void f5(); virtual void f6(); virtual void f7(); virtual void f8(); virtual void f9(); virtual void f10(); virtual void f11(); virtual void f12(); virtual void f13(); virtual void f14(); virtual void f15(); virtual void f16(); virtual void f17(); virtual void f18(); virtual void f19(); virtual void f20(); virtual void f21(); virtual void f22(); virtual void f23(); virtual void f24(); virtual void f25();  virtual int m26(); virtual int m27(); };
+struct T : B { char q[0x1F8 - 0x20]; int x1F8; char r[0x238 - 0x1FC]; int x238; };
+extern "C" void func_001C5E88(int); extern "C" void func_001D5758(T *); extern "C" int func_001D7AE0(T *, T *, int, int);
+extern "C" int func_001D51C8(T *t, T *a, int k, int x) { if (a == t) { int h = 0, r = 0; a->x1F8 = 0; switch (k) { case 3: if (a->x238) { r = a->m26(); h = 1; } break; case 4: if (a->x238) { r = a->m27(); h = 1; } break; case 5: if (!a->x238) { r = a->m26(); h = 1; } break; case 6: if (!a->x238) { r = a->m27(); h = 1; } break; }
+ if (h) { if (r) { func_001C5E88(3); func_001D5758(t); } else func_001C5E88(4); return 0; } } return func_001D7AE0(t, a, k, x); }
+
