@@ -2840,7 +2840,9 @@
 <rect x='196' y='544' width='20' height='4' fill='#2ea043'/>
 <rect x='216' y='544' width='24' height='4' fill='#30363d'/>
 <rect x='240' y='544' width='4' height='4' fill='#2ea043'/>
-<rect x='244' y='544' width='92' height='4' fill='#30363d'/>
+<rect x='244' y='544' width='68' height='4' fill='#30363d'/>
+<rect x='312' y='544' width='20' height='4' fill='#2ea043'/>
+<rect x='332' y='544' width='4' height='4' fill='#30363d'/>
 <rect x='336' y='544' width='8' height='4' fill='#2ea043'/>
 <rect x='344' y='544' width='20' height='4' fill='#30363d'/>
 <rect x='364' y='544' width='8' height='4' fill='#2ea043'/>
