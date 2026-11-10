@@ -123,6 +123,7 @@ Listy robocze są w `work/`:
   a po MATCH zamień ją na względną w `src/manual/`.
 - **Biblioteki:** newlib (`src/lib/`): mprec.c, strtol, vfprintf (`-DINTEGER_ONLY`, `vfprintf-ee.c`).
   vfscanf się nie zgadza (pominięte).
+- **libgcc frame.c (gcc 2.95, DWARF2 unwind) pod ~0x27C000–0x27D200:** dopasowane z oryginalnego źródła: count_fdes 0x27C618, add_fdes 0x27C660, extract_cie_info 0x27C910 (`read_pointer` = struktura `packed` → lwl/lwr), __deregister_frame_info 0x27CE60 (.c, abort = tail `j`). Lista `objects` = D_004AEC50, decode_uleb128 0x27C218, sleb 0x27C260. Reszta (find_fde 0x27C828 w close, frame_init 0x27C6E8, execute_cfa_insn 0x27CA18, __frame_state_for 0x27CEF8, fde_split/sort) — pisać wprost ze źródła frame.c.
 - **Wyjątki (EH, 2026-11-10):** funkcje z martwymi blokami `jal func_002794A0` (+ delete, `b` w pętli,
   `jal func_0027AEE0`) to kod z `-fexceptions` (`// @flags -fexceptions`). Typowo `return new X(args);` —
   blok handlera woła operator delete obiektu. Nazwy wołanych funkcji nie mają znaczenia (relokacje maskowane),
