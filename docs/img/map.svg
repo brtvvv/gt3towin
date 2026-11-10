@@ -2409,7 +2409,9 @@
 <rect x='84' y='472' width='4' height='4' fill='#2ea043'/>
 <rect x='88' y='472' width='20' height='4' fill='#30363d'/>
 <rect x='108' y='472' width='8' height='4' fill='#2ea043'/>
-<rect x='116' y='472' width='20' height='4' fill='#30363d'/>
+<rect x='116' y='472' width='8' height='4' fill='#30363d'/>
+<rect x='124' y='472' width='8' height='4' fill='#2ea043'/>
+<rect x='132' y='472' width='4' height='4' fill='#30363d'/>
 <rect x='136' y='472' width='12' height='4' fill='#2ea043'/>
 <rect x='148' y='472' width='48' height='4' fill='#30363d'/>
 <rect x='196' y='472' width='4' height='4' fill='#2ea043'/>
