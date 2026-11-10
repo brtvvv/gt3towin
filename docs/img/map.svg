@@ -2424,8 +2424,8 @@
 <rect x='636' y='444' width='24' height='4' fill='#2ea043'/>
 <rect x='20' y='448' width='144' height='4' fill='#2ea043'/>
 <rect x='164' y='448' width='56' height='4' fill='#30363d'/>
-<rect x='220' y='448' width='4' height='4' fill='#2ea043'/>
-<rect x='224' y='448' width='24' height='4' fill='#30363d'/>
+<rect x='220' y='448' width='8' height='4' fill='#2ea043'/>
+<rect x='228' y='448' width='20' height='4' fill='#30363d'/>
 <rect x='248' y='448' width='32' height='4' fill='#2ea043'/>
 <rect x='280' y='448' width='12' height='4' fill='#30363d'/>
 <rect x='292' y='448' width='40' height='4' fill='#2ea043'/>
