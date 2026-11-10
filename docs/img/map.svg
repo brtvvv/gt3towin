@@ -763,8 +763,8 @@
 <rect x='280' y='180' width='16' height='4' fill='#2ea043'/>
 <rect x='296' y='180' width='16' height='4' fill='#30363d'/>
 <rect x='312' y='180' width='16' height='4' fill='#2ea043'/>
-<rect x='328' y='180' width='8' height='4' fill='#30363d'/>
-<rect x='336' y='180' width='12' height='4' fill='#2ea043'/>
+<rect x='328' y='180' width='4' height='4' fill='#30363d'/>
+<rect x='332' y='180' width='16' height='4' fill='#2ea043'/>
 <rect x='348' y='180' width='24' height='4' fill='#30363d'/>
 <rect x='372' y='180' width='288' height='4' fill='#2ea043'/>
 <rect x='20' y='184' width='24' height='4' fill='#30363d'/>
