@@ -755,8 +755,8 @@
 <rect x='256' y='188' width='36' height='4' fill='#30363d'/>
 <rect x='292' y='188' width='4' height='4' fill='#2ea043'/>
 <rect x='296' y='188' width='20' height='4' fill='#30363d'/>
-<rect x='316' y='188' width='72' height='4' fill='#2ea043'/>
-<rect x='388' y='188' width='20' height='4' fill='#30363d'/>
+<rect x='316' y='188' width='80' height='4' fill='#2ea043'/>
+<rect x='396' y='188' width='12' height='4' fill='#30363d'/>
 <rect x='408' y='188' width='4' height='4' fill='#2ea043'/>
 <rect x='412' y='188' width='16' height='4' fill='#30363d'/>
 <rect x='428' y='188' width='40' height='4' fill='#2ea043'/>
