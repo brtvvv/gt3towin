@@ -1900,9 +1900,7 @@
 <rect x='304' y='396' width='4' height='4' fill='#30363d'/>
 <rect x='308' y='396' width='8' height='4' fill='#2ea043'/>
 <rect x='316' y='396' width='48' height='4' fill='#30363d'/>
-<rect x='364' y='396' width='256' height='4' fill='#2ea043'/>
-<rect x='620' y='396' width='8' height='4' fill='#30363d'/>
-<rect x='628' y='396' width='16' height='4' fill='#2ea043'/>
+<rect x='364' y='396' width='280' height='4' fill='#2ea043'/>
 <rect x='644' y='396' width='16' height='4' fill='#30363d'/>
 <rect x='20' y='400' width='4' height='4' fill='#30363d'/>
 <rect x='24' y='400' width='16' height='4' fill='#2ea043'/>
