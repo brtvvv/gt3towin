@@ -1742,9 +1742,7 @@
 <rect x='540' y='368' width='40' height='4' fill='#30363d'/>
 <rect x='580' y='368' width='20' height='4' fill='#2ea043'/>
 <rect x='600' y='368' width='24' height='4' fill='#30363d'/>
-<rect x='624' y='368' width='12' height='4' fill='#2ea043'/>
-<rect x='636' y='368' width='12' height='4' fill='#30363d'/>
-<rect x='648' y='368' width='4' height='4' fill='#2ea043'/>
+<rect x='624' y='368' width='28' height='4' fill='#2ea043'/>
 <rect x='652' y='368' width='8' height='4' fill='#30363d'/>
 <rect x='20' y='372' width='20' height='4' fill='#30363d'/>
 <rect x='40' y='372' width='8' height='4' fill='#2ea043'/>
