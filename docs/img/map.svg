@@ -2351,7 +2351,9 @@
 <rect x='308' y='468' width='4' height='4' fill='#2ea043'/>
 <rect x='312' y='468' width='92' height='4' fill='#30363d'/>
 <rect x='404' y='468' width='4' height='4' fill='#2ea043'/>
-<rect x='408' y='468' width='184' height='4' fill='#30363d'/>
+<rect x='408' y='468' width='40' height='4' fill='#30363d'/>
+<rect x='448' y='468' width='12' height='4' fill='#2ea043'/>
+<rect x='460' y='468' width='132' height='4' fill='#30363d'/>
 <rect x='592' y='468' width='8' height='4' fill='#2ea043'/>
 <rect x='600' y='468' width='60' height='4' fill='#30363d'/>
 <rect x='20' y='472' width='48' height='4' fill='#30363d'/>
