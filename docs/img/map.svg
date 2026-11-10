@@ -378,8 +378,8 @@
 <rect x='148' y='116' width='4' height='4' fill='#2ea043'/>
 <rect x='152' y='116' width='4' height='4' fill='#30363d'/>
 <rect x='156' y='116' width='12' height='4' fill='#2ea043'/>
-<rect x='168' y='116' width='12' height='4' fill='#30363d'/>
-<rect x='180' y='116' width='28' height='4' fill='#2ea043'/>
+<rect x='168' y='116' width='4' height='4' fill='#30363d'/>
+<rect x='172' y='116' width='36' height='4' fill='#2ea043'/>
 <rect x='208' y='116' width='64' height='4' fill='#30363d'/>
 <rect x='272' y='116' width='36' height='4' fill='#2ea043'/>
 <rect x='308' y='116' width='8' height='4' fill='#30363d'/>
