@@ -187,6 +187,8 @@ Listy robocze są w `work/`:
 - `addiu v1,v0,-0x100; movz v1,zero,v0` przed dynamic_cast = rzut z drugiej bazy: `struct BL : B, L {}` (B ma 0x100 B), `dynamic_cast<U *>((SB *)static_cast<BL *>(l))` (src/manual/func_001B68E8.cpp).
 - Sign-extend `dsll32/dsra32` po `lw` = zmienna lokalna `long o = x;` (rzutowanie inline nie wystarcza).
 - Rodzina klienta RPC (semafor `D_0030750C`, `func_00289DA8` = sceSifCallRpc, bufory `D_004AD680`/`D_004AD6B0`): szablony w src/manual/func_00274D00.cpp, func_002750F8.cpp (adres pola przez `d - 0x14` gdy oryginał liczy od bufora napisu; wołana funkcja `char *` zamiast void zmienia v0/v1).
+- Kilka wskaźników-givów z `slt` na końcu (np. 4 adresy co 0x44) = pętla indeksowa `for (i=0;i<8;i++) t->e[i].a = ...` (wersja wskaźnikowa daje sltu i jeden wskaźnik); licznik w dół `bgez` bez użycia i = pętla wskaźnikowa. Pola przy `this+0xE388`: struktura z dużym offsetem (`struct T { char p[0xE384]; int n; int o[8]; }`) zamiast arytmetyki wskaźników.
+- `a = b = c = 0.0f` zapisuje od prawej (c, b, a) — kolejność zapisów `swc1` 0x3C, 0x38 = `x38 = x3C = 0`.
 - Zapis do globala tuż PO wywołaniu (`f(h); G = -1;`) gcc 2.9 potrafi wstawić w delay slot `jal`.
 - **Nie do zrobienia tą metodą** (od razu do skip):
   ręczne instrukcje (`ei`, `syscall`, `sync.p`), wstawki VU0 (`vmula`, `qmtc2`),
