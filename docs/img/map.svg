@@ -2750,9 +2750,7 @@
 <rect x='140' y='508' width='12' height='4' fill='#30363d'/>
 <rect x='152' y='508' width='20' height='4' fill='#2ea043'/>
 <rect x='172' y='508' width='32' height='4' fill='#30363d'/>
-<rect x='204' y='508' width='4' height='4' fill='#2ea043'/>
-<rect x='208' y='508' width='4' height='4' fill='#30363d'/>
-<rect x='212' y='508' width='12' height='4' fill='#2ea043'/>
+<rect x='204' y='508' width='20' height='4' fill='#2ea043'/>
 <rect x='224' y='508' width='48' height='4' fill='#30363d'/>
 <rect x='272' y='508' width='4' height='4' fill='#2ea043'/>
 <rect x='276' y='508' width='32' height='4' fill='#30363d'/>
