@@ -51,12 +51,15 @@ Kolejność pracy:
 
 | Polecenie | Co robi |
 |---|---|
+| `sh tools/na.sh N [lista]` | jak nexta, zwięźle dla EH (bez handlerów i prologu; nop tylko w delay slocie) |
 | `sh tools/nexta.sh N [lista]` | kolejne N niedopasowanych funkcji z listy (domyślnie `work/small.txt`), sam asm |
 | `sh tools/w.sh func_X cpp 'kod'` | kompiluje, porównuje, przy MATCH zapisuje do `src/manual/` |
 | `python3 tools/wf.py plik...` | to samo, ale kod z pliku (nazwa pliku = nazwa funkcji; można `#define`, `// @flags`) |
 | `python3 tools/dd.py plik` | diff opcode'ów twoja wersja vs oryginał |
 | `python3 tools/try.py plik` | sprawdza wszystkie funkcje w pliku |
 | `python3 tools/funcasm.py func_X` | asm jednej funkcji |
+| `python3 tools/sd.py plik [sym]` | **obok siebie** oryginał \| moja, tylko różne linie (z operandami) — najszybsza diagnoza |
+| `python3 tools/od.py plik [sym]` | objdump skompilowanej funkcji |
 | `python3 tools/sib.py` | funkcje-rodzeństwo o identycznych opcode'ach |
 | `python3 tools/ginit2.py` | generator statycznych inicjalizatorów (`_GLOBAL_$I$`) |
 | `python3 tools/mkwrap.py`, `libmatch.py` | dopasowania funkcji bibliotecznych (newlib) |
@@ -123,6 +126,56 @@ Listy robocze są w `work/`:
   klasy. Generator: `python3 tools/ehgen.py <lista>`. Około 540 funkcji (~61 tys. instrukcji) ma EH —
   auto_m2c ich nie dopasuje (m2c nie widzi `new`), trzeba ręcznie z `-fexceptions`.
   Nieprzekazany argument wołanej funkcji (np. `check(a0)`) zmienia kolejność prologu — przekaż go jawnie.
+  Konstruktor/metoda klasy pod nazwą func_X: `struct D : B { M m; D() asm("func_001B10C0"); };` + `D::D() : m(this) {...}`
+  (handler EH woła dtor bazy `(this, 0)` = konstruktor z bazą/członkami). Handler z `dtor(a1, 2)` na parametrze
+  = parametr klasowy przez wartość (gcc2: niszczy go wywoływany); klasa musi mieć konstruktor kopiujący
+  `X(const X&)`, inaczej jest kopiowana na stos.
+  Kolejność w konstruktorze gcc2: bazy → vptr → członkowie → ciało. Stąd: zapis vptr PRZED pierwszym `jal`
+  = pierwszy wołany konstruktor to członek (nie baza); vptr PO konstruktorze pod `this+N` = druga baza
+  (`D : B1, B2`). vptr ląduje ZA wszystkimi danymi klasy, która wprowadza wirtualne (`B {int a,b; virtual}` → 8).
+  Lokalny obiekt z dtorem: `X t; return t.m(a);` (handler: `dtor(sp, 2)`). `new D(a)` z inline ctorem
+  pochodnej: `struct D : B { char r[N]; D(void *x) : B(x) {} };` (vptr D zapisany po ctorze B).
+  Argumenty `new X(...)` gcc2 liczy PO alokacji; jeśli oryginał liczy je przed `jal new` — zmienna lokalna
+  (`char *m = t->x; new X(m, ...)`). Ramka stosu za duża/mała = zły rozmiar lokalnego obiektu.
+  Konstruktor bazy z dodatkowym nieużywanym argumentem (`D(p) : B(p)`) zmienia kolejność prologu — próbuj obu.
+  Handler z ciągiem `dtor(m+off, 2)`, zapis vptr, `dtor_bazy(m, 0)` = niejawny inline destruktor członka
+  (`struct M : MB { MM mm; M(); }`, MB z inline `~MB() {}` nad bazą z dtorem poza linią). Pole ustawiane przez
+  osobny wskaźnik (`addu v0,s0,0xA498; sw -1,0(v0)`) = członek z inline ctorem (`S() : id(-1) {}`).
+  Adres funkcji jako argument: przekaż jako `void *` (gcc2 widzi `extern "C" f()` jako `f(...)`).
+  `return new D(...)` vs `D *x = new D(...); return x;` dają inny układ regionów EH (dodatkowe
+  `b; L: jal 2794A0; L2: b koniec; daddu v0,sX` = wersja ze zmienną). Kod po `new` (metody na x) też poza ctorem.
+  `return 0` przez blok regionu (`beqz → L: b koniec; v0=0` za kodem handlera) = `if (o) return new X(..); return 0;`
+  (warunek pozytywny, zwrot zera NA KOŃCU); bezpośredni `beql → koniec` = zwykłe wewnętrzne `return 0`.
+  Statyczne tablice obiektów z EH: `X D_ADR[N];` + `// @_GLOBAL_$I$D_ADR 0xADR` (handler niszczy wirtualnym dtorem).
+  Parametr float w ctorze: pozycja `mov.s $f12` w sekwencji ustawiania argumentów = jego miejsce na liście.
+  Wynik funkcji + duży offset (`lui/ori` + `lw 0x3C`) zamiast złożonego offsetu: `({ V *_g = (V *)(f() + 0x2FF38); _g; })->x`.
+  Pętla kopiująca `ld/sd ×4, bne ptr,end` = przypisanie struktury wyrównanej do 8 (`struct L { long d[12]; }`),
+  nie tablica elementów (ta daje licznik). Niejawny ctor kopiujący klasy pochodnej: `return new D(*s);`.
+  Cały kod przez wskaźnik do członka (`addu s0,this,0x16D40` trzymany w s-rejestrze): `M *p = &m; p->...`.
+  **UWAGA: `nexta.sh` usuwa `nop` i nie pokazuje delay slotów z `sd` — przy EH używaj `na.sh`** (pokazuje `(nop)`
+  i zapis w delay slocie). Bez tego `jal f; daddu s1,v0` wygląda jak bezsensowny odczyt v0 przed wywołaniem.
+  Kolejność kilku zapisów pod koniec: `tools/ord.py func ext "$(cat plik)"` z blokiem `/*{*/ a; b; c; /*}*/`.
+  v0 vs v1 przy porównaniu wyniku/zmiennej po wywołaniu: zmień typ zwracany wołanej funkcji (void ↔ int).
+  Nierozwiązane: wywołanie metody z argumentem float z $gp (`lwc1 $f13` PRZED jal, `a0` w delay slocie) — 4 funkcje w skip.
+  `return 0` po zniszczeniu lokalnego obiektu (label regionu przed `v0=0`): zamknij obiekt w `{ }` przed `return 0;`.
+  Ponowne użycie zmiennej lokalnej (`o = ...` drugi raz) zmienia przydział s-rejestrów — osobna zmienna `o2`.
+  Stała (adres formatu) trzymana w s-rejestrze przez wywołanie = argument liczony w złej kolejności; policz wynik
+  wywołania do zmiennej przed `sprintf(buf, fmt, r)`. Odczyt pola przez wskaźnik podobiektu (`lwc1 8(v0)`, v0=x+0x20)
+  = inline metoda podobiektu (`v20.flip()`), nie wyrażenie z zewnątrz.
+  Bufor na stosie współdzielony z innym (martwym) obiektem = zmienne w rozłącznych blokach `{ }` (gcc2 współdzieli
+  sloty); bufor = istniejący obiekt (`s.d`) gdy oryginał podaje jego adres. Dwa `return x` po różnych gałęziach,
+  które oryginał scala w jedno: `if (f) a(); else {...}; return x;`.
+  Jeden zapis vptr w ctorze, a handler przywraca INNY vtable przed dtorem bazy = klasa z inline bazą
+  (`C0 { int x0,x4; C0():x0(0),x4(0){} virtual ~C0(){} }; C : C0 { MC m; C(){} }`) — vptr C0 jest martwym zapisem.
+  Kilka zapisów pod `this+duży offset`, każdy z osobnym `ori/addu` (bez wspólnej bazy 0x8000) = inline metoda elementu
+  (`struct G { int x0,x4; void s(int v){x4=v;} }; g[0].s(2); g[1].s(2);`).
+  Kopia kilku bajtów do bufora (`lw`+`lhu`/`sw`+`sh`) spod adresu z napisem = `strcpy(buf, "error")` z literałem
+  (builtin); `sprintf(buf, "%s %s", ...)` też z literałem (relokacje maskowane, treść odczytaj z orig/core_100000.bin).
+  Prolog `s0=a0`, a potem `s1=a1` w delay slocie pierwszego `jal` = wołana funkcja bierze TYLKO a0 (a1 jest tylko zapamiętany);
+  przy `f(t, a)` gcc zapisuje s1 przed s0. Wywołanie wirtualne z obiektem w a2 i nietkniętym a1 = metoda bierze a1 dalej (`o->f(a)`).
+- **switch z tablicą skoków:** zakres tablicy (`sltiu N`, przesunięcie `addiu a0,1`) musi się zgadzać — wypisz jawnie
+  przypadki prowadzące do default (`case -1: case 7: break;`, `case 7: case 8: return 0;`); tablicę czytaj z orig/core_100000.bin.
+- Zapis do globala tuż PO wywołaniu (`f(h); G = -1;`) gcc 2.9 potrafi wstawić w delay slot `jal`.
 - **Nie do zrobienia tą metodą** (od razu do skip):
   ręczne instrukcje (`ei`, `syscall`, `sync.p`), wstawki VU0 (`vmula`, `qmtc2`),
   tablice skoków bez danych, funkcje z `lw` w delay slocie `jal`.
