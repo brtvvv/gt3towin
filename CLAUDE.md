@@ -195,6 +195,7 @@ Listy robocze są w `work/`:
 - `a = b = c = 0.0f` zapisuje od prawej (c, b, a) — kolejność zapisów `swc1` 0x3C, 0x38 = `x38 = x3C = 0`.
 - Adres elementu liczony w każdej gałęzi osobno (`mult; addu v0,v1,t; addiu v0,off`) zamiast `&t->a[k]` = jawna arytmetyka `(O *)((char *)t + k * SIZE + OFF)`; `addu v0,v0,t` (odwrotnie) = `(char *)(k * SIZE + (int)t) + OFF`.
 - Kopia struktury: pętla ld/sd po 0x20 z wariantem ldl/sdl (test `(a|b)&7`) + ogon `lwl/swl` = struktura wyrównana do 2 (`struct S { short d[N]; }; *a = *b;`); ogon `lw/sw` = wyrównana do 4 (`int d[N]`).
+- Łańcuch `if/else if` z adresami stałych (`lui`) wyciągniętymi do s-rejestrów w prologu i blokami w dziwnej kolejności (skok `b` na początek) = kod w `do { if (...) { k = 2; break; } ... } while (0);` (optymalizator pętli).
 - Dwie pętle z tym samym s-rejestrem licznika (np. odliczanie `for(i=7;i>=0;i--)` i potem `for(i=0;i<n;i++)`) = jedna zmienna `int i;` użyta w obu pętlach.
 - Globalne zapisy w ściśle zachowanej kolejności (`lw next; sw head; lw cnt; addiu; sw cnt`) = `volatile` na globalach (kolejka z `ei`).
 - `daddu aN, aN, $zero` (kopia rejestru w miejscu) przy argumencie = int przekazany do parametru `long` wołanej funkcji (zmień prototyp na `long`).
