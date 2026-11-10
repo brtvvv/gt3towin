@@ -21,9 +21,7 @@
 <rect x='632' y='36' width='28' height='4' fill='#2ea043'/>
 <rect x='20' y='40' width='40' height='4' fill='#2ea043'/>
 <rect x='60' y='40' width='20' height='4' fill='#30363d'/>
-<rect x='80' y='40' width='8' height='4' fill='#2ea043'/>
-<rect x='88' y='40' width='8' height='4' fill='#30363d'/>
-<rect x='96' y='40' width='48' height='4' fill='#2ea043'/>
+<rect x='80' y='40' width='64' height='4' fill='#2ea043'/>
 <rect x='144' y='40' width='8' height='4' fill='#30363d'/>
 <rect x='152' y='40' width='8' height='4' fill='#2ea043'/>
 <rect x='160' y='40' width='12' height='4' fill='#30363d'/>
@@ -1962,9 +1960,7 @@
 <rect x='264' y='400' width='104' height='4' fill='#30363d'/>
 <rect x='368' y='400' width='8' height='4' fill='#2ea043'/>
 <rect x='376' y='400' width='16' height='4' fill='#30363d'/>
-<rect x='392' y='400' width='64' height='4' fill='#2ea043'/>
-<rect x='456' y='400' width='8' height='4' fill='#30363d'/>
-<rect x='464' y='400' width='92' height='4' fill='#2ea043'/>
+<rect x='392' y='400' width='164' height='4' fill='#2ea043'/>
 <rect x='556' y='400' width='24' height='4' fill='#30363d'/>
 <rect x='580' y='400' width='20' height='4' fill='#2ea043'/>
 <rect x='600' y='400' width='4' height='4' fill='#30363d'/>
@@ -2014,8 +2010,8 @@
 <rect x='20' y='408' width='16' height='4' fill='#30363d'/>
 <rect x='36' y='408' width='24' height='4' fill='#2ea043'/>
 <rect x='60' y='408' width='4' height='4' fill='#30363d'/>
-<rect x='64' y='408' width='12' height='4' fill='#2ea043'/>
-<rect x='76' y='408' width='92' height='4' fill='#30363d'/>
+<rect x='64' y='408' width='20' height='4' fill='#2ea043'/>
+<rect x='84' y='408' width='84' height='4' fill='#30363d'/>
 <rect x='168' y='408' width='8' height='4' fill='#2ea043'/>
 <rect x='176' y='408' width='4' height='4' fill='#30363d'/>
 <rect x='180' y='408' width='28' height='4' fill='#2ea043'/>
@@ -2235,8 +2231,8 @@
 <rect x='172' y='448' width='8' height='4' fill='#30363d'/>
 <rect x='180' y='448' width='8' height='4' fill='#2ea043'/>
 <rect x='188' y='448' width='32' height='4' fill='#30363d'/>
-<rect x='220' y='448' width='8' height='4' fill='#2ea043'/>
-<rect x='228' y='448' width='20' height='4' fill='#30363d'/>
+<rect x='220' y='448' width='16' height='4' fill='#2ea043'/>
+<rect x='236' y='448' width='12' height='4' fill='#30363d'/>
 <rect x='248' y='448' width='32' height='4' fill='#2ea043'/>
 <rect x='280' y='448' width='12' height='4' fill='#30363d'/>
 <rect x='292' y='448' width='40' height='4' fill='#2ea043'/>
@@ -2253,8 +2249,8 @@
 <rect x='484' y='448' width='4' height='4' fill='#30363d'/>
 <rect x='488' y='448' width='44' height='4' fill='#2ea043'/>
 <rect x='532' y='448' width='4' height='4' fill='#30363d'/>
-<rect x='536' y='448' width='8' height='4' fill='#2ea043'/>
-<rect x='544' y='448' width='16' height='4' fill='#30363d'/>
+<rect x='536' y='448' width='16' height='4' fill='#2ea043'/>
+<rect x='552' y='448' width='8' height='4' fill='#30363d'/>
 <rect x='560' y='448' width='92' height='4' fill='#2ea043'/>
 <rect x='652' y='448' width='8' height='4' fill='#30363d'/>
 <rect x='20' y='452' width='12' height='4' fill='#30363d'/>
@@ -2313,8 +2309,8 @@
 <rect x='440' y='456' width='28' height='4' fill='#30363d'/>
 <rect x='468' y='456' width='16' height='4' fill='#2ea043'/>
 <rect x='484' y='456' width='8' height='4' fill='#30363d'/>
-<rect x='492' y='456' width='12' height='4' fill='#2ea043'/>
-<rect x='504' y='456' width='16' height='4' fill='#30363d'/>
+<rect x='492' y='456' width='20' height='4' fill='#2ea043'/>
+<rect x='512' y='456' width='8' height='4' fill='#30363d'/>
 <rect x='520' y='456' width='16' height='4' fill='#2ea043'/>
 <rect x='536' y='456' width='20' height='4' fill='#30363d'/>
 <rect x='556' y='456' width='4' height='4' fill='#2ea043'/>
