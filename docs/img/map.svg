@@ -330,9 +330,7 @@
 <rect x='560' y='104' width='32' height='4' fill='#30363d'/>
 <rect x='592' y='104' width='8' height='4' fill='#2ea043'/>
 <rect x='600' y='104' width='8' height='4' fill='#30363d'/>
-<rect x='608' y='104' width='4' height='4' fill='#2ea043'/>
-<rect x='612' y='104' width='12' height='4' fill='#30363d'/>
-<rect x='624' y='104' width='4' height='4' fill='#2ea043'/>
+<rect x='608' y='104' width='20' height='4' fill='#2ea043'/>
 <rect x='628' y='104' width='32' height='4' fill='#30363d'/>
 <rect x='20' y='108' width='40' height='4' fill='#30363d'/>
 <rect x='60' y='108' width='60' height='4' fill='#2ea043'/>
