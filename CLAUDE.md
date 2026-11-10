@@ -208,6 +208,7 @@ Listy robocze są w `work/`:
 - 4× `nop` w krótkiej pętli (`addiu; nop×4; bnez`) wstawia asembler (obejście błędu krótkich pętli R5900) — to PUSTA pętla w C (`for (i = 0; i < n; i++);`). Funkcje z takimi „opóźnieniami” są do zrobienia (src/manual/func_0018F658.cpp, func_002074F0.cpp).
 - `addu v0,BAZA,idx` (baza pierwsza) = indeks tablicy-członka struktury `((S *)t)->a[i]`; rzutowanie `((float *)(t + off))[i]` daje `addu v0,idx,BAZA`.
 - Kolejność bloków `case` w switch decyduje o układzie (`switch(k){case 2:..; case 1:..; default:..}` vs if-else) — przy różnicy tylko w układzie gałęzi spróbuj switch z przestawionymi case.
+- Drzewo porównań `blez r; slti r,3 (bnel); beq r,3` = `switch (r) { case 1: case 2: f(); case 3: break; default: return; }` (fallthrough); `if/else if` daje inny układ (src/manual/func_0019F460.cpp, func_0016A4A8.cpp).
 - Dwie pętle z tym samym s-rejestrem licznika (np. odliczanie `for(i=7;i>=0;i--)` i potem `for(i=0;i<n;i++)`) = jedna zmienna `int i;` użyta w obu pętlach.
 - Globalne zapisy w ściśle zachowanej kolejności (`lw next; sw head; lw cnt; addiu; sw cnt`) = `volatile` na globalach (kolejka z `ei`).
 - `daddu aN, aN, $zero` (kopia rejestru w miejscu) przy argumencie = int przekazany do parametru `long` wołanej funkcji (zmień prototyp na `long`).
