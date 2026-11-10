@@ -349,9 +349,7 @@
 <rect x='20' y='108' width='40' height='4' fill='#30363d'/>
 <rect x='60' y='108' width='60' height='4' fill='#2ea043'/>
 <rect x='120' y='108' width='16' height='4' fill='#30363d'/>
-<rect x='136' y='108' width='20' height='4' fill='#2ea043'/>
-<rect x='156' y='108' width='12' height='4' fill='#30363d'/>
-<rect x='168' y='108' width='492' height='4' fill='#2ea043'/>
+<rect x='136' y='108' width='524' height='4' fill='#2ea043'/>
 <rect x='20' y='112' width='376' height='4' fill='#2ea043'/>
 <rect x='396' y='112' width='8' height='4' fill='#30363d'/>
 <rect x='404' y='112' width='20' height='4' fill='#2ea043'/>
